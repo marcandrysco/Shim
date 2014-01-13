@@ -1,0 +1,13 @@
+Package	"shim-test-threads"
+Version	"0.1.0"
+
+Target
+	Name	"threads"
+	Type	"TestApplication"
+
+	CFlags	"-I../../"
+	LDFlags	"-Wl,-rpath=../../ -L../../ -lshim"
+
+	Extra	"src/common.h"
+	Source	"src/main.c"
+EndTarget

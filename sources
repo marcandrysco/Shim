@@ -1,0 +1,89 @@
+Package	"libshim"
+Version	"0.1.0"
+
+Target
+	Name	"shim"
+	Type	"Library"
+
+	CFlags	"`pkg-config --cflags shim`"
+	LDFlags	"`pkg-config --libs shim`"
+
+	If [ "$visibility" ]
+		CFlags	+"-fvisibility=internal"
+	EndIf
+
+	If [ "$host" = "windows" ]
+		CFlags	+"-D_WIN32_WINNT=0x0600"
+		LDFlags	+"-lws2_32"
+	Else
+		CFlags	+""
+		LDFlags	+"-lpthread -lrt -lm -ldl"
+	EndIf
+
+	Extra	"src/common.h"
+
+	Source	"src/mem/base.c"
+	Source	"src/mem/manage.c"
+
+	If [ "$host" = "windows" ]
+	Else
+		Source	"src/mem/posix/manage.c"
+	EndIf
+
+	Source	"src/debug/exception.c"
+	Source	"src/debug/res.c"
+
+	If [ "$host" = "windows" ]
+	Else
+		Source	"src/debug/posix/exception.c"
+	EndIf
+
+	Extra	"src/io/defs.h"
+	Source	"src/io/chunk.c"
+	Source	"src/io/device.c"
+	Source	"src/io/output.c"
+	Source	"src/io/print.c"
+
+	If [ "$host" = "windows" ]
+	Else
+		Source	"src/io/posix/output.c"
+	EndIf
+
+	Extra	"src/math/func.h"
+
+	Source	"src/string/base.c"
+	Source	"src/string/io.c"
+	Source	"src/string/locale.c"
+
+	Source	"src/sys/proc.c"
+	Source	"src/sys/sync.c"
+	Source	"src/sys/time.c"
+
+	If [ "$host" = "windows" ]
+	Else
+		Source	"src/sys/posix/proc.c"
+		Source	"src/sys/posix/sync.c"
+		Source	"src/sys/posix/time.c"
+	EndIf
+
+	Extra	"src/thread/host.h"
+	Source	"src/thread/base.c"
+	Source	"src/thread/cond.c"
+	Source	"src/thread/local.c"
+	Source	"src/thread/lock.c"
+
+	If [ "$host" = "windows" ]
+	Else
+		Extra	"src/thread/posix/defs.h"
+		Source	"src/thread/posix/base.c"
+		Source	"src/thread/posix/cond.c"
+		Source	"src/thread/posix/local.c"
+		Source	"src/thread/posix/lock.c"
+	EndIf
+
+	Extra	"src/types/defs.h"
+	Source	"src/types/avltree.c"
+	Source	"src/types/compare.c"
+	Source	"src/types/llist.c"
+	Source	"src/types/strbuf.c"
+EndTarget
