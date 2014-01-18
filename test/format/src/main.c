@@ -95,6 +95,65 @@ bool test_str_printf()
 	return true;
 }
 
+/**
+ * I/O scanning test.
+ *   &returns: True of success, false on failure.
+ */
+
+bool test_io_scan()
+{
+	struct io_input_t input;
+	char ch;
+	const char *str, *ptr;
+	unsigned long ulong;
+
+	printf("testing io scanning... ");
+
+	ch = '\0';
+	ptr = str = "123 string";
+	input = str_input_ref(&ptr);
+
+	ulong = io_scan_ulong(input, &ch);
+	if((ulong != 123) || (ptr != (str + 4)))
+		return printf("failed\n"), false;
+
+	io_input_close(input);
+
+	ch = '\0';
+	ptr = str = "0x123 string";
+	input = str_input_ref(&ptr);
+
+	ulong = io_scan_ulong(input, &ch);
+	if((ulong != 0x123) || (ptr != (str + 6)))
+		return printf("failed\n"), false;
+
+	io_input_close(input);
+
+	ch = '\0';
+	ptr = str = "0b101";
+	input = str_input_ref(&ptr);
+
+	ulong = io_scan_ulong(input, &ch);
+	if((ulong != 5) || (*ptr != '\0'))
+		return printf("failed\n"), false;
+
+	io_input_close(input);
+
+	ch = '\0';
+	ptr = str = "0x";
+	input = str_input_ref(&ptr);
+
+	ulong = io_scan_ulong(input, &ch);
+	if((ulong != 0) || (*ptr != '\0'))
+		return printf("failed\n"), false;
+
+	io_input_close(input);
+
+	printf("okay\n");
+
+	return true;
+}
+
 
 /**
  * Main entry point.
@@ -109,6 +168,7 @@ int main(int argc, char *argv[])
 
 	suc &= test_io_len();
 	suc &= test_io_accum();
+	suc &= test_io_scan();
 	suc &= test_str_printf();
 
 	return suc ? 0 : 1;

@@ -26,16 +26,10 @@ struct io_output_t _impl_io_output_open_dbg(const char *path, const char *file, 
 struct io_output_t _impl_io_output_append(const char *path);
 struct io_output_t _impl_io_output_append_dbg(const char *path, const char *file, unsigned int line);
 
-/*
- * implementation variables
- */
-
-extern struct io_output_i _impl_io_output_file_iface;
-
 
 /**
  * Retrieve the standard output.
- *   &returns; The standard output.
+ *   &returns: The standard output.
  */
 
 _export
@@ -53,37 +47,6 @@ _export
 struct io_output_t io_output_stderr()
 {
 	return _impl_io_output_stderr();
-}
-
-
-/**
- * Create an output device.
- *   @ref: The reference.
- *   @iface: The interface.
- *   &returns: The output device.
- */
-
-_export
-struct io_output_t _io_output_create(void *ref, const struct io_output_i *iface)
-{
-	return (struct io_output_t){ ref, iface };
-}
-
-/**
- * Create an output device.
- *   @ref: The reference.
- *   @iface: The interface.
- *   @file: The file.
- *   @line: hte line.
- *   &returns: The output device.
- */
-
-_export
-struct io_output_t _io_output_create_dbg(void *ref, const struct io_output_i *iface, const char *file, unsigned int line)
-{
-	_dbg_res_alloc(ref, file, line, io_chunk_null);
-
-	return (struct io_output_t){ ref, iface };
 }
 
 
@@ -155,6 +118,28 @@ size_t io_output_write(struct io_output_t output, const void *restrict buf, size
 }
 
 /**
+ * Write full chunk to the output device.
+ *   @output: The output device.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes.
+ */
+
+_export
+void io_output_writefull(struct io_output_t output, const void *restrict buf, size_t nbytes)
+{
+	size_t rem = nbytes;
+
+	do {
+		nbytes = io_output_write(output, buf, rem);
+		if(nbytes == 0)
+			throw("Unable to write data to output.");
+
+		rem -= nbytes;
+		buf += nbytes;
+	} while(rem > 0);
+}
+
+/**
  * Close the output device.
  *   @output: The output device.
  */
@@ -168,6 +153,30 @@ void io_output_close(struct io_output_t output)
 
 
 /**
+ * Write a boolean to the output device.
+ *   @output: The output device.
+ *   @value: The value.
+ */
+
+_export
+void io_output_bool(struct io_output_t output, bool value)
+{
+	io_output_uint8(output, value ? 1 : 0);
+}
+
+/**
+ * Write an 8-bit unsigned integer to the output device.
+ *   @output: The output device.
+ *   @value: The value.
+ */
+
+_export
+void io_output_uint8(struct io_output_t output, uint8_t value)
+{
+	io_output_writefull(output, &value, sizeof(uint8_t));
+}
+
+/**
  * Write a 32-bit unsigned integer to the output device.
  *   @output: The output device.
  *   @value: The value.
@@ -176,7 +185,7 @@ void io_output_close(struct io_output_t output)
 _export
 void io_output_uint32(struct io_output_t output, uint32_t value)
 {
-	io_output_write(output, &value, sizeof(uint32_t));
+	io_output_writefull(output, &value, sizeof(uint32_t));
 }
 
 /**
@@ -188,7 +197,7 @@ void io_output_uint32(struct io_output_t output, uint32_t value)
 _export
 void io_output_ch(struct io_output_t output, char ch)
 {
-	io_output_write(output, &ch, sizeof(char));
+	io_output_writefull(output, &ch, sizeof(char));
 }
 
 /**
@@ -207,5 +216,5 @@ void io_output_str(struct io_output_t output, const char *str)
 		throw("String too long to be written.");
 
 	io_output_uint32(output, len);
-	io_output_write(output, str, len);
+	io_output_writefull(output, str, len);
 }

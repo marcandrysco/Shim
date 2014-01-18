@@ -4,17 +4,26 @@ HEADERS = \
 	  src/debug/exception.h \
 	  src/debug/res.h \
 	  \
+	  src/fs/base.h \
+	  \
+	  src/math/func.h \
+	  src/math/rand.h \
+	  \
+	  src/mem/base.h \
 	  src/mem/manage.h \
 	  \
 	  src/io/defs.h \
 	  src/io/chunk.h \
 	  src/io/device.h \
+	  src/io/input.h \
 	  src/io/output.h \
 	  src/io/print.h \
+	  src/io/scan.h \
 	  \
 	  src/string/base.h \
 	  src/string/io.h \
 	  src/string/locale.h \
+	  src/string/scan.h \
 	  \
 	  src/sys/proc.h \
 	  src/sys/sync.h \

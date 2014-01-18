@@ -6,6 +6,7 @@
 #include "../../io/chunk.h"
 #include "../../io/print.h"
 
+
 /*
  * function declarations
  */
@@ -18,7 +19,6 @@ void _impl_io_output_file_close(FILE *file);
  */
 
 static void res_chunk(struct io_output_t output, void *arg);
-
 
 /*
  * global variables

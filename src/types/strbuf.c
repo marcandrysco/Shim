@@ -159,11 +159,8 @@ void strbuf_write(struct strbuf_t *buf, const void *restrict data, size_t nbytes
 _export
 char *strbuf_done(struct strbuf_t *buf)
 {
-	size_t len;
-
-	len = str_len(buf->store);
-	buf->store = mem_realloc(buf->store, len + 1);
-	buf->store[len] = '\0';
+	buf->store = mem_realloc(buf->store, buf->i + 1);
+	buf->store[buf->i] = '\0';
 
 	return buf->store;
 }

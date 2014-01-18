@@ -12,6 +12,7 @@
  */
 
 bool str_isdigit(char ch);
+bool str_isspace(char ch);
 
 /* %~shim.h% */
 

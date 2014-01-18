@@ -38,22 +38,34 @@ Target
 		Source	"src/debug/posix/exception.c"
 	EndIf
 
-	Extra	"src/io/defs.h"
-	Source	"src/io/chunk.c"
-	Source	"src/io/device.c"
-	Source	"src/io/output.c"
-	Source	"src/io/print.c"
+	Source	"src/fs/base.c"
 
 	If [ "$host" = "windows" ]
 	Else
+		Source	"src/fs/posix/base.c"
+	EndIf
+
+	Extra	"src/io/defs.h"
+	Source	"src/io/chunk.c"
+	Source	"src/io/device.c"
+	Source	"src/io/input.c"
+	Source	"src/io/output.c"
+	Source	"src/io/print.c"
+	Source	"src/io/scan.c"
+
+	If [ "$host" = "windows" ]
+	Else
+		Source	"src/io/posix/input.c"
 		Source	"src/io/posix/output.c"
 	EndIf
 
 	Extra	"src/math/func.h"
+	Source	"src/math/rand.c"
 
 	Source	"src/string/base.c"
 	Source	"src/string/io.c"
 	Source	"src/string/locale.c"
+	Source	"src/string/scan.c"
 
 	Source	"src/sys/proc.c"
 	Source	"src/sys/sync.c"

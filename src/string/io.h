@@ -15,6 +15,9 @@ struct io_output_t str_output_buf(char *buf, size_t nbytes, size_t *nread);
 struct io_output_t str_output_len(size_t *len);
 struct io_output_t str_output_accum(char **buf, size_t *nread);
 
+struct io_input_t str_input_buf(const char *buf);
+struct io_input_t str_input_ref(const char **ref);
+
 /*
  * string formatted printing funtcion declarations
  */

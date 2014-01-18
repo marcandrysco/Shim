@@ -2,8 +2,10 @@
 #include "io.h"
 #include "../io/output.h"
 #include "../io/print.h"
+#include "../math/func.h"
 #include "../mem/base.h"
 #include "../mem/manage.h"
+#include "base.h"
 
 
 /**
@@ -41,6 +43,9 @@ static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes);
 static void accum_delete(struct accum_t *inst);
 static size_t accum_write(struct accum_t *inst, const void *restrict buf, size_t nbytes);
 
+static bool ref_ctrl(char **ref, unsigned int cmd, void *arg);
+static size_t ref_read(const char **ref, void *restrict buf, size_t nbytes);
+
 static bool unimpl_ctrl(void *ref, unsigned int id, void *data);
 static void unimpl_close(void *ref);
 
@@ -51,6 +56,9 @@ static void unimpl_close(void *ref);
 static struct io_output_i buf_iface = { { unimpl_ctrl, (io_close_f)buf_delete }, (io_write_f)buf_write };
 static struct io_output_i len_iface = { { unimpl_ctrl, unimpl_close }, (io_write_f)len_write };
 static struct io_output_i accum_iface = { { unimpl_ctrl, (io_close_f)accum_delete }, (io_write_f)accum_write };
+
+static struct io_input_i str_iface = { { (io_ctrl_f)ref_ctrl, mem_free }, (io_read_f)ref_read };
+static struct io_input_i ref_iface = { { (io_ctrl_f)ref_ctrl, unimpl_close }, (io_read_f)ref_read };
 
 
 /**
@@ -196,6 +204,74 @@ static size_t accum_write(struct accum_t *inst, const void *restrict buf, size_t
 
 	mem_copy(*inst->buf + inst->i, buf, nbytes);
 	inst->i += nbytes;
+
+	return nbytes;
+}
+
+
+/**
+ * Create an input from a string buffer.
+ *   @buf: The string buffer.
+ *   &returns: The input.
+ */
+
+_export
+struct io_input_t str_input_buf(const char *buf)
+{
+	const char **ref;
+
+	ref = mem_alloc(sizeof(char *));
+	*ref = buf;
+
+	return (struct io_input_t){ ref, &str_iface };
+}
+
+/**
+ * Create an input from a string reference.
+ *   @ref: The string reference.
+ *   &returns: The input.
+ */
+
+_export
+struct io_input_t str_input_ref(const char **ref)
+{
+	return (struct io_input_t){ ref, &ref_iface };
+}
+
+/**
+ * Handle a control singal to an input string reference.
+ *   @ref: The string reference.
+ *   @cmd: The command.
+ *   @arg: The argument.
+ *   &returns: True if handle, false otherwise.
+ */
+
+static bool ref_ctrl(char **ref, unsigned int cmd, void *arg)
+{
+	switch(cmd) {
+	case IO_CTRL_EOS:
+		*(bool *)arg = (**ref == '\0');
+		break;
+
+	default:
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Read from a string reference.
+ *   @ptr: The string reference.
+ *   @buf: The buffer.
+ *   @nbyts: The number of bytes.
+ */
+
+static size_t ref_read(const char **ref, void *restrict buf, size_t nbytes)
+{
+	nbytes = m_sizemin(str_len(*ref), nbytes);
+	mem_copy(buf, *ref, nbytes);
+	*ref += nbytes;
 
 	return nbytes;
 }

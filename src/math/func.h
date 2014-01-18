@@ -11,6 +11,7 @@
  * Unsigned 16-bit integer maximum.
  *   @a: The first parameter.
  *   @b: The second peramater.
+ *   &returns: The maximum.
  */
 
 static inline uint16_t m_uint16max(uint16_t a, uint16_t b)
@@ -22,11 +23,49 @@ static inline uint16_t m_uint16max(uint16_t a, uint16_t b)
  * Unsigned 32-bit integer maximum.
  *   @a: The first parameter.
  *   @b: The second peramater.
+ *   &returns: The maximum.
  */
 
 static inline uint32_t m_uint32max(uint32_t a, uint32_t b)
 {
 	return (a > b) ? a : b;
+}
+
+/**
+ * Unsigned integer maximum.
+ *   @a: The first parameter.
+ *   @b: The second peramater.
+ *   &returns: The maximum.
+ */
+
+static inline unsigned int m_uintmax(unsigned int a, unsigned int b)
+{
+	return (a > b) ? a : b;
+}
+
+/**
+ * Unsigned 32-bit integer maximum.
+ *   @a: The first parameter.
+ *   @b: The second peramater.
+ *   &returns: The maximum.
+ */
+
+static inline size_t m_sizemax(size_t a, size_t b)
+{
+	return (a > b) ? a : b;
+}
+
+
+/**
+ * Unsigned 32-bit integer minimum.
+ *   @a: The first parameter.
+ *   @b: The second peramater.
+ *   &returns: The minimum.
+ */
+
+static inline size_t m_sizemin(size_t a, size_t b)
+{
+	return (a < b) ? a : b;
 }
 
 /* %~shim.h% */

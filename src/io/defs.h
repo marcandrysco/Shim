@@ -81,6 +81,49 @@ struct io_output_t {
 	const struct io_output_i *iface;
 };
 
+
+/**
+ * Read function.
+ *   @ref: The reference.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes.
+ *   &returns: The number of bytes read.
+ */
+
+typedef size_t (*io_read_f)(void *ref, void *restrict buf, size_t nbytes);
+
+/**
+ * Input interface.
+ *   @device: The base device interface.
+ *   @write: Write.
+ */
+
+struct io_input_i {
+	struct io_device_i device;
+
+	io_read_f read;
+};
+
+/**
+ * Input structure.
+ *   @ref: The reference.
+ *   @iface: The interface.
+ */
+
+struct io_input_t {
+	void *ref;
+	const struct io_input_i *iface;
+};
+
+
+/*
+ * control definitions
+ */
+
+#define IO_EOS		(-1)
+
+#define IO_CTRL_EOS	(1)
+
 /* %~shim.h% */
 
 /*

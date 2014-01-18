@@ -8,6 +8,14 @@
 *.so
 *.so.*
 *.dll
+shim.h
+
+# test files
+run.log
+test/format/format
+test/sanity/sanity
+test/safety/safety
+test/thread/threads
 
 # build files
 config.h

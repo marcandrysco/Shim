@@ -95,10 +95,4 @@ int main(int argc, char *argv[])
 	suc &= test_atexit();
 
 	return suc ? 0 : 1;
-
-	//io_output_open("shim-test-safety");
-	//fprintf(stdout, "%06d\n", -2014);
-
-	//io_format_int(io_stdout, -2014, 3, true);
-	//printf("%2u\n", 2);
 }
