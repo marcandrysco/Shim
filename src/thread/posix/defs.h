@@ -33,6 +33,15 @@ struct thread_rwlock_t {
 };
 
 /**
+ * Condition variable structure.
+ *   @var: The pthread condition variable.
+ */
+
+struct thread_cond_t {
+	pthread_cond_t var;
+};
+
+/**
  * Single run structure.
  *   @once: The once.
  */

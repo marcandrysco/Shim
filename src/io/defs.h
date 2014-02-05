@@ -116,12 +116,101 @@ struct io_input_t {
 };
 
 
+/**
+ * Seek whence enumerator.
+ *   @io_whence_set_e: Beginning of the file.
+ *   @io_whence_cur_e: Current position.
+ *   @io_whence_end_e: End of the file.
+ */
+
+enum io_whence_e {
+	io_whence_set_e,
+	io_whence_cur_e,
+	io_whence_end_e
+};
+
+
+/**
+ * Retrieve the file offset.
+ *   @ref: The reference.
+ *   &returns: The offset from the beginning of the file.
+ */
+
+typedef uint64_t (*io_tell_f)(void *ref);
+
+/**
+ * Seek to a given file offset.
+ *   @ref: The reference.
+ *   @offset: The offset.
+ *   @whence: The position from which to seek.
+ *   &returns: The new offset from the beginning of the file.
+ */
+
+typedef uint64_t (*io_seek_f)(void *ref, int64_t offset, enum io_whence_e whence);
+
+/**
+ * File interface.
+ *   @device: The base device interface.
+ *   @read: Read.
+ *   @write: Write.
+ *   @tell: Tell.
+ *   @seek: Seek.
+ */
+
+struct io_file_i {
+	struct io_device_i device;
+
+	io_read_f read;
+	io_write_f write;
+
+	io_tell_f tell;
+	io_seek_f seek;
+};
+
+/**
+ * File structure.
+ *   @ref: The reference.
+ *   @iface: The interface.
+ */
+
+struct io_file_t {
+	void *ref;
+	const struct io_file_i *iface;
+};
+
+/**
+ * File open options enumerator.
+ *   @io_read_e: Read.
+ *   @io_write_e: Write.
+ *   @io_append_e: Append.
+ *   @io_trunc_e: Truncate.
+ *   @io_unbuf_e: Unbuffered.
+ *   @io_create_e: Create.
+ */
+
+enum io_file_e {
+	io_read_e = 0x01,
+	io_write_e = 0x02,
+	io_append_e = 0x04,
+	io_trunc_e = 0x08,
+	io_unbuf_e = 0x10,
+	io_create_e = 0x20
+};
+
+
 /*
- * control definitions
+ * special value definitions
  */
 
 #define IO_EOS		(-1)
 
+/*
+ * control definitions
+ */
+
+enum io_ctrl_e {
+	io_ctrl_eos_e
+};
 #define IO_CTRL_EOS	(1)
 
 /* %~shim.h% */

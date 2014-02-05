@@ -28,6 +28,7 @@ struct io_output_t _io_output_append_dbg(const char *path, const char *file, uns
 
 size_t io_output_write(struct io_output_t output, const void *restrict buf, size_t nbytes);
 void io_output_writefull(struct io_output_t output, const void *restrict buf, size_t nbytes);
+bool io_output_ctrl(struct io_output_t output, unsigned int cmd, void *arg);
 void io_output_close(struct io_output_t output);
 
 void io_output_bool(struct io_output_t output, bool value);

@@ -1,5 +1,7 @@
 #include "../../common.h"
+#include <signal.h>
 #include <stdlib.h>
+#include "../../debug/exception.h"
 #include "../../debug/res.h"
 #include "../../mem/manage.h"
 #include "../../thread/base.h"
@@ -75,6 +77,27 @@ void _impl_sys_atexit_init()
 	thread_once(&atexit_once, atexit_reg);
 }
 
+
+static void signal_int()
+{
+	if(_debug)
+		_backtrace();
+
+	signal(SIGINT, NULL);
+	raise(SIGINT);
+}
+
+static void signal_segv()
+{
+	atexit_handler();
+
+	if(_debug)
+		_backtrace();
+
+	signal(SIGSEGV, NULL);
+	raise(SIGSEGV);
+}
+
 /**
  * Register the atexit handler.
  */
@@ -82,6 +105,9 @@ void _impl_sys_atexit_init()
 static void atexit_reg()
 {
 	llist_root_init(&atexit_list);
+
+	signal(SIGSEGV, signal_segv);
+	signal(SIGINT, signal_int);
 
 	atexit(_dbg_res_atexit);
 	atexit(atexit_handler);
@@ -106,6 +132,12 @@ static void atexit_handler()
 	}
 }
 
+
+/**
+ * Cast for atexit handler.
+ *   @node: The node.
+ *   &returns: The handler.
+ */
 
 static struct atexit_t *atexit_cast(struct llist_node_t *node)
 {

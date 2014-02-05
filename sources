@@ -48,13 +48,17 @@ Target
 	Extra	"src/io/defs.h"
 	Source	"src/io/chunk.c"
 	Source	"src/io/device.c"
+	Source	"src/io/file.c"
 	Source	"src/io/input.c"
 	Source	"src/io/output.c"
 	Source	"src/io/print.c"
+	Source	"src/io/reader.c"
 	Source	"src/io/scan.c"
+	Source	"src/io/writer.c"
 
 	If [ "$host" = "windows" ]
 	Else
+		Source	"src/io/posix/file.c"
 		Source	"src/io/posix/input.c"
 		Source	"src/io/posix/output.c"
 	EndIf
@@ -96,6 +100,7 @@ Target
 	Extra	"src/types/defs.h"
 	Source	"src/types/avltree.c"
 	Source	"src/types/compare.c"
+	Source	"src/types/float.c"
 	Source	"src/types/llist.c"
 	Source	"src/types/strbuf.c"
 EndTarget

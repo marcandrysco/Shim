@@ -5,25 +5,7 @@
 #include "../../debug/exception.h"
 #include "../../mem/manage.h"
 #include "../cond.h"
-
-
-/**
- * Condition variable structure.
- *   @var: The pthread condition variable.
- */
-
-struct thread_cond_t {
-	pthread_cond_t var;
-};
-
-/**
- * Mutex structure.
- *   @lock: The pthread lock.
- */
-
-struct thread_mutex_t {
-	pthread_mutex_t lock;
-};
+#include "defs.h"
 
 
 /**
@@ -32,13 +14,12 @@ struct thread_mutex_t {
  *   &returns: The condition variable.
  */
 
-struct thread_cond_t *_impl_thread_cond_new(struct thread_cond_attr_t *attr)
+struct thread_cond_t _impl_thread_cond_new(struct thread_cond_attr_t *attr)
 {
 	int err;
-	struct thread_cond_t *cond;
+	struct thread_cond_t cond;
 
-	cond = mem_alloc(sizeof(struct thread_cond_t));
-	err = pthread_cond_init(&cond->var, NULL);
+	err = pthread_cond_init(&cond.var, NULL);
 	if(err != 0)
 		throw("Failed to create condition variable. %s.", strerror(err));
 

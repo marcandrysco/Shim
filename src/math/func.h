@@ -68,6 +68,19 @@ static inline size_t m_sizemin(size_t a, size_t b)
 	return (a < b) ? a : b;
 }
 
+
+/**
+ * Double modulus operator.
+ *   @a: The input value.
+ *   @b: The modulus.
+ *   &returns: The modulated value.
+ */
+
+static inline double m_dblmod(double a, double b)
+{
+	return fmod(a, b);
+}
+
 /* %~shim.h% */
 
 /*

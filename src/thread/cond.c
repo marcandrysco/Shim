@@ -6,7 +6,7 @@
  * implementation function declarations
  */
 
-struct thread_cond_t *_impl_thread_cond_new(struct thread_cond_attr_t *attr);
+struct thread_cond_t _impl_thread_cond_new(struct thread_cond_attr_t *attr);
 void _impl_thread_cond_delete(struct thread_cond_t *cond);
 
 void _impl_thread_cond_wait(struct thread_cond_t *cond, struct thread_mutex_t *mutex);
@@ -22,7 +22,7 @@ void _impl_thread_cond_broadcast(struct thread_cond_t *cond);
  *   &returns: The condition variable.
  */
 
-struct thread_cond_t *thread_cond_new(struct thread_cond_attr_t *attr)
+struct thread_cond_t thread_cond_new(struct thread_cond_attr_t *attr)
 {
 	return _impl_thread_cond_new(attr);
 }

@@ -140,6 +140,20 @@ void io_output_writefull(struct io_output_t output, const void *restrict buf, si
 }
 
 /**
+ * Send a control request to the output device.
+ *   @output: The output device.
+ *   @cmd: The command.
+ *   @arg: The argument.
+ *   &returns: True if command handled, false otherwise.
+ */
+
+_export
+bool io_output_ctrl(struct io_output_t output, unsigned int cmd, void *arg)
+{
+	return output.iface->device.ctrl(output.ref, cmd, arg);
+}
+
+/**
  * Close the output device.
  *   @output: The output device.
  */

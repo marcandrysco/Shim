@@ -321,12 +321,14 @@ void io_format_int(struct io_output_t output, int value, uint8_t base, int16_t w
 	if(value < 0) {
 		char neg = '-';
 
+		if(width > 0)
+			width--;
+
 		value = -value;
-		width--;
 		io_output_write(output, &neg, 1);
 	}
 
-	io_format_uint(output, value, 10, width, pad);
+	io_format_uint(output, value, base, width, pad);
 }
 
 /**

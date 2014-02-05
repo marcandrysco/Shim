@@ -29,7 +29,7 @@ void _impl_backtrace()
 		void *buffer[nframe];
 
 		i = backtrace(buffer, nframe);
-		if(i == nframe)
+		if(i < nframe)
 			symbols = backtrace_symbols(buffer, i);
 		else
 			nframe *= 2;

@@ -14,13 +14,12 @@
  *   &returns: The mutex.
  */
 
-struct thread_mutex_t *_impl_thread_mutex_new(struct thread_mutex_attr_t *attr)
+struct thread_mutex_t _impl_thread_mutex_new(struct thread_mutex_attr_t *attr)
 {
 	int err;
-	struct thread_mutex_t *mutex;
+	struct thread_mutex_t mutex;
 
-	mutex = mem_alloc(sizeof(struct thread_mutex_t));
-	err = pthread_mutex_init(&mutex->lock, NULL);
+	err = pthread_mutex_init(&mutex.lock, NULL);
 	if(err != 0)
 		throw("Failed to create mutex. %s.", strerror(err));
 
@@ -96,13 +95,12 @@ void _impl_thread_mutex_unlock(struct thread_mutex_t *mutex)
  *   &returns: The read-write lock.
  */
 
-struct thread_rwlock_t *_impl_thread_rwlock_new(struct thread_rwlock_attr_t *attr)
+struct thread_rwlock_t _impl_thread_rwlock_new(struct thread_rwlock_attr_t *attr)
 {
 	int err;
-	struct thread_rwlock_t *lock;
+	struct thread_rwlock_t lock;
 
-	lock = mem_alloc(sizeof(struct thread_rwlock_t));
-	err = pthread_rwlock_init(&lock->rwlock, NULL);
+	err = pthread_rwlock_init(&lock.rwlock, NULL);
 	if(err != 0)
 		throw("Failed to create read-write lock. %s.", strerror(err));
 
