@@ -23,6 +23,7 @@ char *str_chr(const char *str, char ch);
 char *str_pbrk(const char *str, const char *set);
 
 char *str_dup(const char *str);
+void str_replace(char **dest, const char *src);
 
 /* %~shim.h% */
 

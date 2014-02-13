@@ -17,7 +17,21 @@ void _impl_mem_free(void *ptr);
  * local function declarations
  */
 
+static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes);
+
 static void str_proc(struct io_output_t output, void *arg);
+
+/*
+ * local variables
+ */
+
+static struct io_output_i len_iface = {
+	{
+		NULL,
+		NULL
+	},
+	(io_write_f)len_write
+};
 
 /*
  * global variables
@@ -55,6 +69,38 @@ char *io_chunk_proc_str(struct io_chunk_t chunk)
 	io_chunk_proc(chunk, output);
 
 	return strbuf_done(&buf);
+}
+
+/**
+ * Process a chunk, retrieve the total length written.
+ *   @chunk: The chunk.
+ *   &returns: the total number of bytes written.
+ */
+
+_export
+size_t io_chunk_proc_len(struct io_chunk_t chunk)
+{
+	size_t len;
+	struct io_output_t output = { &len, &len_iface };
+
+	io_chunk_proc(chunk, output);
+
+	return len;
+}
+
+/**
+ * Write callback for the length.
+ *   @len: The length reference.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes to write.
+ *   &returns: The number of bytes to written.
+ */
+
+static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes)
+{
+	*len += nbytes;
+
+	return nbytes;
 }
 
 

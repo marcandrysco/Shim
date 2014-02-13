@@ -149,3 +149,18 @@ char *str_dup(const char *str)
 
 	return copy;
 }
+
+/**
+ * Replace the string in destination with source. Either string may be null.
+ *   @dest: The destination.
+ *   @src: The source.
+ */
+
+_export
+void str_replace(char **dest, const char *src)
+{
+	if(*dest != NULL)
+		mem_free(*dest);
+
+	*dest = src ? str_dup(src) : NULL;
+}

@@ -39,6 +39,8 @@ HEADERS = \
 	  \
 	  src/types/defs.h \
 	  src/types/avltree.h \
+	  src/types/avlitree.h \
+	  src/types/avljtree.h \
 	  src/types/compare.h \
 	  src/types/float.h \
 	  src/types/llist.h \
