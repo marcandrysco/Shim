@@ -104,6 +104,20 @@ char *str_chr(const char *str, char ch)
 }
 
 /**
+ * Search a string for a substring.
+ *   @str: The string.
+ *   @sub: The substring.
+ *   &returns: The a pointer to the character in the stirng if found, null
+ *     otherwise.
+ */
+
+_export
+char *str_str(const char *str, char *sub)
+{
+	return strstr(str, sub);
+}
+
+/**
  * Search a string for any character in set.
  *   @str: The string.
  *   @set: The set of characters, terminated by a null byte.
@@ -148,6 +162,18 @@ char *str_dup(const char *str)
 	str_copy(copy, str);
 
 	return copy;
+}
+
+/**
+ * Clone a string, allocating the required space if it is non-null.
+ *   @str: The string, may be null.
+ *   &returns: Duplicated string, or null if input is null.
+ */
+
+_export
+char *str_clone(const char *str)
+{
+	return str ? str_dup(str) : NULL;
 }
 
 /**
