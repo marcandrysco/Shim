@@ -31,7 +31,7 @@ typedef void (*io_save_f)(void *ref, struct io_writer_t *writer, void *arg);
 struct io_writer_t *io_writer_new(struct io_output_t output);
 void io_writer_delete(struct io_writer_t *writer);
 
-struct io_output_t io_write_output(struct io_writer_t *writer);
+struct io_output_t io_writer_output(struct io_writer_t *writer);
 
 void io_writer_save(struct io_writer_t *writer, void *ref, io_save_f save, void *arg);
 

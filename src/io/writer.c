@@ -90,7 +90,7 @@ void io_writer_delete(struct io_writer_t *writer)
  */
 
 _export
-struct io_output_t io_write_output(struct io_writer_t *writer)
+struct io_output_t io_writer_output(struct io_writer_t *writer)
 {
 	return writer->output;
 }

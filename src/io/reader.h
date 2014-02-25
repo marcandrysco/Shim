@@ -33,6 +33,8 @@ void io_reader_delete(struct io_reader_t *reader);
 
 struct io_input_t io_reader_input(struct io_reader_t *reader);
 
+void *io_reader_load(struct io_reader_t *reader, io_load_f load, void *arg);
+
 /* %~shim.h% */
 
 /*
