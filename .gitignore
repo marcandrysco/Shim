@@ -13,6 +13,7 @@ shim.h
 # test files
 run.log
 test/format/format
+test/fs/fs
 test/sanity/sanity
 test/safety/safety
 test/thread/threads
