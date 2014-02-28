@@ -5,6 +5,7 @@ HEADERS = \
 	  src/debug/res.h \
 	  \
 	  src/fs/base.h \
+	  src/fs/path.h \
 	  \
 	  src/math/func.h \
 	  src/math/rand.h \

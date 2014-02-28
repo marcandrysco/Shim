@@ -39,6 +39,7 @@ Target
 	EndIf
 
 	Source	"src/fs/base.c"
+	Source	"src/fs/path.c"
 
 	If [ "$host" = "windows" ]
 	Else

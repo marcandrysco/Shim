@@ -1,5 +1,6 @@
 #include "../common.h"
 #include "base.h"
+#include "../types/defs.h"
 
 
 /*
@@ -11,6 +12,10 @@ bool _impl_fs_isdir(const char *path);
 
 void _impl_fs_mkdir(const char *path);
 void _impl_fs_rmdir(const char *path);
+void _impl_fs_rmfile(const char *path);
+void _impl_fs_clear(const char *path);
+
+struct iter_t _impl_fs_lsdir(const char *path);
 
 char *_impl_fs_mktmpdir(const char *prefix);
 
@@ -62,6 +67,28 @@ void fs_rmdir(const char *path)
 	_impl_fs_rmdir(path);
 }
 
+/**
+ * Remove a file.
+ *   @path: The file path.
+ */
+
+_export
+void fs_rmfile(const char *path)
+{
+	_impl_fs_rmfile(path);
+}
+
+/**
+ * Recursively delete all files an directories from a path.
+ *   @path: The path.
+ */
+
+_export
+void fs_clear(const char *path)
+{
+	_impl_fs_clear(path);
+}
+
 
 /**
  * Create a temporary directory.
@@ -73,4 +100,17 @@ _export
 char *fs_mktmpdir(const char *prefix)
 {
 	return _impl_fs_mktmpdir(prefix);
+}
+
+
+/**
+ * Create an iterator over all entries in a directory.
+ *   @path: The directory path.
+ *   &returns: The iterator.
+ */
+
+_export
+struct iter_t fs_lsdir(const char *path)
+{
+	return _impl_fs_lsdir(path);
 }

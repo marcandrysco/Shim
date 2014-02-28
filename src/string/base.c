@@ -97,10 +97,31 @@ int str_cmp(const char *s1, const char *s2)
 _export
 char *str_chr(const char *str, char ch)
 {
-	while(*str != ch)
+	while((*str != '\0') && (*str != ch))
 		str++;
 
 	return (*str == ch) ? (char *)str : NULL;
+}
+
+/**
+ * Search a string for a character in reverse.
+ *   @str: The string.
+ *   @ch: The character.
+ *   &returns: The a pointer to the character in the stirng if found, null
+ *     otherwise.
+ */
+
+_export
+char *str_rchr(const char *str, char ch)
+{
+	const char *orig = str;
+
+	str += str_len(str);
+
+	while((str >= orig) && (*str != ch))
+		str--;
+
+	return (str >= orig) ? (char *)str : NULL;
 }
 
 /**

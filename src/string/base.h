@@ -20,6 +20,7 @@ bool str_isequal(const char *s1, const char *s2);
 int str_cmp(const char *s1, const char *s2);
 
 char *str_chr(const char *str, char ch);
+char *str_rchr(const char *str, char ch);
 char *str_str(const char *str, char *sub);
 char *str_pbrk(const char *str, const char *set);
 

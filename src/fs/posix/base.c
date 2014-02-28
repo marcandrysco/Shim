@@ -11,6 +11,7 @@
 #include "../../io/output.h"
 #include "../../string/base.h"
 #include "../../string/io.h"
+#include "../../types/defs.h"
 
 
 /*
@@ -20,10 +21,20 @@
 #define NAMELEN 8
 
 /*
- * local variables
+ * local function declarations
  */
 
 static void tmpfill(struct io_output_t output, void *arg);
+
+static const char *lsdir_prev(DIR *dir);
+static const char *lsdir_next(DIR *dir);
+static void lsdir_delete(DIR *dir);
+
+/*
+ * local variables
+ */
+
+struct iter_i lsdir_iface = { (iter_next_f)lsdir_next, (iter_prev_f)lsdir_prev, (delete_f)lsdir_delete };
 
 /*
  * global variables
@@ -83,6 +94,52 @@ void _impl_fs_rmdir(const char *path)
 {
 	if(rmdir(path) != 0)
 		throw("Failed to remove directory '%s'. %s.", strerror(errno));
+}
+
+/**
+ * Remove a file.
+ *   @path: The file path.
+ */
+
+_export
+void _impl_fs_rmfile(const char *path)
+{
+	if(unlink(path) < 0)
+		throw("Unable to remove file '%s'. %s.", path, strerror(errno));
+}
+
+/**
+ * Recursively delete all files an directories from a path.
+ *   @path: The path.
+ */
+
+_export
+void _impl_fs_clear(const char *path)
+{
+	if(_impl_fs_isdir(path)) {
+		DIR *dir;
+		struct dirent *entry;
+
+		dir = opendir(path);
+		if(dir == NULL)
+			throw("Unable to enumerate files in '%s'. %s.", path, strerror(errno));
+
+		do {
+			entry = readdir(dir);
+			if(entry != NULL) {
+				char sub[str_len(path) + str_len(entry->d_name) + 2];
+
+				str_printf(sub, "%s/%s", path, entry->d_name);
+
+				_impl_fs_clear(sub);
+			}
+		} while(str_isequal(entry->d_name, ".") || str_isequal(entry->d_name, ".."));
+
+		closedir(dir);
+		_impl_fs_rmdir(path);
+	}
+	else
+		_impl_fs_rmfile(path);
 }
 
 
@@ -160,4 +217,73 @@ static void tmpfill(struct io_output_t output, void *arg)
 	}
 
 	io_output_write(output, buf, NAMELEN);
+}
+
+
+/**
+ * Create an iterator over all entries in a directory.
+ *   @path: The directory path.
+ *   &returns: The iterator.
+ */
+
+_export
+struct iter_t _impl_fs_lsdir(const char *path)
+{
+	DIR *dir;
+
+	dir = opendir(path);
+	if(dir == NULL)
+		throw("Unable to enumerate files in '%s'. %s.", path, strerror(errno));
+
+	return (struct iter_t){ dir, &lsdir_iface };
+}
+
+/**
+ * Retrieve the previous file name from the directory iterator.
+ *   @dir: The iterator.
+ *   &returns: The name or null.
+ */
+
+static const char *lsdir_prev(DIR *dir)
+{
+	struct dirent *entry;
+
+	do {
+		seekdir(dir, telldir(dir) - 2);
+
+		entry = readdir(dir);
+		if(entry == NULL)
+			return NULL;
+	} while(str_isequal(entry->d_name, ".") || str_isequal(entry->d_name, ".."));
+
+	return entry->d_name;
+}
+
+/**
+ * Retrieve the next file name from the directory iterator.
+ *   @dir: The iterator.
+ *   &returns: The name or null.
+ */
+
+static const char *lsdir_next(DIR *dir)
+{
+	struct dirent *entry;
+
+	do {
+		entry = readdir(dir);
+		if(entry == NULL)
+			return NULL;
+	} while(str_isequal(entry->d_name, ".") || str_isequal(entry->d_name, ".."));
+
+	return entry->d_name;
+}
+
+/**
+ * Close the directory iterator.
+ *   @dir: The iterator.
+ */
+
+static void lsdir_delete(DIR *dir)
+{
+	closedir(dir);
 }
