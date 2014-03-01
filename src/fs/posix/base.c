@@ -1,6 +1,7 @@
 #include "../../common.h"
 #include <errno.h>
 #include <dirent.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -44,6 +45,22 @@ _export struct io_chunk_t fs_tmpchunk = { tmpfill, NULL };
 
 
 /**
+ * Retrieve the file size.
+ *   @path: The path.
+ *   &returns: The file size.
+ */
+
+uint64_t _impl_fs_size(const char *path)
+{
+	struct stat st;
+
+	if(stat(path, &st) == -1)
+		throw("Failed to stat file '%s'.", path);
+
+	return st.st_size;
+}
+
+/**
  * Determine if a file path exists.
  *   @path: The path.
  *   &returns: True if it exists, false otherwise.
@@ -53,6 +70,40 @@ _export
 bool _impl_fs_exists(const char *path)
 {
 	return (access(path, F_OK) == 0) ? true : false;
+}
+
+/**
+ * Determine if a path references a regular file.
+ *   @path: The path.
+ *   &returns: True if regular file, false otherwise.
+ */
+
+_export
+bool _impl_fs_isfile(const char *path)
+{
+	struct stat info;
+
+	if(stat(path, &info))
+		throw("Failed to stat file '%s'.", path);
+
+	return S_ISREG(info.st_mode);
+}
+
+/**
+ * Determine if a path references a symbolic link.
+ *   @path: The path.
+ *   &returns: True if symbolic link, false otherwise.
+ */
+
+_export
+bool _impl_fs_islink(const char *path)
+{
+	struct stat info;
+
+	if(stat(path, &info))
+		throw("Failed to stat file '%s'.", path);
+
+	return S_ISLNK(info.st_mode);
 }
 
 /**
@@ -66,11 +117,209 @@ bool _impl_fs_isdir(const char *path)
 {
 	struct stat info;
 
-	stat(path, &info);
+	if(stat(path, &info))
+		throw("Failed to stat file '%s'.", path);
 
-	return info.st_mode & S_IFDIR;
+	return S_ISDIR(info.st_mode);
 }
 
+
+/**
+ * Write data directly to a file.
+ *   @path: The path.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes to write.
+ */
+
+_export
+void _impl_fs_write(const char *path, const void *buf, size_t nbytes)
+{
+	int fd;
+	ssize_t ret;
+
+	fd = open(path, O_WRONLY | O_CREAT, 0777);
+	if(fd == -1)
+		throw("Cannot open '%s' for writing. %s.", strerror(errno));
+
+	do {
+		ret = write(fd, buf, nbytes);
+		if(ret <= 0)
+			break;
+
+		buf += ret;
+		nbytes -= ret;
+	} while(nbytes > 0);
+
+	close(fd);
+}
+
+/**
+ * Write data directly to a file.
+ *   @path: The path.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes to write.
+ */
+
+_export
+void _impl_fs_writestr(const char *path, const char *str)
+{
+	_impl_fs_write(path, str, str_len(str));
+}
+
+/**
+ * Read data directly from a file.
+ *   @path: The path.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes to read.
+ */
+
+_export
+void _impl_fs_read(const char *path, void *buf, size_t nbytes)
+{
+	int fd;
+	ssize_t ret;
+
+	fd = open(path, O_RDONLY);
+	if(fd == -1)
+		throw("Cannot open '%s' for reading. %s.", strerror(errno));
+
+	do {
+		ret = read(fd, buf, nbytes);
+		if(ret <= 0)
+			break;
+
+		buf += ret;
+		nbytes -= ret;
+	} while(nbytes > 0);
+
+	close(fd);
+}
+
+/**
+ * Read a string directly from a file.
+ *   @path: The path.
+ *   &returns: The allocated string.
+ */
+
+_export
+char *_impl_fs_readstr(const char *path)
+{
+	char *str;
+	uint64_t nbytes;
+
+	nbytes = _impl_fs_size(path);
+	str = mem_alloc(nbytes + 1);
+	_impl_fs_read(path, str, nbytes);
+	str[nbytes] = '\0';
+
+	return str;
+}
+
+/**
+ * Copy a file to a destination path. On failure, the destination may exist
+ * but be incomplete.
+ *   @dest: The destination path.
+ *   @src: The source path.
+ *   &returns: The number of bytes copied.
+ */
+
+_export
+size_t _impl_fs_copy(const char *dest, const char *src)
+{
+	int dfd, sfd;
+	size_t total = 0;
+	ssize_t nbytes = 0, written = 0;
+	uint8_t buf[16*1024], *ptr;
+
+	dfd = open(dest, O_WRONLY | O_CREAT, 0777);
+	sfd = open(src, O_RDONLY);
+
+	if((dfd != -1) && (sfd != -1)) {
+		while(true) {
+			nbytes = read(sfd, buf, sizeof(buf));
+			if(nbytes <= 0)
+				break;
+
+			ptr = buf;
+			total += nbytes;
+
+			do {
+				written = write(dfd, ptr, nbytes);
+				if(written < 0)
+					break;
+
+				ptr += written;
+				nbytes -= written;
+			} while(nbytes > 0);
+
+			if(written < 0)
+				break;
+		}
+	}
+
+	if(dfd != -1)
+		close(dfd);
+	
+	if(sfd != -1)
+		close(sfd);
+
+	if((dfd < 0) || (sfd < 0) || (nbytes < 0) || (written < 0))
+		throw("Failed to copy files. %s.", strerror(errno));
+
+	return total;
+}
+
+
+/**
+ * Create a hard link.
+ *   @dest: The link destination.
+ *   @target: The target path.
+ */
+
+_export
+void _impl_fs_link(const char *dest, const char *target)
+{
+	if(link(target, dest) < 0)
+		throw("Failed to create hard link to '%s' from '%s'. %s.", target, dest, strerror(errno));
+}
+
+/**
+ * Try to create a hard link.
+ *   @dest: The link destination.
+ *   @target: The target path.
+ *   &returns: True if successful, false otherwise.
+ */
+
+_export
+bool _impl_fs_trylink(const char *dest, const char *target)
+{
+	return link(target, dest) == 0;
+}
+
+/**
+ * Create a symbolic link.
+ *   @dest: The link destination.
+ *   @target: The target path.
+ */
+
+_export
+void _impl_fs_symlink(const char *dest, const char *target)
+{
+	if(symlink(target, dest) < 0)
+		throw("Failed to create hard link to '%s' from '%s'. %s.", target, dest, strerror(errno));
+}
+
+/**
+ * Try to create a symbolic link.
+ *   @dest: The link destination.
+ *   @target: The target path.
+ */
+
+_export
+bool _impl_fs_trysymlink(const char *dest, const char *target)
+{
+	return symlink(target, dest) == 0;
+}
 
 /**
  * Create a directory.
@@ -83,6 +332,7 @@ void _impl_fs_mkdir(const char *path)
 	if(mkdir(path, 0777) != 0)
 		throw("Failed to create directory '%s'. %s.", strerror(errno));
 }
+
 
 /**
  * Remove a directory, failing if it is non-empty.

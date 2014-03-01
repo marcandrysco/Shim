@@ -16,7 +16,7 @@ Target
 		CFlags	+"-D_WIN32_WINNT=0x0600"
 		LDFlags	+"-lws2_32"
 	Else
-		CFlags	+""
+		CFlags	+"-D_FILE_OFFSET_BITS=64"
 		LDFlags	+"-lpthread -lrt -lm -ldl"
 	EndIf
 
