@@ -16,13 +16,20 @@ void _impl_fs_write(const char *path, const void *buf, size_t nbytes);
 void _impl_fs_writestr(const char *path, const char *str);
 void _impl_fs_read(const char *path, void *buf, size_t nbytes);
 char *_impl_fs_readstr(const char *path);
+
+void _impl_fs_move(const char *dest, const char *src);
+bool _impl_fs_trymove(const char *dest, const char *src);
 size_t _impl_fs_copy(const char *dest, const char *src);
+bool _impl_fs_trycopy(const char *dest, const char *src);
 
 void _impl_fs_link(const char *dest, const char *target);
 bool _impl_fs_trylink(const char *dest, const char *target);
 void _impl_fs_symlink(const char *dest, const char *target);
 bool _impl_fs_trysymlink(const char *dest, const char *target);
+void _impl_fs_mkfile(const char *path);
+bool _impl_fs_trymkfile(const char *path);
 void _impl_fs_mkdir(const char *path);
+bool _impl_fs_trymkdir(const char *path);
 
 void _impl_fs_rmdir(const char *path);
 void _impl_fs_rmfile(const char *path);
@@ -30,7 +37,11 @@ void _impl_fs_clear(const char *path);
 
 struct iter_t _impl_fs_lsdir(const char *path);
 
+const char *_impl_fs_tmpdir();
+void _impl_fs_tmpfill(char *buf, unsigned int len);
+char *_impl_fs_tmpname(const char *prefix);
 char *_impl_fs_mktmpdir(const char *prefix);
+char *_impl_fs_mktmpfile(const char *prefix);
 
 
 /**
@@ -133,6 +144,32 @@ char *fs_readstr(const char *path)
 	return _impl_fs_readstr(path);
 }
 
+
+/**
+ * Move a file or directory.
+ *   @dest: The destination.
+ *   @src: The source.
+ */
+
+_export
+void fs_move(const char *dest, const char *src)
+{
+	_impl_fs_move(dest, src);
+}
+
+/**
+ * Try to move a file or directory.
+ *   @dest: The destination.
+ *   @src: The source.
+ *   &returns: True if successful, false otherwise.
+ */
+
+_export
+bool fs_trymove(const char *dest, const char *src)
+{
+	return _impl_fs_trymove(dest, src);
+}
+
 /**
  * Copy a file to a destination path. On failure, the destination may exist
  * but be incomplete.
@@ -145,6 +182,19 @@ _export
 size_t fs_copy(const char *dest, const char *src)
 {
 	return _impl_fs_copy(dest, src);
+}
+
+/**
+ * Try to copy a file.
+ *   @dest: The destination.
+ *   @src: The source.
+ *   &returns: True if successful, false otherwise.
+ */
+
+_export
+bool fs_trycopy(const char *dest, const char *src)
+{
+	return _impl_fs_trycopy(dest, src);
 }
 
 
@@ -198,6 +248,29 @@ bool fs_trysymlink(const char *dest, const char *target)
 }
 
 /**
+ * Create the file.
+ *   @path: The file path.
+ */
+
+_export
+void fs_mkfile(const char *path)
+{
+	_impl_fs_mkfile(path);
+}
+
+/**
+ * Try to create a file.
+ *   @path: The path.
+ *   &returns: True if successful, false otherwise.
+ */
+
+_export
+bool fs_trymkfile(const char *path)
+{
+	return _impl_fs_trymkfile(path);
+}
+
+/**
  * Create a directory.
  *   @path: The path.
  */
@@ -206,6 +279,18 @@ _export
 void fs_mkdir(const char *path)
 {
 	_impl_fs_mkdir(path);
+}
+
+/**
+ * Try to create a directory.
+ *   @path: The path.
+ *   &returns: True if successful, false otherwise.
+ */
+
+_export
+bool fs_trymkdir(const char *path)
+{
+	return _impl_fs_trymkdir(path);
 }
 
 
@@ -244,6 +329,42 @@ void fs_clear(const char *path)
 
 
 /**
+ * Retrieve the temporary directory.
+ *   &returns: The temporary directory.
+ */
+
+_export
+const char *fs_tmpdir()
+{
+	return _impl_fs_tmpdir();
+}
+
+/**
+ * Fill a buffer with a random file name.
+ *   @buf: The buffer.
+ *   @len: The length.
+ */
+
+_export
+void fs_tmpfill(char *buf, unsigned int len)
+{
+	_impl_fs_tmpfill(buf, len);
+}
+
+/**
+ * Create a temporary file path. The returned path may be taken by the time
+ * you can write to the file.
+ *   @prefix: Optional. The temporary path prefix.
+ *   &returns: The allocted path.
+ */
+
+_export
+char *fs_tmpname(const char *prefix)
+{
+	return _impl_fs_tmpname(prefix);
+}
+
+/**
  * Create a temporary directory.
  *   @prefix: Optional. The temporary path prefix.
  *   &returns: The allocted path.
@@ -253,6 +374,18 @@ _export
 char *fs_mktmpdir(const char *prefix)
 {
 	return _impl_fs_mktmpdir(prefix);
+}
+
+/**
+ * Create a temporary file.
+ *   @prefix: Optional. The temporary path prefix.
+ *   &returns: The allocted path.
+ */
+
+_export
+char *fs_mktmpfile(const char *prefix)
+{
+	return _impl_fs_mktmpfile(prefix);
 }
 
 

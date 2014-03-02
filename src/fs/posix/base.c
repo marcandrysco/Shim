@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <dirent.h>
 #include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -215,6 +216,33 @@ char *_impl_fs_readstr(const char *path)
 	return str;
 }
 
+
+/**
+ * Move a file or directory.
+ *   @dest: The destination.
+ *   @src: The source.
+ */
+
+_export
+void _impl_fs_move(const char *dest, const char *src)
+{
+	if(rename(src, dest) == -1)
+		throw("Failed to move file '%s' to '%s'. %s.", dest, src, strerror(errno));
+}
+
+/**
+ * Try to move a file or directory.
+ *   @dest: The destination.
+ *   @src: The source.
+ *   &returns: True if successful, false otherwise.
+ */
+
+_export
+bool _impl_fs_trymove(const char *dest, const char *src)
+{
+	return rename(src, dest) == 0;
+}
+
 /**
  * Copy a file to a destination path. On failure, the destination may exist
  * but be incomplete.
@@ -231,7 +259,7 @@ size_t _impl_fs_copy(const char *dest, const char *src)
 	ssize_t nbytes = 0, written = 0;
 	uint8_t buf[16*1024], *ptr;
 
-	dfd = open(dest, O_WRONLY | O_CREAT, 0777);
+	dfd = open(dest, O_WRONLY | O_CREAT, 0666);
 	sfd = open(src, O_RDONLY);
 
 	if((dfd != -1) && (sfd != -1)) {
@@ -267,6 +295,56 @@ size_t _impl_fs_copy(const char *dest, const char *src)
 		throw("Failed to copy files. %s.", strerror(errno));
 
 	return total;
+}
+
+/**
+ * Try to copy a file.
+ *   @dest: The destination.
+ *   @src: The source.
+ *   &returns: True if successful, false otherwise.
+ */
+
+_export
+bool _impl_fs_trycopy(const char *dest, const char *src)
+{
+	int rdfd, wrfd;
+	uint8_t buf[16*1024];
+	ssize_t nbytes, written = 0;
+
+	rdfd = open(src, O_RDONLY);
+	wrfd = open(dest, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+
+	if((rdfd < 0) || (wrfd < 0)) {
+		if(rdfd >= 0)
+			close(rdfd);
+
+		if(rdfd >= 0)
+			close(rdfd);
+
+		return false;
+	}
+
+	while(true) {
+		nbytes = read(rdfd, buf, sizeof(buf));
+		if(nbytes <= 0)
+			break;
+
+		do {
+			written = write(wrfd, buf, nbytes);
+			if(written <= 0)
+				break;
+
+			nbytes -= written;
+		} while(nbytes > 0);
+
+		if(written <= 0)
+			break;
+	}
+
+	close(rdfd);
+	close(wrfd);
+
+	return (nbytes >= 0) && (written >= 0);
 }
 
 
@@ -322,6 +400,30 @@ bool _impl_fs_trysymlink(const char *dest, const char *target)
 }
 
 /**
+ * Create the file.
+ *   @path: The file path.
+ */
+
+_export
+void _impl_fs_mkfile(const char *path)
+{
+	if(mknod(path, 0777 | S_IFREG, 0) < 0)
+		throw("Unable to create file '%s'. %s.", path, strerror(errno));
+}
+
+/**
+ * Try to create a file.
+ *   @path: The path.
+ *   &returns: True if successful, false otherwise.
+ */
+
+_export
+bool _impl_fs_trymkfile(const char *path)
+{
+	return mknod(path, 0777 | S_IFREG, 0) == 0;
+}
+
+/**
  * Create a directory.
  *   @path: The path.
  */
@@ -331,6 +433,18 @@ void _impl_fs_mkdir(const char *path)
 {
 	if(mkdir(path, 0777) != 0)
 		throw("Failed to create directory '%s'. %s.", strerror(errno));
+}
+
+/**
+ * Try to create a directory.
+ *   @path: The path.
+ *   &returns: True if successful, false otherwise.
+ */
+
+_export
+bool _impl_fs_trymkdir(const char *path)
+{
+	return mkdir(path, 0777) == 0;
 }
 
 
@@ -410,6 +524,59 @@ const char *_impl_fs_tmpdir()
 	return path;
 }
 
+/**
+ * Fill a buffer with a random file name.
+ *   @buf: The buffer.
+ *   @len: The length.
+ */
+
+_export
+void _impl_fs_tmpfill(char *buf, unsigned int len)
+{
+	unsigned int i, n;
+
+	buf[--len] = '\0';
+
+	for(i = 0; i < len; i++) {
+		n = rand() % 62;
+		if(n < 10)
+			n = n + '0';
+		else if(n < 36)
+			n = n - 10 + 'a';
+		else
+			n = n - 36 + 'A';
+
+		*buf++ = n;
+	}
+}
+
+/**
+ * Create a temporary file path. The returned path may be taken by the time
+ * you can write to the file.
+ *   @prefix: Optional. The temporary path prefix.
+ *   &returns: The allocted path.
+ */
+
+_export
+char *_impl_fs_tmpname(const char *prefix)
+{
+	char *path;
+
+	if(prefix == NULL)
+		prefix = _impl_fs_tmpdir();
+
+	while(true) {
+		path = mem_alloc(str_len(prefix) + NAMELEN + 1);
+		str_printf(path, "%s%C", prefix, fs_tmpchunk);
+
+		if(!_impl_fs_exists(path))
+			break;
+
+		mem_free(path);
+	}
+
+	return path;
+}
 
 /**
  * Create a temporary directory.
@@ -442,6 +609,36 @@ char *_impl_fs_mktmpdir(const char *prefix)
 	return path;
 }
 
+/**
+ * Create a temporary file.
+ *   @prefix: Optional. The temporary path prefix.
+ *   &returns: The allocted path.
+ */
+
+_export
+char *_impl_fs_mktmpfile(const char *prefix)
+{
+	int err;
+	char *path;
+
+	if(prefix == NULL)
+		prefix = _impl_fs_tmpdir();
+
+	while(true) {
+		path = mem_alloc(str_len(prefix) + NAMELEN + 1);
+		str_printf(path, "%s%C", prefix, fs_tmpchunk);
+
+		err = mknod(path, 0600 | S_IFREG, 0);
+		if(err == 0)
+			break;
+		else if(err != EEXIST)
+			throw("Failed to create a temporary file. %s.", strerror(errno));
+
+		mem_free(path);
+	}
+
+	return path;
+}
 
 /**
  * Fill in a temporary name for a output chunk.
