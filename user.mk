@@ -1,6 +1,8 @@
 HEADERS = \
 	  src/defs.h \
 	  \
+	  src/app/path.h \
+	  \
 	  src/debug/exception.h \
 	  src/debug/res.h \
 	  \
@@ -24,11 +26,15 @@ HEADERS = \
 	  src/io/scan.h \
 	  src/io/writer.h \
 	  \
+	  src/os/env.h \
+	  src/os/path.h \
+	  \
 	  src/string/base.h \
 	  src/string/io.h \
 	  src/string/locale.h \
 	  src/string/scan.h \
 	  \
+	  src/sys/lib.h \
 	  src/sys/proc.h \
 	  src/sys/sync.h \
 	  src/sys/time.h \

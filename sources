@@ -22,6 +22,8 @@ Target
 
 	Extra	"src/common.h"
 
+	Source	"src/app/path.c"
+
 	Source	"src/mem/base.c"
 	Source	"src/mem/manage.c"
 
@@ -67,17 +69,28 @@ Target
 	Extra	"src/math/func.h"
 	Source	"src/math/rand.c"
 
+	Source	"src/os/env.c"
+	Source	"src/os/path.c"
+
+	If [ "$host" = "windows" ]
+	Else
+		Source	"src/os/posix/env.c"
+		Source	"src/os/posix/path.c"
+	EndIf
+
 	Source	"src/string/base.c"
 	Source	"src/string/io.c"
 	Source	"src/string/locale.c"
 	Source	"src/string/scan.c"
 
+	Source	"src/sys/lib.c"
 	Source	"src/sys/proc.c"
 	Source	"src/sys/sync.c"
 	Source	"src/sys/time.c"
 
 	If [ "$host" = "windows" ]
 	Else
+		Source	"src/sys/posix/lib.c"
 		Source	"src/sys/posix/proc.c"
 		Source	"src/sys/posix/sync.c"
 		Source	"src/sys/posix/time.c"
