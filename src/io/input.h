@@ -33,7 +33,9 @@ bool io_input_eos(struct io_input_t input);
 
 bool io_input_bool(struct io_input_t input);
 uint8_t io_input_uint8(struct io_input_t input);
+uint16_t io_input_uint16(struct io_input_t input);
 uint32_t io_input_uint32(struct io_input_t input);
+uint64_t io_input_uint64(struct io_input_t input);
 char io_input_ch(struct io_input_t input);
 char *io_input_str(struct io_input_t input);
 char *io_input_strptr(struct io_input_t input);

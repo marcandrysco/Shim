@@ -191,6 +191,18 @@ void io_output_uint8(struct io_output_t output, uint8_t value)
 }
 
 /**
+ * Write a 16-bit unsigned integer to the output device.
+ *   @output: The output device.
+ *   @value: The value.
+ */
+
+_export
+void io_output_uint16(struct io_output_t output, uint16_t value)
+{
+	io_output_writefull(output, &value, sizeof(uint16_t));
+}
+
+/**
  * Write a 32-bit unsigned integer to the output device.
  *   @output: The output device.
  *   @value: The value.
@@ -200,6 +212,18 @@ _export
 void io_output_uint32(struct io_output_t output, uint32_t value)
 {
 	io_output_writefull(output, &value, sizeof(uint32_t));
+}
+
+/**
+ * Write a 64-bit unsigned integer to the output device.
+ *   @output: The output device.
+ *   @value: The value.
+ */
+
+_export
+void io_output_uint64(struct io_output_t output, uint64_t value)
+{
+	io_output_writefull(output, &value, sizeof(uint64_t));
 }
 
 /**

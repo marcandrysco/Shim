@@ -183,6 +183,22 @@ uint8_t io_input_uint8(struct io_input_t input)
 }
 
 /**
+ * Read a 16-bit unsigned integer from the input.
+ *   @input: The input device.
+ *   &returns: The value.
+ */
+
+_export
+uint16_t io_input_uint16(struct io_input_t input)
+{
+	uint16_t value;
+
+	io_input_readfull(input, &value, sizeof(uint16_t));
+
+	return value;
+}
+
+/**
  * Read a 32-bit unsigned integer from the input.
  *   @input: The input device.
  *   &returns: The value.
@@ -194,6 +210,22 @@ uint32_t io_input_uint32(struct io_input_t input)
 	uint32_t value;
 
 	io_input_readfull(input, &value, sizeof(uint32_t));
+
+	return value;
+}
+
+/**
+ * Read a 64-bit unsigned integer from the input.
+ *   @input: The input device.
+ *   &returns: The value.
+ */
+
+_export
+uint64_t io_input_uint64(struct io_input_t input)
+{
+	uint64_t value;
+
+	io_input_readfull(input, &value, sizeof(uint64_t));
 
 	return value;
 }

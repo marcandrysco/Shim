@@ -33,7 +33,9 @@ void io_output_close(struct io_output_t output);
 
 void io_output_bool(struct io_output_t output, bool value);
 void io_output_uint8(struct io_output_t output, uint8_t value);
+void io_output_uint16(struct io_output_t output, uint16_t value);
 void io_output_uint32(struct io_output_t output, uint32_t value);
+void io_output_uint64(struct io_output_t output, uint64_t value);
 void io_output_ch(struct io_output_t output, char ch);
 void io_output_str(struct io_output_t output, const char *str);
 void io_output_strptr(struct io_output_t output, const char *str);

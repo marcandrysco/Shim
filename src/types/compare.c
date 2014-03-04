@@ -53,3 +53,23 @@ int compare_int(const void *p1, const void *p2)
 	else
 		return 0;
 }
+
+/**
+ * Compares two integers against one another in numerical order.
+ *   @p1: The first integer pointer.
+ *   @p2: The second integer pointer.
+ *   &returns: An integer representing their order.
+ */
+
+_export
+int compare_uint(const void *p1, const void *p2)
+{
+	unsigned int n1 = *(unsigned int *)p1, n2 = *(unsigned int *)p2;
+
+	if(n1 > n2)
+		return -1;
+	else if(n1 < n2)
+		return 1;
+	else
+		return 0;
+}
