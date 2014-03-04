@@ -232,3 +232,50 @@ void io_output_str(struct io_output_t output, const char *str)
 	io_output_uint32(output, len);
 	io_output_writefull(output, str, len);
 }
+
+/**
+ * Write a string to the output device.
+ *   @output: The output device.
+ *   @str: The string.
+ */
+
+_export
+void io_output_strptr(struct io_output_t output, const char *str)
+{
+	size_t len;
+
+	if(str != NULL) {
+		len = str_len(str);
+		if(len > UINT32_MAX)
+			throw("String too long to be written.");
+
+		io_output_uint32(output, len);
+		io_output_writefull(output, str, len);
+	}
+	else
+		io_output_uint32(output, UINT32_MAX);
+}
+
+/**
+ * Write a float to the output device.
+ *   @output: The output device.
+ *   @ch: The float.
+ */
+
+_export
+void io_output_float(struct io_output_t output, float value)
+{
+	io_output_writefull(output, &value, sizeof(float));
+}
+
+/**
+ * Write a double to the output device.
+ *   @output: The output device.
+ *   @ch: The double.
+ */
+
+_export
+void io_output_double(struct io_output_t output, double value)
+{
+	io_output_writefull(output, &value, sizeof(double));
+}

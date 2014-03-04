@@ -20,6 +20,7 @@ void _impl_mem_free(void *ptr);
 static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes);
 
 static void str_proc(struct io_output_t output, void *arg);
+static void strptr_proc(struct io_output_t output, void *arg);
 
 /*
  * local variables
@@ -107,7 +108,7 @@ static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes)
 /**
  * Create a string chunk.
  *   @str: The string.
- *   &returnS: The chunk.
+ *   &returns: The chunk.
  */
 
 _export
@@ -125,6 +126,29 @@ struct io_chunk_t io_chunk_str(const char *str)
 static void str_proc(struct io_output_t output, void *arg)
 {
 	io_print_str(output, (const char *)arg);
+}
+
+/**
+ * Create a string pointer chunk.
+ *   @str: The string pointer.
+ *   &returns: The chunk.
+ */
+
+_export
+struct io_chunk_t io_chunk_strptr(char **str)
+{
+	return (struct io_chunk_t){ strptr_proc, (void *)str };
+}
+
+/**
+ * Processing callback for string chunks.
+ *   @output: The output.
+ *   @arg: the argument.
+ */
+
+static void strptr_proc(struct io_output_t output, void *arg)
+{
+	io_print_str(output, *(char **)arg);
 }
 
 

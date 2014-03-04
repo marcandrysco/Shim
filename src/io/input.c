@@ -233,3 +233,59 @@ char *io_input_str(struct io_input_t input)
 
 	return str;
 }
+
+/**
+ * Read a string pointer from the input, the value which may be null.
+ *   @input: The input.
+ *   &returns: The allocated string or null.
+ */
+
+_export
+char *io_input_strptr(struct io_input_t input)
+{
+	char *str;
+	uint32_t len;
+
+	len = io_input_uint32(input);
+	if(len != UINT32_MAX) {
+		str = mem_alloc(len + 1);
+		io_input_readfull(input, str, len);
+		str[len] = '\0';
+	}
+	else
+		str = NULL;
+
+	return str;
+}
+
+/**
+ * Read a float from the input.
+ *   @input: The input device.
+ *   &returns: The float.
+ */
+
+_export
+float io_input_float(struct io_input_t input)
+{
+	float value;
+
+	io_input_readfull(input, &value, sizeof(float));
+
+	return value;
+}
+
+/**
+ * Read a double from the input.
+ *   @input: The input device.
+ *   &returns: The double.
+ */
+
+_export
+double io_input_double(struct io_input_t input)
+{
+	double value;
+
+	io_input_readfull(input, &value, sizeof(double));
+
+	return value;
+}

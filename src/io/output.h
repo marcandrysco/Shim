@@ -36,6 +36,9 @@ void io_output_uint8(struct io_output_t output, uint8_t value);
 void io_output_uint32(struct io_output_t output, uint32_t value);
 void io_output_ch(struct io_output_t output, char ch);
 void io_output_str(struct io_output_t output, const char *str);
+void io_output_strptr(struct io_output_t output, const char *str);
+void io_output_float(struct io_output_t output, float value);
+void io_output_double(struct io_output_t output, double value);
 
 /*
  * convenience definitions
