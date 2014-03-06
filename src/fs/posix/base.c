@@ -85,7 +85,7 @@ bool _impl_fs_isfile(const char *path)
 	struct stat info;
 
 	if(stat(path, &info))
-		throw("Failed to stat file '%s'.", path);
+		return false;
 
 	return S_ISREG(info.st_mode);
 }
@@ -102,7 +102,7 @@ bool _impl_fs_islink(const char *path)
 	struct stat info;
 
 	if(stat(path, &info))
-		throw("Failed to stat file '%s'.", path);
+		return false;
 
 	return S_ISLNK(info.st_mode);
 }
@@ -119,7 +119,7 @@ bool _impl_fs_isdir(const char *path)
 	struct stat info;
 
 	if(stat(path, &info))
-		throw("Failed to stat file '%s'.", path);
+		return false;
 
 	return S_ISDIR(info.st_mode);
 }
@@ -600,7 +600,7 @@ char *_impl_fs_mktmpdir(const char *prefix)
 		err = mkdir(path, 0700);
 		if(err == 0)
 			break;
-		else if(err != EEXIST)
+		else if(errno != EEXIST)
 			throw("Failed to create a temporary directory. %s.", strerror(errno));
 
 		mem_free(path);
@@ -631,7 +631,7 @@ char *_impl_fs_mktmpfile(const char *prefix)
 		err = mknod(path, 0600 | S_IFREG, 0);
 		if(err == 0)
 			break;
-		else if(err != EEXIST)
+		else if(errno != EEXIST)
 			throw("Failed to create a temporary file. %s.", strerror(errno));
 
 		mem_free(path);
