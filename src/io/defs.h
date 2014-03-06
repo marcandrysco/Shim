@@ -118,15 +118,15 @@ struct io_input_t {
 
 /**
  * Seek whence enumerator.
- *   @io_whence_set_e: Beginning of the file.
- *   @io_whence_cur_e: Current position.
- *   @io_whence_end_e: End of the file.
+ *   @io_seek_set_e: Beginning of the file.
+ *   @io_seek_cur_e: Current position.
+ *   @io_seek_end_e: End of the file.
  */
 
 enum io_whence_e {
-	io_whence_set_e,
-	io_whence_cur_e,
-	io_whence_end_e
+	io_seek_set_e,
+	io_seek_cur_e,
+	io_seek_end_e
 };
 
 
@@ -182,6 +182,7 @@ struct io_file_t {
  * File open options enumerator.
  *   @io_read_e: Read.
  *   @io_write_e: Write.
+ *   @io_rw_e: Read and write.
  *   @io_append_e: Append.
  *   @io_trunc_e: Truncate.
  *   @io_unbuf_e: Unbuffered.
@@ -191,6 +192,7 @@ struct io_file_t {
 enum io_file_e {
 	io_read_e = 0x01,
 	io_write_e = 0x02,
+	io_rw_e = 0x03,
 	io_append_e = 0x04,
 	io_trunc_e = 0x08,
 	io_unbuf_e = 0x10,

@@ -141,9 +141,9 @@ uint64_t _impl_io_file_seek(struct file_t *file, int64_t offset, enum io_whence_
 	int val;
 
 	switch(whence) {
-	case io_whence_set_e: val = SEEK_SET; break;
-	case io_whence_cur_e: val = SEEK_CUR; break;
-	case io_whence_end_e: val = SEEK_END; break;
+	case io_seek_set_e: val = SEEK_SET; break;
+	case io_seek_cur_e: val = SEEK_CUR; break;
+	case io_seek_end_e: val = SEEK_END; break;
 	default: _fatal("Invalid seek type.");
 	}
 

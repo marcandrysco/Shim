@@ -38,7 +38,7 @@ static struct io_output_i len_iface = {
  * global variables
  */
 
-struct io_chunk_t io_chunk_null = { NULL, NULL };
+_export struct io_chunk_t io_chunk_null = { NULL, NULL };
 
 
 /**
