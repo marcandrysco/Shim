@@ -133,7 +133,7 @@ void avltree_node_insert(struct avltree_node_t **root, struct avltree_node_t *no
 	for(i = 0; stack[i] != NULL && i < AVLTREE_MAX_HEIGHT; i++) {
 		cmp = compare(node, stack[i], arg);
 		if(cmp == 0)
-			return;//throw("Key already exists.");
+			throw("Key already exists.");
 
 		dir[i] = CMP2NODE(cmp);
 		stack[i+1] = stack[i]->child[dir[i]];
@@ -302,6 +302,28 @@ void avltree_node_clear(struct avltree_node_t *root, avltree_delete_node_f delet
 	}
 }
 
+
+/**
+ * Create a new iterator on the tree.
+ *   @root: The root node.
+ *   &returs: The iterator.
+ */
+
+_export
+struct avltree_iter_t avltree_node_iter_new(struct avltree_node_t *root)
+{
+	struct avltree_iter_t iter;
+
+	if(root != NULL) {
+		iter.i = 0;
+		iter.stack[0] = root;
+		iter.state[0] = 0;
+	}
+	else
+		iter.i = -2;
+
+	return iter;
+}
 
 /**
  * Initialize an AVL tree iterator across all nodes from the root.
@@ -653,6 +675,18 @@ void avltree_clear(struct avltree_t *tree)
 	tree->count = 0;
 }
 
+
+/**
+ * Create a new iterator on the tree.
+ *   @tree: The AVL tree.
+ *   &returs: The iterator.
+ */
+
+_export
+struct avltree_iter_t avltree_iter(const struct avltree_t *tree)
+{
+	return avltree_node_iter_new(tree->root);
+}
 
 /**
  * Initialize an iterator on the AVL tree.

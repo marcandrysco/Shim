@@ -46,11 +46,10 @@ bool test_io_accum()
 	printf("testing io accum... ");
 
 	output = str_output_accum(&buf, &len);
-	io_printf(output, "%04u%u%u%u%u%u number -------------------------------------------------------------------------------", 1, 2, 3, 4, 5, 6);
+	io_printf(output, "%04u number", 1);
 	io_output_close(output);
 
-	//if((len != 11) || !str_isequal(buf, "0001 number -------------------------------------------------------------------------------"))
-	if(!str_isequal(buf, "000123456 number -------------------------------------------------------------------------------"))
+	if((len != 11) || !str_isequal(buf, "0001 number"))
 		return printf("failed\n"), false;
 
 	mem_free(buf);
