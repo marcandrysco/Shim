@@ -144,7 +144,14 @@ static void try_destroy()
 _export
 const char *_shim_catch_start()
 {
+	struct _shim_try_t *inst;
+
+	thread_once(&try_once, try_init);
 	thread_once(&throw_once, throw_init);
+
+	inst = thread_local_get(try_local);
+	thread_local_set(try_local, inst->prev);
+	mem_free(inst);
 
 	return thread_local_get(throw_local);
 }
@@ -209,9 +216,6 @@ void _shim_sthrow(const char *file, unsigned int line, char *restrict error)
 	inst = thread_local_get(try_local);
 	if(inst == NULL)
 		_fatal("Unhandled exception.\n%s:%u:%s", file, line, error);
-
-	thread_local_set(try_local, inst->prev);
-	mem_free(inst);
 
 	thread_once(&throw_once, throw_init);
 	mem_delete(thread_local_get(throw_local));
