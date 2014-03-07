@@ -31,6 +31,7 @@ void _impl_thread_rwlock_wrunlock(struct thread_rwlock_t *lock);
  *   &returns: The mutex.
  */
 
+_export
 struct thread_mutex_t thread_mutex_new(struct thread_mutex_attr_t *attr)
 {
 	return _impl_thread_mutex_new(attr);
@@ -41,6 +42,7 @@ struct thread_mutex_t thread_mutex_new(struct thread_mutex_attr_t *attr)
  *   @mutex: The mutex.
  */
 
+_export
 void thread_mutex_delete(struct thread_mutex_t *mutex)
 {
 	_impl_thread_mutex_delete(mutex);
@@ -52,6 +54,7 @@ void thread_mutex_delete(struct thread_mutex_t *mutex)
  *   @mutex: The mutex.a
  */
 
+_export
 void thread_mutex_lock(struct thread_mutex_t *mutex)
 {
 	_impl_thread_mutex_lock(mutex);
@@ -63,6 +66,7 @@ void thread_mutex_lock(struct thread_mutex_t *mutex)
  *   &returns: True if locked, false if lock failed.
  */
 
+_export
 bool thread_mutex_trylock(struct thread_mutex_t *mutex)
 {
 	return _impl_thread_mutex_trylock(mutex);
@@ -73,6 +77,7 @@ bool thread_mutex_trylock(struct thread_mutex_t *mutex)
  *   @mutex: The mutex.a
  */
 
+_export
 void thread_mutex_unlock(struct thread_mutex_t *mutex)
 {
 	_impl_thread_mutex_unlock(mutex);
@@ -85,6 +90,7 @@ void thread_mutex_unlock(struct thread_mutex_t *mutex)
  *   &returns: The read-write lock.
  */
 
+_export
 struct thread_rwlock_t thread_rwlock_new(struct thread_rwlock_attr_t *attr)
 {
 	return _impl_thread_rwlock_new(attr);
@@ -95,6 +101,7 @@ struct thread_rwlock_t thread_rwlock_new(struct thread_rwlock_attr_t *attr)
  *   @lock: The read-write lock.
  */
 
+_export
 void thread_rwlock_delete(struct thread_rwlock_t *lock)
 {
 	_impl_thread_rwlock_delete(lock);
@@ -106,6 +113,7 @@ void thread_rwlock_delete(struct thread_rwlock_t *lock)
  *   @lock: The read-write lock.
  */
 
+_export
 void thread_rwlock_rdlock(struct thread_rwlock_t *lock)
 {
 	_impl_thread_rwlock_rdlock(lock);
@@ -117,6 +125,7 @@ void thread_rwlock_rdlock(struct thread_rwlock_t *lock)
  *   &returns: True if locked, false if lock failed.
  */
 
+_export
 bool thread_rwlock_tryrdlock(struct thread_rwlock_t *lock)
 {
 	return _impl_thread_rwlock_tryrdlock(lock);
@@ -127,6 +136,7 @@ bool thread_rwlock_tryrdlock(struct thread_rwlock_t *lock)
  *   @lock: The read-write lock.
  */
 
+_export
 void thread_rwlock_rdunlock(struct thread_rwlock_t *lock)
 {
 	_impl_thread_rwlock_rdunlock(lock);
@@ -138,6 +148,7 @@ void thread_rwlock_rdunlock(struct thread_rwlock_t *lock)
  *   @lock: The read-write lock.
  */
 
+_export
 void thread_rwlock_wrlock(struct thread_rwlock_t *lock)
 {
 	_impl_thread_rwlock_wrlock(lock);
@@ -149,6 +160,7 @@ void thread_rwlock_wrlock(struct thread_rwlock_t *lock)
  *   &returns: True if locked, false if lock failed.
  */
 
+_export
 bool thread_rwlock_trywrlock(struct thread_rwlock_t *lock)
 {
 	return _impl_thread_rwlock_trywrlock(lock);
@@ -159,6 +171,7 @@ bool thread_rwlock_trywrlock(struct thread_rwlock_t *lock)
  *   @lock: The read-write lock.
  */
 
+_export
 void thread_rwlock_wrunlock(struct thread_rwlock_t *lock)
 {
 	_impl_thread_rwlock_wrunlock(lock);

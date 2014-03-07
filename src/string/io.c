@@ -164,7 +164,7 @@ struct io_output_t str_output_accum(char **buf, size_t *nread)
 	inst->i = 0;
 	inst->buf = buf;
 	inst->nbytes = 32;
-	inst->nbytes = 32;
+	inst->nread = nread;
 
 	*inst->buf = mem_alloc(32);
 	
@@ -197,7 +197,7 @@ static size_t accum_write(struct accum_t *inst, const void *restrict buf, size_t
 	if(inst->nread != NULL)
 		*inst->nread += nbytes;
 
-	if((inst->i + nbytes) > inst->nbytes) {
+	if((inst->i + nbytes) >= inst->nbytes) {
 		inst->nbytes = 2 * (inst->i + nbytes);
 		*inst->buf = mem_realloc(*inst->buf, inst->nbytes);
 	}

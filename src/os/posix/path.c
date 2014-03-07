@@ -40,17 +40,17 @@ static void path_proc(struct io_output_t output, void *arg)
 	switch(id) {
 	case os_path_lib_e:
 #ifdef BMAKE__PATH_LIB
-		io_output_str(output, BMAKE__PATH_LIB);
+		io_print_str(output, BMAKE__PATH_LIB);
 #else
-		io_output_str(output, "/usr/local/lib");
+		io_print_str(output, "/usr/local/lib");
 #endif
 		break;
 
 	case os_path_share_e:
 #ifdef BMAKE__PATH_SHARE
-		io_output_str(output, BMAKE__PATH_SHARE);
+		io_print_str(output, BMAKE__PATH_SHARE);
 #else
-		io_output_str(output, "/usr/local/share");
+		io_print_str(output, "/usr/local/share");
 #endif
 		break;
 

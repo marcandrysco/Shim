@@ -17,6 +17,7 @@ void *_impl_sys_dynlib_symbol(struct sys_dynlib_t *dynlib, const char *restrict 
  *   &returns: The dynamic library.
  */
 
+_export
 struct sys_dynlib_t *sys_dynlib_open(const char *path)
 {
 	return _impl_sys_dynlib_open(path);
@@ -27,6 +28,7 @@ struct sys_dynlib_t *sys_dynlib_open(const char *path)
  *   @dynlib: The dynamic library.
  */
 
+_export
 void sys_dynlib_close(struct sys_dynlib_t *dynlib)
 {
 	_impl_sys_dynlib_close(dynlib);
@@ -39,6 +41,7 @@ void sys_dynlib_close(struct sys_dynlib_t *dynlib)
  *   &returns: The symbol or null.
  */
 
+_export
 void *sys_dynlib_symbol(struct sys_dynlib_t *dynlib, const char *restrict name)
 {
 	return _impl_sys_dynlib_symbol(dynlib, name);

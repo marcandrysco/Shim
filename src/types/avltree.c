@@ -133,7 +133,7 @@ void avltree_node_insert(struct avltree_node_t **root, struct avltree_node_t *no
 	for(i = 0; stack[i] != NULL && i < AVLTREE_MAX_HEIGHT; i++) {
 		cmp = compare(node, stack[i], arg);
 		if(cmp == 0)
-			throw("Key already exists.");
+			return;//throw("Key already exists.");
 
 		dir[i] = CMP2NODE(cmp);
 		stack[i+1] = stack[i]->child[dir[i]];

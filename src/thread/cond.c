@@ -22,6 +22,7 @@ void _impl_thread_cond_broadcast(struct thread_cond_t *cond);
  *   &returns: The condition variable.
  */
 
+_export
 struct thread_cond_t thread_cond_new(struct thread_cond_attr_t *attr)
 {
 	return _impl_thread_cond_new(attr);
@@ -32,6 +33,7 @@ struct thread_cond_t thread_cond_new(struct thread_cond_attr_t *attr)
  *   @cond: The condition variable.
  */
 
+_export
 void thread_cond_delete(struct thread_cond_t *cond)
 {
 	_impl_thread_cond_delete(cond);
@@ -44,6 +46,7 @@ void thread_cond_delete(struct thread_cond_t *cond)
  *   @mutex: The mutex.
  */
 
+_export
 void thread_cond_wait(struct thread_cond_t *cond, struct thread_mutex_t *mutex)
 {
 	_impl_thread_cond_wait(cond, mutex);
@@ -57,6 +60,7 @@ void thread_cond_wait(struct thread_cond_t *cond, struct thread_mutex_t *mutex)
  *   &returns: True if successfully waited, false if wait timed out.
  */
 
+_export
 bool thread_cond_timedwait(struct thread_cond_t *cond, struct thread_mutex_t *mutex, uint64_t utime)
 {
 	return _impl_thread_cond_timedwait(cond, mutex, utime);
@@ -68,6 +72,7 @@ bool thread_cond_timedwait(struct thread_cond_t *cond, struct thread_mutex_t *mu
  *   @cond: The condition variable.
  */
 
+_export
 void thread_cond_signal(struct thread_cond_t *cond)
 {
 	_impl_thread_cond_signal(cond);
@@ -78,6 +83,7 @@ void thread_cond_signal(struct thread_cond_t *cond)
  *   @cond: The condition variable.
  */
 
+_export
 void thread_cond_broadcast(struct thread_cond_t *cond)
 {
 	_impl_thread_cond_broadcast(cond);

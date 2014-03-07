@@ -5,8 +5,8 @@ Target
 	Name	"shim"
 	Type	"Library"
 
-	CFlags	"`pkg-config --cflags shim`"
-	LDFlags	"`pkg-config --libs shim`"
+	CFlags	""
+	LDFlags	""
 
 	If [ "$visibility" ]
 		CFlags	+"-fvisibility=internal"

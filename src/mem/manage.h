@@ -28,7 +28,7 @@ void _mem_delete_dbg(void *ptr);
 #	define mem_delete _mem_delete_dbg
 #else
 #	define mem_alloc(nbytes) _mem_alloc(nbytes)
-#	define mem_realloc(ptr, nbytes) _mem_alloc(ptr, nbytes)
+#	define mem_realloc(ptr, nbytes) _mem_realloc(ptr, nbytes)
 #	define mem_free _mem_free
 #	define mem_delete _mem_delete
 #endif
