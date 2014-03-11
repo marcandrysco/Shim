@@ -168,7 +168,7 @@ char *str_pbrk(const char *str, const char *set)
 
 
 /**
- * Duplciate a string.
+ * Duplicate a string.
  *   @str: The input string.
  *   &returns: The duplicate string.
  */
@@ -181,6 +181,28 @@ char *str_dup(const char *str)
 
 	copy = mem_alloc(len + 1);
 	str_copy(copy, str);
+
+	return copy;
+}
+
+/**
+ * Duplicate a string, copying at most 'n' characters from the input..
+ *   @str: The input string.
+ *   @n: The max length in characters.
+ *   &returns: The duplicate string.
+ */
+
+_export
+char *str_ndup(const char *str, size_t n)
+{
+	char *copy;
+	size_t len = str_len(str);
+
+	if(len > n)
+		len = n;
+
+	copy = mem_alloc(len + 1);
+	str_ncopy(copy, str, len + 1);
 
 	return copy;
 }

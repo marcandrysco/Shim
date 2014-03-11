@@ -25,6 +25,7 @@ char *str_str(const char *str, char *sub);
 char *str_pbrk(const char *str, const char *set);
 
 char *str_dup(const char *str);
+char *str_ndup(const char *str, size_t n);
 char *str_clone(const char *str);
 void str_replace(char **dest, const char *src);
 

@@ -125,7 +125,8 @@ struct io_chunk_t io_chunk_str(const char *str)
 
 static void str_proc(struct io_output_t output, void *arg)
 {
-	io_print_str(output, (const char *)arg);
+	if(arg != NULL)
+		io_print_str(output, (const char *)arg);
 }
 
 /**
