@@ -488,16 +488,24 @@ void _impl_fs_clear(const char *path)
 		if(dir == NULL)
 			throw("Unable to enumerate files in '%s'. %s.", path, strerror(errno));
 
-		do {
+		while(true) {
 			entry = readdir(dir);
-			if(entry != NULL) {
+			do {
+				entry = readdir(dir);
+				if(entry == NULL)
+					break;
+			} while(str_isequal(entry->d_name, ".") || str_isequal(entry->d_name, ".."));
+
+			if(entry == NULL)
+				break;
+			else {
 				char sub[str_len(path) + str_len(entry->d_name) + 2];
 
 				str_printf(sub, "%s/%s", path, entry->d_name);
 
 				_impl_fs_clear(sub);
 			}
-		} while(str_isequal(entry->d_name, ".") || str_isequal(entry->d_name, ".."));
+		}
 
 		closedir(dir);
 		_impl_fs_rmdir(path);
