@@ -81,6 +81,13 @@ size_t io_chunk_proc_len(struct io_chunk_t chunk);
 
 struct io_chunk_t io_chunk_str(const char *str);
 struct io_chunk_t io_chunk_strptr(char **str);
+struct io_chunk_t io_chunk_cond(const struct io_chunk_t *pair);
+
+/*
+ * chunk definitions
+ */
+
+#define io_chunk_nullstr(chunk, str) io_chunk_cond((struct io_chunk_t []){ chunk, io_chunk_str(str) })
 
 /*
  * object function declarations

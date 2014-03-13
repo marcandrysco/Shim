@@ -21,6 +21,7 @@ static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes);
 
 static void str_proc(struct io_output_t output, void *arg);
 static void strptr_proc(struct io_output_t output, void *arg);
+static void cond_proc(struct io_output_t output, void *arg);
 
 /*
  * local variables
@@ -150,6 +151,32 @@ struct io_chunk_t io_chunk_strptr(char **str)
 static void strptr_proc(struct io_output_t output, void *arg)
 {
 	io_print_str(output, *(char **)arg);
+}
+
+/**
+ * Create a conditional chunk pair, processing the first if non-null,
+ * otherwise processing the second.
+ *   @pair: The pair.
+ *   &returns: The chunk.
+ */
+
+_export
+struct io_chunk_t io_chunk_cond(const struct io_chunk_t *pair)
+{
+	return (struct io_chunk_t){ cond_proc, (void *)pair };
+}
+
+/**
+ * Processing callback for conditional chunks.
+ *   @output: The output.
+ *   @arg: the argument.
+ */
+
+static void cond_proc(struct io_output_t output, void *arg)
+{
+	const struct io_chunk_t *pair = arg;
+
+	io_chunk_proc(!io_chunk_isnull(pair[0]) ? pair[0] : pair[1], output);
 }
 
 
