@@ -87,7 +87,8 @@ void *_mem_alloc_dbg(size_t nbytes, const char *file, unsigned int line)
 	void *ptr;
 
 	ptr = _impl_mem_alloc(nbytes);
-	_dbg_res_alloc(ptr, file, line, (struct io_chunk_t){ dbg_chunk, &nbytes });
+	if(ptr != NULL)
+		_dbg_res_alloc(ptr, file, line, (struct io_chunk_t){ dbg_chunk, &nbytes });
 
 	return ptr;
 }
@@ -123,7 +124,9 @@ void *_mem_realloc_dbg(void *ptr, size_t nbytes, const char *file, unsigned int 
 _export
 void _mem_free_dbg(void *ptr)
 {
-	_dbg_res_free(ptr);
+	if(ptr != NULL)
+		_dbg_res_free(ptr);
+
 	_impl_mem_free(ptr);
 }
 

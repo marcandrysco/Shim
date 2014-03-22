@@ -168,6 +168,21 @@ char *str_pbrk(const char *str, const char *set)
 
 
 /**
+ * Concatonate a string, reallocating space for the final string.
+ *   @base: The base string reference.
+ *   @str: The string to concatonate.
+ */
+
+_export
+void str_cat(char **restrict base, const char *restrict str)
+{
+	size_t len[2] = { str_len(*base), str_len(str) };
+
+	*base = mem_realloc(*base, len[0] + len[1] + 1);
+	str_copy(*base + len[0], str);
+}
+
+/**
  * Duplicate a string.
  *   @str: The input string.
  *   &returns: The duplicate string.

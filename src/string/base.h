@@ -24,6 +24,7 @@ char *str_rchr(const char *str, char ch);
 char *str_str(const char *str, char *sub);
 char *str_pbrk(const char *str, const char *set);
 
+void str_cat(char **restrict base, const char *restrict str);
 char *str_dup(const char *str);
 char *str_ndup(const char *str, size_t n);
 char *str_clone(const char *str);
