@@ -106,6 +106,13 @@ static inline void iter_delete(struct iter_t iter)
 	iter.iface->delete(iter.ref);
 }
 
+
+/*
+ * common implementation variables
+ */
+
+extern struct iter_t iter_blank;
+
 /* %~shim.h% */
 
 /*
