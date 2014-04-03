@@ -5,6 +5,7 @@
 #include "../io/chunk.h"
 #include "../mem/manage.h"
 #include "../string/base.h"
+#include "../types/strbuf.h"
 
 
 /*
@@ -288,6 +289,38 @@ char *io_input_strptr(struct io_input_t input)
 		str = NULL;
 
 	return str;
+}
+
+/**
+ * Input a line of text, delimited by a newline or EOS.
+ *   @input: The input.
+ *   &returns; The line.
+ */
+
+_export
+char *io_input_line(struct io_input_t input)
+{
+	char *line;
+	int16_t ch;
+	struct strbuf_t buf;
+
+	buf = strbuf_empty(64);
+	do {
+		ch = io_input_byte(input);
+		if(ch == IO_EOS)
+			break;
+
+		strbuf_store(&buf, ch);
+	} while(ch != '\n');
+
+	line = strbuf_done(&buf);
+	if(*line == '\0') {
+		mem_free(line);
+
+		return NULL;
+	}
+	else
+		return line;
 }
 
 /**

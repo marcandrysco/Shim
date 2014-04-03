@@ -30,6 +30,8 @@ char *str_ndup(const char *str, size_t n);
 char *str_clone(const char *str);
 void str_replace(char **dest, const char *src);
 
+void str_rtrim(char **str);
+
 /* %~shim.h% */
 
 /*

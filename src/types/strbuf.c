@@ -40,6 +40,18 @@ void strbuf_init(struct strbuf_t *buf, size_t initlen)
 }
 
 /**
+ * Create an empty string buffer.
+ *   @initlen: The initial buffer length.
+ *   &returns: The string buffer.
+ */
+
+_export
+struct strbuf_t strbuf_empty(size_t initlen)
+{
+	return (struct strbuf_t){ mem_alloc(initlen), 0, initlen };
+}
+
+/**
  * Create a string buffer.
  *   @initlen: The initial buffer length.
  *   &returns: The string buffer.

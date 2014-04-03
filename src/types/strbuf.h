@@ -31,6 +31,7 @@ struct strbuf_t {
  */
 
 void strbuf_init(struct strbuf_t *buf, size_t initlen);
+struct strbuf_t strbuf_empty(size_t initlen);
 struct strbuf_t *strbuf_new(size_t initlen);
 void strbuf_destroy(struct strbuf_t *buf);
 void strbuf_delete(struct strbuf_t *buf);

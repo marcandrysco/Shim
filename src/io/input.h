@@ -39,6 +39,7 @@ uint64_t io_input_uint64(struct io_input_t input);
 char io_input_ch(struct io_input_t input);
 char *io_input_str(struct io_input_t input);
 char *io_input_strptr(struct io_input_t input);
+char *io_input_line(struct io_input_t input);
 float io_input_float(struct io_input_t input);
 double io_input_double(struct io_input_t input);
 

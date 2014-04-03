@@ -2,6 +2,7 @@
 #include "base.h"
 #include <string.h>
 #include "../mem/manage.h"
+#include "locale.h"
 
 
 /**
@@ -247,4 +248,22 @@ void str_replace(char **dest, const char *src)
 		mem_free(*dest);
 
 	*dest = src ? str_dup(src) : NULL;
+}
+
+/**
+ * Trim whitespace off the right side of the string. The string is reallocated
+ * fit exactly.
+ *   @str: The string reference.
+ */
+
+_export
+void str_rtrim(char **str)
+{
+	char *endptr = *str + str_len(*str) - 1;
+
+	while((endptr >= *str) && str_isspace(*endptr))
+		endptr--;
+
+	*(++endptr) = '\0';
+	*str = mem_realloc(*str, endptr - *str + 1);
 }
