@@ -118,5 +118,6 @@ Target
 	Source	"src/types/defs.c"
 	Source	"src/types/float.c"
 	Source	"src/types/llist.c"
+	Source	"src/types/queue.c"
 	Source	"src/types/strbuf.c"
 EndTarget

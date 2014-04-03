@@ -51,6 +51,7 @@ HEADERS = \
 	  src/types/compare.h \
 	  src/types/float.h \
 	  src/types/llist.h \
+	  src/types/queue.h \
 	  src/types/strbuf.h \
 
 ifeq ($(bmake_HOST),windows)
