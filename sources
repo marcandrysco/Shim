@@ -67,6 +67,7 @@ Target
 	EndIf
 
 	Extra	"src/math/func.h"
+	Source	"src/math/algo.c"
 	Source	"src/math/rand.c"
 
 	Source	"src/os/env.c"

@@ -22,6 +22,7 @@ static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes);
 static void str_proc(struct io_output_t output, void *arg);
 static void strptr_proc(struct io_output_t output, void *arg);
 static void cond_proc(struct io_output_t output, void *arg);
+static void indent_proc(struct io_output_t output, void *arg);
 
 /*
  * local variables
@@ -177,6 +178,35 @@ static void cond_proc(struct io_output_t output, void *arg)
 	const struct io_chunk_t *pair = arg;
 
 	io_chunk_proc(!io_chunk_isnull(pair[0]) ? pair[0] : pair[1], output);
+}
+
+/**
+ * Create an indent chunk.
+ *   @indent: The indent count.
+ *   &returns: The chunk.
+ */
+
+_export
+struct io_chunk_t io_chunk_indent(const unsigned int *indent)
+{
+	return (struct io_chunk_t){ indent_proc, (void *)indent };
+}
+
+/**
+ * Processing callback for indent.
+ *   @output: The output.
+ *   @arg: the argument.
+ */
+
+static void indent_proc(struct io_output_t output, void *arg)
+{
+	unsigned int n = *(unsigned int *)arg;
+	static const char blank[8] = "        ";
+
+	io_print_str(output, blank + (8 - n % 8));
+
+	for(n /= 8; n != 0; n--)
+		io_print_str(output, blank);
 }
 
 

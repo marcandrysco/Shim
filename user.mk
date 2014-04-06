@@ -9,6 +9,7 @@ HEADERS = \
 	  src/fs/base.h \
 	  src/fs/path.h \
 	  \
+	  src/math/algo.h \
 	  src/math/func.h \
 	  src/math/rand.h \
 	  \
