@@ -236,6 +236,22 @@ char *str_clone(const char *str)
 }
 
 /**
+ * Set the destination string freeing any previous value. The incoming string
+ * must already have been allocated if non-null.
+ *   @dest: The destination.
+ *   @src: The source.
+ */
+
+_export
+void str_set(char **dest, char *src)
+{
+	if(*dest != NULL)
+		mem_free(*dest);
+
+	*dest = src;
+}
+
+/**
  * Replace the string in destination with source. Either string may be null.
  *   @dest: The destination.
  *   @src: The source.
@@ -249,6 +265,7 @@ void str_replace(char **dest, const char *src)
 
 	*dest = src ? str_dup(src) : NULL;
 }
+
 
 /**
  * Trim whitespace off the right side of the string. The string is reallocated
