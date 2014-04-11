@@ -344,6 +344,18 @@ void avltree_node_iter_init(struct avltree_iter_t *iter, struct avltree_node_t *
 }
 
 /**
+ * Retrieve the previous node from an AVL tree iterator.
+ *   @iter: The iterator.
+ *   &returns: The previous node, 'NULL' if all nodes are exhausted.
+ */
+
+_export
+struct avltree_node_t *avltree_node_iter_prev(struct avltree_iter_t *iter)
+{
+	throw("stub");
+}
+
+/**
  * Retrieve the next node from an AVL tree iterator.
  *   @iter: The iterator.
  *   &returns: The next node, 'NULL' if all nodes are exhausted.
@@ -698,6 +710,24 @@ struct avltree_iter_t avltree_iter(const struct avltree_t *tree)
 void avltree_iter_init(struct avltree_iter_t *iter, const struct avltree_t *tree)
 {
 	avltree_node_iter_init(iter, tree->root);
+}
+
+/**
+ * Retrieve the previous reference from an AVL tree iterator.
+ *   @iter: The iterator.
+ *   &returns: The previous reference, 'NULL' if all references are exhausted.
+ */
+
+_export
+void *avltree_iter_prev(struct avltree_iter_t *iter)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_iter_prev(iter);
+	if(node == NULL)
+		return NULL;
+
+	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
 }
 
 /**
