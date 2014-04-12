@@ -170,6 +170,7 @@ struct avltree_node_t *avltree_node_iter_next_depth(struct avltree_iter_t *iter)
  */
 
 void avltree_init(struct avltree_t *tree, compare_f compare, delete_f delete);
+struct avltree_t avltree_empty(compare_f compare, delete_f delete);
 struct avltree_t *avltree_new(compare_f compare, delete_f delete);
 void avltree_destroy(struct avltree_t *tree);
 void avltree_delete(struct avltree_t *tree);

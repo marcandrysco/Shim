@@ -31,13 +31,13 @@ static int compare_nodenode(const struct avltree_node_t *n1, const struct avltre
  * local variables
  */
 
-static struct iter_i keyiter_iface = { (iter_next_f)avljtree_keyiter_next, NULL, mem_free };
-static struct iter_i keyiter_keys_iface = { (iter_next_f)avljtree_keyiter_next_key, NULL, mem_free };
-static struct iter_i keyiter_refs_iface = { (iter_next_f)avljtree_keyiter_next_ref, NULL, mem_free };
+static struct iter_i keyiter_iface = { (iter_f)avljtree_keyiter_next, mem_free };
+static struct iter_i keyiter_keys_iface = { (iter_f)avljtree_keyiter_next_key, mem_free };
+static struct iter_i keyiter_refs_iface = { (iter_f)avljtree_keyiter_next_ref, mem_free };
 
-static struct iter_i idxiter_iface = { (iter_next_f)avljtree_idxiter_next, NULL, mem_free };
-static struct iter_i idxiter_keys_iface = { (iter_next_f)avljtree_idxiter_next_key, NULL, mem_free };
-static struct iter_i idxiter_refs_iface = { (iter_next_f)avljtree_idxiter_next_ref, NULL, mem_free };
+static struct iter_i idxiter_iface = { (iter_f)avljtree_idxiter_next, mem_free };
+static struct iter_i idxiter_keys_iface = { (iter_f)avljtree_idxiter_next_key, mem_free };
+static struct iter_i idxiter_refs_iface = { (iter_f)avljtree_idxiter_next_ref, mem_free };
 
 
 /**
