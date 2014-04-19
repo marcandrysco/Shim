@@ -34,37 +34,6 @@ struct io_chunk_t {
 };
 
 
-/**
- * Object output callback.
- *   @ref: the object reference.
- *   @output: The output device.
- */
-
-typedef void (*io_object_f)(void *ref, struct io_output_t output);
-
-/**
- * Object interface.
- *   @proc: Process output.
- *   @close: Close object.
- */
-
-struct io_object_i {
-	io_object_f proc;
-	io_close_f close;
-};
-
-/**
- * Output object structure.
- *   @ref: The reference.
- *   @iface: The interface.
- */
-
-struct io_object_t {
-	void *ref;
-	const struct io_object_i *iface;
-};
-
-
 /*
  * chunk variables
  */
@@ -90,13 +59,6 @@ struct io_chunk_t io_chunk_indent(const unsigned int *indent);
 
 #define io_chunk_nullstr(chunk, str) io_chunk_cond((struct io_chunk_t []){ chunk, io_chunk_str(str) })
 #define io_chunk_indentval(val) io_chunk_indent(&(union { unsigned int i; }){ .i = val }.i)
-
-/*
- * object function declarations
- */
-
-void io_object_proc(struct io_object_t object, struct io_output_t output);
-void io_object_close(struct io_object_t object);
 
 
 /**

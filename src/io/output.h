@@ -43,6 +43,12 @@ void io_output_float(struct io_output_t output, float value);
 void io_output_double(struct io_output_t output, double value);
 
 /*
+ * output wrapper function declarations
+ */
+
+struct io_output_t io_output_counter(struct io_output_t output, uint64_t *nbytes);
+
+/*
  * convenience definitions
  */
 

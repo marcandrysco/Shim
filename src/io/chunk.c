@@ -208,27 +208,3 @@ static void indent_proc(struct io_output_t output, void *arg)
 	for(n /= 8; n != 0; n--)
 		io_print_str(output, blank);
 }
-
-
-/**
- * Process an output object.
- *   @object: The object.
- *   @output: The output device.
- */
-
-_export
-void io_object_proc(struct io_object_t object, struct io_output_t output)
-{
-	object.iface->proc(object.ref, output);
-}
-
-/**
- * Close an output object.
- *   @object: The object.
- */
-
-_export
-void io_object_close(struct io_object_t object)
-{
-	object.iface->close(object.ref);
-}
