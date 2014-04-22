@@ -2,10 +2,12 @@
 #include "output.h"
 #include "../debug/exception.h"
 #include "../debug/res.h"
+#include "../math/func.h"
 #include "../mem/manage.h"
 #include "../io/chunk.h"
 #include "../string/base.h"
 #include "device.h"
+#include "file.h"
 
 
 /**
@@ -322,6 +324,30 @@ _export
 void io_output_double(struct io_output_t output, double value)
 {
 	io_output_writefull(output, &value, sizeof(double));
+}
+
+/**
+ * Write a double to the output device.
+ *   @output: The output device.
+ *   @ch: The double.
+ */
+
+_export
+void io_output_segment(struct io_output_t output, struct io_file_t file, uint64_t offset, uint64_t nbytes)
+{
+	size_t read;
+	uint8_t buf[4096];
+
+	io_file_seek(file, offset, io_seek_set_e);
+
+	while(nbytes > 0) {
+		read = io_file_read(file, buf, m_sizemin(sizeof(buf), nbytes));
+		if(read == 0)
+			throw("Failed to read from file.");
+
+		nbytes -= read;
+		io_output_writefull(output, buf, read);
+	}
 }
 
 
