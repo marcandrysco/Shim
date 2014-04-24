@@ -80,6 +80,7 @@ Target
 		Source	"src/os/posix/path.c"
 	EndIf
 
+	Source	"src/string/argv.c"
 	Source	"src/string/base.c"
 	Source	"src/string/io.c"
 	Source	"src/string/locale.c"

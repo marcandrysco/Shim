@@ -32,6 +32,7 @@ HEADERS = \
 	  src/os/env.h \
 	  src/os/path.h \
 	  \
+	  src/string/argv.h \
 	  src/string/base.h \
 	  src/string/io.h \
 	  src/string/locale.h \
