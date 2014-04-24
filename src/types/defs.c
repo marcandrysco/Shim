@@ -14,7 +14,7 @@ static void *blank(void *ref);
  * iterator interface
  */
 
-static struct iter_i iter_iface = { blank, blank, noop };
+static struct iter_i iter_iface = { blank, noop };
 
 /*
  * global variables
@@ -23,10 +23,20 @@ static struct iter_i iter_iface = { blank, blank, noop };
 _export struct iter_t iter_blank = { NULL, &iter_iface };
 
 
+/**
+ * No operation.
+ *   @ref: Unused reference.
+ */
 
 static void noop(void *ref)
 {
 }
+
+/**
+ * Retrurn a blank element.
+ *   @ref: Unused reference.
+ *   &returns: Always null.
+ */
 
 static void *blank(void *ref)
 {

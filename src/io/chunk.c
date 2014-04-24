@@ -22,6 +22,7 @@ static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes);
 static void str_proc(struct io_output_t output, void *arg);
 static void strptr_proc(struct io_output_t output, void *arg);
 static void cond_proc(struct io_output_t output, void *arg);
+static void indent_proc(struct io_output_t output, void *arg);
 
 /*
  * local variables
@@ -179,26 +180,31 @@ static void cond_proc(struct io_output_t output, void *arg)
 	io_chunk_proc(!io_chunk_isnull(pair[0]) ? pair[0] : pair[1], output);
 }
 
-
 /**
- * Process an output object.
- *   @object: The object.
- *   @output: The output device.
+ * Create an indent chunk.
+ *   @indent: The indent count.
+ *   &returns: The chunk.
  */
 
 _export
-void io_object_proc(struct io_object_t object, struct io_output_t output)
+struct io_chunk_t io_chunk_indent(const unsigned int *indent)
 {
-	object.iface->proc(object.ref, output);
+	return (struct io_chunk_t){ indent_proc, (void *)indent };
 }
 
 /**
- * Close an output object.
- *   @object: The object.
+ * Processing callback for indent.
+ *   @output: The output.
+ *   @arg: the argument.
  */
 
-_export
-void io_object_close(struct io_object_t object)
+static void indent_proc(struct io_output_t output, void *arg)
 {
-	object.iface->close(object.ref);
+	unsigned int n = *(unsigned int *)arg;
+	static const char blank[8] = "        ";
+
+	io_print_str(output, blank + (8 - n % 8));
+
+	for(n /= 8; n != 0; n--)
+		io_print_str(output, blank);
 }

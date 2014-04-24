@@ -41,6 +41,13 @@ void io_output_str(struct io_output_t output, const char *str);
 void io_output_strptr(struct io_output_t output, const char *str);
 void io_output_float(struct io_output_t output, float value);
 void io_output_double(struct io_output_t output, double value);
+void io_output_segment(struct io_output_t output, struct io_file_t file, uint64_t offset, uint64_t nbytes);
+
+/*
+ * output wrapper function declarations
+ */
+
+struct io_output_t io_output_counter(struct io_output_t output, uint64_t *nbytes);
 
 /*
  * convenience definitions

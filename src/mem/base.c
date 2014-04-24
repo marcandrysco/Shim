@@ -1,6 +1,7 @@
 #include "../common.h"
 #include "base.h"
 #include <string.h>
+#include "manage.h"
 
 
 /**
@@ -81,4 +82,23 @@ _export
 bool mem_isequal(const void *p1, const void *p2, size_t nbytes)
 {
 	return !memcmp(p1, p2, nbytes);
+}
+
+
+/**
+ * Duplicate a chunk of memory.
+ *   @ptr: The pointer.
+ *   @nbytes: The number of bytes.
+ *   &returns: The duplicated memory.
+ */
+
+_export
+void *mem_dup(void *ptr, size_t nbytes)
+{
+	void *dup;
+
+	dup = mem_alloc(nbytes);
+	mem_copy(dup, ptr, nbytes);
+
+	return dup;
 }

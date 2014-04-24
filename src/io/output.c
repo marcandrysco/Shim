@@ -2,15 +2,25 @@
 #include "output.h"
 #include "../debug/exception.h"
 #include "../debug/res.h"
+#include "../math/func.h"
+#include "../mem/manage.h"
 #include "../io/chunk.h"
 #include "../string/base.h"
+#include "device.h"
+#include "file.h"
 
-/*
-struct io_output_t io_output_open(const char *path)
-{
 
-}
-*/
+/**
+ * Counter structure.
+ *   @nbytes: The number of bytes written.
+ *
+ *   @output: The output.
+ */
+
+struct counter_t {
+	uint64_t *nbytes;
+	struct io_output_t output;
+};
 
 
 /*
@@ -25,6 +35,18 @@ struct io_output_t _impl_io_output_open_dbg(const char *path, const char *file, 
 
 struct io_output_t _impl_io_output_append(const char *path);
 struct io_output_t _impl_io_output_append_dbg(const char *path, const char *file, unsigned int line);
+
+/*
+ * local function declarations
+ */
+
+static size_t counter_proc(struct counter_t *counter, const void *restrict buf, size_t nbytes);
+
+/*
+ * local variables
+ */
+
+static struct io_output_i counter_iface = { { io_blank_ctrl, mem_free }, (io_write_f)counter_proc };
 
 
 /**
@@ -302,4 +324,64 @@ _export
 void io_output_double(struct io_output_t output, double value)
 {
 	io_output_writefull(output, &value, sizeof(double));
+}
+
+/**
+ * Write a double to the output device.
+ *   @output: The output device.
+ *   @ch: The double.
+ */
+
+_export
+void io_output_segment(struct io_output_t output, struct io_file_t file, uint64_t offset, uint64_t nbytes)
+{
+	size_t read;
+	uint8_t buf[4096];
+
+	io_file_seek(file, offset, io_seek_set_e);
+
+	while(nbytes > 0) {
+		read = io_file_read(file, buf, m_sizemin(sizeof(buf), nbytes));
+		if(read == 0)
+			throw("Failed to read from file.");
+
+		nbytes -= read;
+		io_output_writefull(output, buf, read);
+	}
+}
+
+
+/**
+ * Create an output counter.
+ *   @output: The output.
+ *   @nbytes: The number of bytes written.
+ *   &returns: The output.
+ */
+
+_export
+struct io_output_t io_output_counter(struct io_output_t output, uint64_t *nbytes)
+{
+	struct counter_t *counter;
+
+	counter = mem_alloc(sizeof(struct counter_t));
+	counter->nbytes = nbytes;
+	counter->output = output;
+
+	return (struct io_output_t){ counter, &counter_iface };
+}
+
+/**
+ * Process the counter output.
+ *   @counter: The counter.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes.
+ *   &returns: The number of bytes written.
+ */
+
+static size_t counter_proc(struct counter_t *counter, const void *restrict buf, size_t nbytes)
+{
+	nbytes = io_output_write(counter->output, buf, nbytes);
+	*counter->nbytes += nbytes;
+
+	return nbytes;
 }

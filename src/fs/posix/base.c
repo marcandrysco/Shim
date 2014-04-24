@@ -28,7 +28,6 @@
 
 static void tmpfill(struct io_output_t output, void *arg);
 
-static const char *lsdir_prev(DIR *dir);
 static const char *lsdir_next(DIR *dir);
 static void lsdir_delete(DIR *dir);
 
@@ -36,7 +35,7 @@ static void lsdir_delete(DIR *dir);
  * local variables
  */
 
-struct iter_i lsdir_iface = { (iter_next_f)lsdir_next, (iter_prev_f)lsdir_prev, (delete_f)lsdir_delete };
+struct iter_i lsdir_iface = { (iter_f)lsdir_next, (delete_f)lsdir_delete };
 
 /*
  * global variables
@@ -691,27 +690,6 @@ struct iter_t _impl_fs_lsdir(const char *path)
 		throw("Unable to enumerate files in '%s'. %s.", path, strerror(errno));
 
 	return (struct iter_t){ dir, &lsdir_iface };
-}
-
-/**
- * Retrieve the previous file name from the directory iterator.
- *   @dir: The iterator.
- *   &returns: The name or null.
- */
-
-static const char *lsdir_prev(DIR *dir)
-{
-	struct dirent *entry;
-
-	do {
-		seekdir(dir, telldir(dir) - 2);
-
-		entry = readdir(dir);
-		if(entry == NULL)
-			return NULL;
-	} while(str_isequal(entry->d_name, ".") || str_isequal(entry->d_name, ".."));
-
-	return entry->d_name;
 }
 
 /**

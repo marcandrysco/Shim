@@ -14,6 +14,12 @@
 
 /* %shim.h% */
 
+/*
+ * blank function declarations
+ */
+
+bool io_blank_ctrl(void *ref, unsigned int id, void *data);
+
 /* %~shim.h% */
 
 /*

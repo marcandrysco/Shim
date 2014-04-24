@@ -28,6 +28,7 @@ void str_cat(char **restrict base, const char *restrict str);
 char *str_dup(const char *str);
 char *str_ndup(const char *str, size_t n);
 char *str_clone(const char *str);
+void str_set(char **dest, char *src);
 void str_replace(char **dest, const char *src);
 
 void str_rtrim(char **str);

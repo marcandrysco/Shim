@@ -36,8 +36,8 @@ static void recount(struct avlitree_node_t *node);
  * local variables
  */
 
-static struct iter_i iter_iface = { (iter_next_f)avlitree_iter_next, NULL, mem_free };
-static struct iter_i refiter_iface = { (iter_next_f)avlitree_iter_next_ref, NULL, mem_free };
+static struct iter_i iter_iface = { (iter_f)avlitree_iter_next, mem_free };
+static struct iter_i refiter_iface = { (iter_f)avlitree_iter_next_ref, mem_free };
 
 
 /**

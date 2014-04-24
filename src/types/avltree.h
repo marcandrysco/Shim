@@ -161,6 +161,7 @@ void avltree_node_clear(struct avltree_node_t *root, avltree_delete_node_f delet
 
 struct avltree_iter_t avltree_node_iter_new(struct avltree_node_t *root);
 void avltree_node_iter_init(struct avltree_iter_t *iter, struct avltree_node_t *root);
+struct avltree_node_t *avltree_node_iter_prev(struct avltree_iter_t *iter);
 struct avltree_node_t *avltree_node_iter_next(struct avltree_iter_t *iter);
 struct avltree_node_t *avltree_node_iter_next_depth(struct avltree_iter_t *iter);
 
@@ -169,6 +170,7 @@ struct avltree_node_t *avltree_node_iter_next_depth(struct avltree_iter_t *iter)
  */
 
 void avltree_init(struct avltree_t *tree, compare_f compare, delete_f delete);
+struct avltree_t avltree_empty(compare_f compare, delete_f delete);
 struct avltree_t *avltree_new(compare_f compare, delete_f delete);
 void avltree_destroy(struct avltree_t *tree);
 void avltree_delete(struct avltree_t *tree);
@@ -186,6 +188,7 @@ void avltree_clear(struct avltree_t *tree);
 
 struct avltree_iter_t avltree_iter(const struct avltree_t *tree);
 void avltree_iter_init(struct avltree_iter_t *iter, const struct avltree_t *tree);
+void *avltree_iter_prev(struct avltree_iter_t *iter);
 void *avltree_iter_next(struct avltree_iter_t *iter);
 void *avltree_iter_next_key(struct avltree_iter_t *iter);
 struct avltree_ref_t *avltree_iter_next_ref(struct avltree_iter_t *iter);

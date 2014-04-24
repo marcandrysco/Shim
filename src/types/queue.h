@@ -1,5 +1,5 @@
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef TYPES_QUEUE_H
+#define TYPES_QUEUE_H
 
 /*
  * definitions

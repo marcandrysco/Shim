@@ -34,31 +34,21 @@ typedef int (*compare_f)(const void *p1, const void *p2);
 
 
 /**
- * Obtain the previous iterator reference.
- *   @ref: The iterator reference.
- *   &returns: The reference. 'NULL' if at the end of the iterator.
- */
-
-typedef void *(*iter_prev_f)(void *ref);
-
-/**
  * Obtain the next iterator reference.
  *   @ref: The iterator reference.
  *   &returns: The reference. 'NULL' if at the end of the iterator.
  */
 
-typedef void *(*iter_next_f)(void *ref);
+typedef void *(*iter_f)(void *ref);
 
 /**
  * Iterator interface structure.
  *   @next: The next function.
- *   @prev: The previous function.
  *   @delete: The internal deletion function.
  */
 
 struct iter_i {
-	iter_next_f next;
-	iter_prev_f prev;
+	iter_f next;
 	delete_f delete;
 };
 
@@ -73,17 +63,6 @@ struct iter_t {
 	const struct iter_i *iface;
 };
 
-
-/**
- * Obtain the previous iterator reference.
- *   @iter: The iterator.
- *   &returns: The reference. 'NULL' if at the end of the iterator.
- */
-
-static inline void *iter_prev(struct iter_t iter)
-{
-	return iter.iface->next(iter.ref);
-}
 
 /**
  * Obtain the next iterator reference.

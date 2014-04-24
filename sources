@@ -53,6 +53,7 @@ Target
 	Source	"src/io/device.c"
 	Source	"src/io/file.c"
 	Source	"src/io/input.c"
+	Source	"src/io/object.c"
 	Source	"src/io/output.c"
 	Source	"src/io/print.c"
 	Source	"src/io/reader.c"
@@ -67,6 +68,7 @@ Target
 	EndIf
 
 	Extra	"src/math/func.h"
+	Source	"src/math/algo.c"
 	Source	"src/math/rand.c"
 
 	Source	"src/os/env.c"

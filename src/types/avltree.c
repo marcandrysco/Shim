@@ -36,9 +36,9 @@ static struct avltree_node_t *rotate_double(struct avltree_node_t *node, uint8_t
  * local variables
  */
 
-static struct iter_i iter_iface = { (iter_next_f)avltree_iter_next, NULL, mem_free };
-static struct iter_i iter_keys_iface = { (iter_next_f)avltree_iter_next_key, NULL, mem_free };
-static struct iter_i iter_refs_iface = { (iter_next_f)avltree_iter_next_ref, NULL, mem_free };
+static struct iter_i iter_iface = { (iter_f)avltree_iter_next, mem_free };
+static struct iter_i iter_keys_iface = { (iter_f)avltree_iter_next_key, mem_free };
+static struct iter_i iter_refs_iface = { (iter_f)avltree_iter_next_ref, mem_free };
 
 
 /**
@@ -344,6 +344,18 @@ void avltree_node_iter_init(struct avltree_iter_t *iter, struct avltree_node_t *
 }
 
 /**
+ * Retrieve the previous node from an AVL tree iterator.
+ *   @iter: The iterator.
+ *   &returns: The previous node, 'NULL' if all nodes are exhausted.
+ */
+
+_export
+struct avltree_node_t *avltree_node_iter_prev(struct avltree_iter_t *iter)
+{
+	throw("stub");
+}
+
+/**
  * Retrieve the next node from an AVL tree iterator.
  *   @iter: The iterator.
  *   &returns: The next node, 'NULL' if all nodes are exhausted.
@@ -459,16 +471,26 @@ struct avltree_node_t *avltree_node_iter_next_depth(struct avltree_iter_t *iter)
  *   @compare: The comparison function used to sort reference.
  *   @delete: Optional. The callback to delete references. Set to 'NULL' if
  *     unused.
- *   &prop: noerror
  */
 
 _export
 void avltree_init(struct avltree_t *tree, compare_f compare, delete_f delete)
 {
-	tree->root = NULL;
-	tree->count = 0;
-	tree->compare = compare;
-	tree->delete = delete;
+	*tree = avltree_empty(compare, delete);
+}
+
+/**
+ * Create an empty AVL tree.
+ *   @compare: The comparison function used to sort reference.
+ *   @delete: Optional. The callback to delete references. Set to 'NULL' if
+ *     unused.
+ *   &returns: The empty tree.
+ */
+
+_export
+struct avltree_t avltree_empty(compare_f compare, delete_f delete)
+{
+	return (struct avltree_t){ NULL, 0, compare, delete };
 }
 
 /**
@@ -698,6 +720,24 @@ struct avltree_iter_t avltree_iter(const struct avltree_t *tree)
 void avltree_iter_init(struct avltree_iter_t *iter, const struct avltree_t *tree)
 {
 	avltree_node_iter_init(iter, tree->root);
+}
+
+/**
+ * Retrieve the previous reference from an AVL tree iterator.
+ *   @iter: The iterator.
+ *   &returns: The previous reference, 'NULL' if all references are exhausted.
+ */
+
+_export
+void *avltree_iter_prev(struct avltree_iter_t *iter)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_iter_prev(iter);
+	if(node == NULL)
+		return NULL;
+
+	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
 }
 
 /**

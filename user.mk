@@ -1,5 +1,6 @@
 HEADERS = \
 	  src/defs.h \
+	  src/types/defs.h \
 	  \
 	  src/app/path.h \
 	  \
@@ -9,6 +10,7 @@ HEADERS = \
 	  src/fs/base.h \
 	  src/fs/path.h \
 	  \
+	  src/math/algo.h \
 	  src/math/func.h \
 	  src/math/rand.h \
 	  \
@@ -20,6 +22,7 @@ HEADERS = \
 	  src/io/device.h \
 	  src/io/file.h \
 	  src/io/input.h \
+	  src/io/object.h \
 	  src/io/output.h \
 	  src/io/print.h \
 	  src/io/reader.h \
@@ -45,7 +48,6 @@ HEADERS = \
 	  src/thread/local.h \
 	  src/thread/lock.h \
 	  \
-	  src/types/defs.h \
 	  src/types/avltree.h \
 	  src/types/avlitree.h \
 	  src/types/avljtree.h \
