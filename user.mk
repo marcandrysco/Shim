@@ -73,8 +73,8 @@ install: shim_h_install pkgconfig_install
 shim_h_install: shim.h
 	install --mode 0644 -D shim.h "$(PREFIX)/include/shim.h"
 
-pkgconfig_install: shim.new.pc
-	install --mode 0644 -D shim.new.pc "$(bmake_PATH_LIB)/pkgconfig/shim.new.pc"
+pkgconfig_install: shim.pc
+	install --mode 0644 -D shim.pc "$(bmake_PATH_LIB)/pkgconfig/shim.pc"
 
 clean: shim_h_clean
 
