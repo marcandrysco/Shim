@@ -73,3 +73,24 @@ int compare_uint(const void *p1, const void *p2)
 	else
 		return 0;
 }
+
+/**
+ * Compares two double-precision floating-point numbers aagainst one another
+ * in numerical order.
+ *   @p1: The first double pointer.
+ *   @p2: The second double pointer.
+ *   &returns: An integer representing their order.
+ */
+
+_export
+int compare_double(const void *p1, const void *p2)
+{
+	double n1 = *(double *)p1, n2 = *(double *)p2;
+
+	if(n1 > n2)
+		return -1;
+	else if(n1 < n2)
+		return 1;
+	else
+		return 0;
+}
