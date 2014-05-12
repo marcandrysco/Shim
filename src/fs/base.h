@@ -34,6 +34,7 @@ void fs_mkfile(const char *path);
 bool fs_trymkfile(const char *path);
 void fs_mkdir(const char *path);
 bool fs_trymkdir(const char *path);
+void fs_mkdir_parents(const char *path);
 
 void fs_rmdir(const char *path);
 void fs_rmfile(const char *path);

@@ -1,5 +1,6 @@
 #include "../common.h"
 #include "base.h"
+#include "../string/base.h"
 #include "../types/defs.h"
 
 
@@ -291,6 +292,32 @@ _export
 bool fs_trymkdir(const char *path)
 {
 	return _impl_fs_trymkdir(path);
+}
+
+/**
+ * Create all of the parent directories.
+ *   @path: The path.
+ */
+
+_export
+void fs_mkdir_parents(const char *path)
+{
+	char *ptr, part[str_len(path) + 1];
+
+	if(*path == '\0')
+		return;
+
+	str_copy(part, path);
+
+	ptr = part;
+	while((ptr = str_chr(ptr + 1, '/')) != NULL) {
+		*ptr = '\0';
+
+		if(!fs_exists(part))
+			fs_mkdir(part);
+
+		*ptr = '/';
+	}
 }
 
 

@@ -431,7 +431,7 @@ _export
 void _impl_fs_mkdir(const char *path)
 {
 	if(mkdir(path, 0777) != 0)
-		throw("Failed to create directory '%s'. %s.", strerror(errno));
+		throw("Failed to create directory '%s'. %s.", path, strerror(errno));
 }
 
 /**
