@@ -92,6 +92,12 @@ static inline void iter_delete(struct iter_t iter)
 
 extern struct iter_t iter_blank;
 
+/*
+ * blank function declarations
+ */
+
+void delete_noop(void *ref);
+
 /* %~shim.h% */
 
 /*
