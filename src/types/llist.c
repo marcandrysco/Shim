@@ -24,6 +24,17 @@ void llist_root_init(struct llist_root_t *root)
 }
 
 /**
+ * Create blank linked-list root.
+ *   &returns The root.
+ */
+
+_export
+struct llist_root_t llist_root_empty()
+{
+	return (struct llist_root_t){ NULL, NULL };
+}
+
+/**
  * Clear the list using a callback.
  *   @root: The root.
  *   @clear: The clear function.

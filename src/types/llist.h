@@ -87,6 +87,7 @@ struct llist_iter_t {
  */
 
 void llist_root_init(struct llist_root_t *root);
+struct llist_root_t llist_root_empty();
 void llist_root_clear(struct llist_root_t *root, llist_clear_f clear, void *arg);
 
 void llist_root_prepend(struct llist_root_t *root, struct llist_node_t *node);
