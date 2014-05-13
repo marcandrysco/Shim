@@ -21,7 +21,7 @@
  */
 
 #define AVLTREE_MAX_HEIGHT	48
-#define AVLTREE_NODE_INIT	(struct avltree_node_t){ 0, { NULL, NULL } }
+#define AVLTREE_NODE_INIT	(struct avltree_node_t){ 0, NULL, { NULL, NULL } }
 
 
 /*
@@ -111,12 +111,12 @@ struct avltree_t {
 /**
  * AVL tree node storage.
  *   @balance: The current balance of the node, between '-2' to '2'.
- *   @child: The child nodes.
+ *   @parent, child: The parent and child nodes.
  */
 
 struct avltree_node_t {
 	int8_t balance;
-	struct avltree_node_t *child[2];
+	struct avltree_node_t *parent, *child[2];
 };
 
 /**
@@ -151,8 +151,10 @@ struct avltree_iter_t {
  * avl tree node function declarations
  */
 
-void *avltree_node_first(struct avltree_node_t *root);
-void *avltree_node_last(struct avltree_node_t *root);
+struct avltree_node_t *avltree_node_first(struct avltree_node_t *root);
+struct avltree_node_t *avltree_node_last(struct avltree_node_t *root);
+struct avltree_node_t *avltree_node_prev(struct avltree_node_t *node);
+struct avltree_node_t *avltree_node_next(struct avltree_node_t *node);
 struct avltree_node_t *avltree_node_lookup(struct avltree_node_t *root, const void *key, avltree_compare_nodekey_f compare, void *arg);
 
 void avltree_node_insert(struct avltree_node_t **root, struct avltree_node_t *node, avltree_compare_nodenode_f compare, void *arg);
@@ -178,6 +180,7 @@ void avltree_delete(struct avltree_t *tree);
 void *avltree_first(const struct avltree_t *tree);
 void *avltree_last(const struct avltree_t *tree);
 void *avltree_lookup(const struct avltree_t *tree, const void *key);
+void *avltree_prev(const struct avltree_t *tree, const void *key);
 
 void avltree_insert(struct avltree_t *tree, const void *key, void *ref);
 void *avltree_remove(struct avltree_t *tree, const void *key);

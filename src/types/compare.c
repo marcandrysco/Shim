@@ -27,9 +27,9 @@ _export
 int compare_ptr(const void *p1, const void *p2)
 {
 	if(p1 > p2)
-		return -1;
-	else if(p1 < p2)
 		return 1;
+	else if(p1 < p2)
+		return -1;
 	else
 		return 0;
 }
@@ -47,9 +47,9 @@ int compare_int(const void *p1, const void *p2)
 	int n1 = *(int *)p1, n2 = *(int *)p2;
 
 	if(n1 > n2)
-		return -1;
-	else if(n1 < n2)
 		return 1;
+	else if(n1 < n2)
+		return -1;
 	else
 		return 0;
 }
@@ -67,9 +67,9 @@ int compare_uint(const void *p1, const void *p2)
 	unsigned int n1 = *(unsigned int *)p1, n2 = *(unsigned int *)p2;
 
 	if(n1 > n2)
-		return -1;
-	else if(n1 < n2)
 		return 1;
+	else if(n1 < n2)
+		return -1;
 	else
 		return 0;
 }
@@ -88,9 +88,9 @@ int compare_double(const void *p1, const void *p2)
 	double n1 = *(double *)p1, n2 = *(double *)p2;
 
 	if(n1 > n2)
-		return -1;
-	else if(n1 < n2)
 		return 1;
+	else if(n1 < n2)
+		return -1;
 	else
 		return 0;
 }

@@ -44,11 +44,11 @@ static struct iter_i iter_refs_iface = { (iter_f)avltree_iter_next_ref, mem_free
 /**
  * Obtain the first element from the root.
  *   @root: The root node.
- *   &returns: The first node from the root, or 'NULL' if no elements exist.
+ *   &returns: The first node from the root, or null if no elements exist.
  */
 
 _export
-void *avltree_node_first(struct avltree_node_t *root)
+struct avltree_node_t *avltree_node_first(struct avltree_node_t *root)
 {
 	if(root == NULL)
 		return NULL;
@@ -62,11 +62,11 @@ void *avltree_node_first(struct avltree_node_t *root)
 /**
  * Obtain the last element from the root.
  *   @root: The root node.
- *   &returns: The last node from the root, or 'NULL' if no elements exist.
+ *   &returns: The last node from the root, or null if no elements exist.
  */
 
 _export
-void *avltree_node_last(struct avltree_node_t *root)
+struct avltree_node_t *avltree_node_last(struct avltree_node_t *root)
 {
 	if(root == NULL)
 		return NULL;
@@ -78,11 +78,69 @@ void *avltree_node_last(struct avltree_node_t *root)
 }
 
 /**
+ * Retrieve the previous node.
+ *   @node: The current node.
+ *   &returns: The previous node or null.
+ */
+
+_export
+struct avltree_node_t *avltree_node_prev(struct avltree_node_t *node)
+{
+	if(node->child[LEFT] != NULL) {
+		node = node->child[LEFT];
+
+		while(node->child[RIGHT] != NULL)
+			node = node->child[RIGHT];
+
+		return node;
+	}
+	else {
+		while(node->parent != NULL) {
+			if(node->parent->child[RIGHT] == node)
+				break;
+
+			node = node->parent;
+		}
+
+		return node->parent;
+	}
+}
+
+/**
+ * Retrieve the next node.
+ *   @node: The current node.
+ *   &returns: The next node or null.
+ */
+
+_export
+struct avltree_node_t *avltree_node_next(struct avltree_node_t *node)
+{
+	if(node->child[RIGHT] != NULL) {
+		node = node->child[RIGHT];
+
+		while(node->child[LEFT] != NULL)
+			node = node->child[LEFT];
+
+		return node;
+	}
+	else {
+		while(node->parent != NULL) {
+			if(node->parent->child[LEFT] == node)
+				break;
+
+			node = node->parent;
+		}
+
+		return node->parent;
+	}
+}
+
+/**
  * Look up an AVL tree node from the root.
  *   @root: The root node.
  *   @key: The sought key.
  *   @compare: The node-key comparison function.
- *   @arg: An argument passed to teh comparison function.
+ *   @arg: An argument passed to the comparison function.
  *   &returns: The node if found, 'NULL' if not found.
  */
 
@@ -101,6 +159,34 @@ struct avltree_node_t *avltree_node_lookup(struct avltree_node_t *root, const vo
 	}
 
 	return NULL;
+}
+
+/**
+ * Look up an AVL tree node from the root.
+ *   @root: The root node.
+ *   @key: The sought key.
+ *   @compare: The node-key comparison function.
+ *   @arg: An argument passed to the comparison function.
+ *   &returns: A nearby or exact node, null if the tree is empty.
+ */
+
+_export
+struct avltree_node_t *avltree_node_nearby(struct avltree_node_t *root, const void *key, avltree_compare_nodekey_f compare, void *arg)
+{
+	int cmp;
+	struct avltree_node_t *node = root, *prev = NULL;
+
+	while(node != NULL) {
+		prev = node;
+
+		cmp = compare(key, node, arg);
+		if(cmp == 0)
+			return node;
+		else
+			node = node->child[CMP2NODE(cmp)];
+	}
+
+	return prev;
 }
 
 
@@ -124,6 +210,7 @@ void avltree_node_insert(struct avltree_node_t **root, struct avltree_node_t *no
 
 	if(*root == NULL) {
 		*root = node;
+		node->parent = NULL;
 
 		return;
 	}
@@ -142,6 +229,7 @@ void avltree_node_insert(struct avltree_node_t **root, struct avltree_node_t *no
 	i--;
 	stack[i]->child[dir[i]] = node;
 	stack[i]->balance += NODEDIR(dir[i]);
+	node->parent = stack[i];
 
 	if(stack[i]->child[OTHERNODE(dir[i])] != NULL)
 		return;
@@ -162,10 +250,12 @@ void avltree_node_insert(struct avltree_node_t **root, struct avltree_node_t *no
 		else
 			node = rotate_double(stack[i], OTHERNODE(CMP2NODE(stack[i]->balance)));
 
-		if(i == 0)
+		if(i == 0) {
 			*root = node;
-		else
+		}
+		else {
 			stack[i-1]->child[dir[i-1]] = node;
+		}
 		
 		break;
 	}
@@ -579,7 +669,7 @@ void *avltree_last(const struct avltree_t *tree)
  * Lookup an AVL tree reference.
  *   @tree: The AVL tree.
  *   @key: The sought key.
- *   &returns: The reference if found, 'NULL' if not found.
+ *   &returns: The refrence if found, null otherwise.
  */
 
 _export
@@ -592,6 +682,19 @@ void *avltree_lookup(const struct avltree_t *tree, const void *key)
 		return NULL;
 
 	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+}
+
+/**
+ * Find the previous tree element.
+ *   @tree: The AVL tree.
+ *   @key: The key.
+ *   &returns: The refrence if found, null otherwise.
+ */
+
+_export
+void *avltree_before(const struct avltree_t *tree, const void *key)
+{
+	return NULL;
 }
 
 
@@ -915,19 +1018,6 @@ void avltree_iterate_refs(const struct avltree_t *tree, avltree_iterate_ref_f fu
 
 
 /**
- * Memory manage element removal.
- *   @tree: The AVL tree.
- *   @key: The element key.
- */
-
-_export
-void avltree_mm2remove(void *tree, void *key)
-{
-	avltree_remove(tree, key);
-}
-
-
-/**
  * Compare a reference node against a key.
  *   @key: The key reference.
  *   @node: The node.
@@ -998,6 +1088,11 @@ static struct avltree_node_t *rotate_single(struct avltree_node_t *node, uint8_t
 	tmp = node->child[OTHERNODE(dir)];
 	node->child[OTHERNODE(dir)] = tmp->child[dir];
 	tmp->child[dir] = node;
+
+	tmp->parent = node->parent;
+	node->parent = tmp;
+	if(node->child[OTHERNODE(dir)])
+		node->child[OTHERNODE(dir)]->parent = node;
 
 	node->balance += NODEDIR(dir);
 	if(NODEDIR(dir) * tmp->balance < 0)
