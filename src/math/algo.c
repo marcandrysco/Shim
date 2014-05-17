@@ -22,3 +22,16 @@ unsigned int m_gcd(unsigned int a, unsigned int b)
 
 	return b;
 }
+
+/**
+ * Least common multiple computation.
+ *   @a: The first number.
+ *   @b: The second number.
+ *   &return: The least common multiple.
+ */
+
+_export
+unsigned int m_lcm(unsigned int a, unsigned int b)
+{
+	return (a * b) / m_gcd(a, b);
+}

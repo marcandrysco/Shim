@@ -12,6 +12,7 @@
  */
 
 unsigned int m_gcd(unsigned int a, unsigned int b);
+unsigned int m_lcm(unsigned int a, unsigned int b);
 
 /* %~shim.h% */
 
