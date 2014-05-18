@@ -1,4 +1,4 @@
-Name: Shim (new)
+Name: Shim
 Description: Shim base libraries
 Version: 0.1.0
 Libs: -lshim

@@ -46,6 +46,7 @@ extern struct io_chunk_t io_chunk_null;
 
 void io_chunk_proc(struct io_chunk_t chunk, struct io_output_t output);
 char *io_chunk_proc_str(struct io_chunk_t chunk);
+void io_chunk_proc_buf(struct io_chunk_t chunk, char *buf);
 size_t io_chunk_proc_len(struct io_chunk_t chunk);
 
 struct io_chunk_t io_chunk_str(const char *str);

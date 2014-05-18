@@ -135,6 +135,7 @@ struct avltree_node_t *avltree_node_next(struct avltree_node_t *node)
 	}
 }
 
+
 /**
  * Look up an AVL tree node from the root.
  *   @root: The root node.
@@ -162,7 +163,7 @@ struct avltree_node_t *avltree_node_lookup(struct avltree_node_t *root, const vo
 }
 
 /**
- * Look up an AVL tree node from the root.
+ * Look up a nearby node from the AVL tree root.
  *   @root: The root node.
  *   @key: The sought key.
  *   @compare: The node-key comparison function.
@@ -187,6 +188,68 @@ struct avltree_node_t *avltree_node_nearby(struct avltree_node_t *root, const vo
 	}
 
 	return prev;
+}
+
+/**
+ * Look a node that is LUB given the key.
+ *   @root: The root node.
+ *   @key: The sought key.
+ *   @compare: The node-key comparison function.
+ *   @arg: An argument passed to the comparison function.
+ *   &returns: A nearby or exact node, null if the tree is empty.
+ */
+
+_export
+struct avltree_node_t *avltree_node_atleast(struct avltree_node_t *root, const void *key, avltree_compare_nodekey_f compare, void *arg)
+{
+	int cmp = 0;
+	struct avltree_node_t *node = root, *prev = NULL;
+
+	while(node != NULL) {
+		prev = node;
+
+		cmp = compare(key, node, arg);
+		if(cmp == 0)
+			return node;
+		else
+			node = node->child[CMP2NODE(cmp)];
+	}
+
+	if((node == NULL) && (cmp > 0))
+		return avltree_node_next(prev);
+	else
+		return prev;
+}
+
+/**
+ * Look a node that is GLB given the key.
+ *   @root: The root node.
+ *   @key: The sought key.
+ *   @compare: The node-key comparison function.
+ *   @arg: An argument passed to the comparison function.
+ *   &returns: A nearby or exact node, null if the tree is empty.
+ */
+
+_export
+struct avltree_node_t *avltree_node_atmost(struct avltree_node_t *root, const void *key, avltree_compare_nodekey_f compare, void *arg)
+{
+	int cmp = 0;
+	struct avltree_node_t *node = root, *prev = NULL;
+
+	while(node != NULL) {
+		prev = node;
+
+		cmp = compare(key, node, arg);
+		if(cmp == 0)
+			return node;
+		else
+			node = node->child[CMP2NODE(cmp)];
+	}
+
+	if((node == NULL) && (cmp < 0))
+		return avltree_node_prev(prev);
+	else
+		return prev;
 }
 
 
@@ -665,6 +728,7 @@ void *avltree_last(const struct avltree_t *tree)
 	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
 }
 
+
 /**
  * Lookup an AVL tree reference.
  *   @tree: The AVL tree.
@@ -685,16 +749,60 @@ void *avltree_lookup(const struct avltree_t *tree, const void *key)
 }
 
 /**
- * Find the previous tree element.
+ * Lookup a nearby AVL tree reference.
  *   @tree: The AVL tree.
- *   @key: The key.
+ *   @key: The sought key.
  *   &returns: The refrence if found, null otherwise.
  */
 
 _export
-void *avltree_before(const struct avltree_t *tree, const void *key)
+void *avltree_nearby(const struct avltree_t *tree, const void *key)
 {
-	return NULL;
+	struct avltree_node_t *node;
+
+	node = avltree_node_nearby(tree->root, key, compare_nodekey, tree->compare);
+	if(node == NULL)
+		return NULL;
+
+	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+}
+
+/**
+ * Lookup the LUB node given the key.
+ *   @tree: The AVL tree.
+ *   @key: The sought key.
+ *   &returns: The refrence if found, null otherwise.
+ */
+
+_export
+void *avltree_atleast(const struct avltree_t *tree, const void *key)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_atleast(tree->root, key, compare_nodekey, tree->compare);
+	if(node == NULL)
+		return NULL;
+
+	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+}
+
+/**
+ * Lookup the GLB node given the key.
+ *   @tree: The AVL tree.
+ *   @key: The sought key.
+ *   &returns: The refrence if found, null otherwise.
+ */
+
+_export
+void *avltree_atmost(const struct avltree_t *tree, const void *key)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_atmost(tree->root, key, compare_nodekey, tree->compare);
+	if(node == NULL)
+		return NULL;
+
+	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
 }
 
 

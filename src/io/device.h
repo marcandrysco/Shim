@@ -19,6 +19,7 @@
  */
 
 bool io_blank_ctrl(void *ref, unsigned int id, void *data);
+void io_blank_close(void *ref);
 
 /* %~shim.h% */
 

@@ -22,6 +22,7 @@ struct io_print_t io_print_default[] = {
 	{ 'u', "unsigned", 0, io_printf_uint },
 	{ 'c', "char", 0, io_printf_char },
 	{ 'C', "chunk", 0, io_printf_chunk },
+	{ 'f', "float", 0, io_printf_float },
 	{ '\0', NULL, 0, NULL }
 };
 
@@ -136,6 +137,11 @@ void io_vprintf_custom(struct io_output_t output, struct io_print_t *print, cons
 		if(*format == '%') {
 			format++;
 
+			if(*format == '-')
+				mod.neg = true, format++;
+			else
+				mod.neg = false;
+
 			if(*format == '0')
 				mod.zero = true, format++;
 			else
@@ -206,7 +212,7 @@ void io_vprintf_custom(struct io_output_t output, struct io_print_t *print, cons
 _export
 void io_printf_str(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list)
 {
-	io_format_str(output, va_arg(list->args, const char *), mod->width, ' ');
+	io_format_str(output, va_arg(list->args, const char *), mod->width, mod->neg, ' ');
 }
 
 /**
@@ -277,17 +283,41 @@ void io_printf_chunk(struct io_output_t output, struct io_print_mod_t *mod, stru
 	io_chunk_proc(va_arg(list->args, struct io_chunk_t), output);
 }
 
+/**
+ * Printf-style float output.
+ *   @device: The output device.
+ *   @mod: The modifier.
+ *   @args: The variable argument list with an upcoming string.
+ */
+
+int sprintf(const char *restrict, const char *restrict, ...);
+_export
+void io_printf_float(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list)
+{
+	char format[10], str[20];
+
+	if(mod->width)
+		sprintf(format, "%%0%dg", mod->width);
+	else
+		sprintf(format, "%%g");
+
+	sprintf(str, format, va_arg(list->args, double));
+	io_print_str(output, str);
+	//io_format_uint(output, va_arg(list->args, unsigned int), 10, mod->width, mod->zero);
+}
+
 
 /**
  * Format a string.
  *   @output: The output device.
  *   @str: The string.
  *   @width: The width.
+ *   @neg: Negative alignment.
  *   @pad: Padding character.
  */
 
 _export
-void io_format_str(struct io_output_t output, const char *str, int16_t width, char pad)
+void io_format_str(struct io_output_t output, const char *str, uint16_t width, bool neg, char pad)
 {
 	size_t len;
 
@@ -295,10 +325,14 @@ void io_format_str(struct io_output_t output, const char *str, int16_t width, ch
 	if(width > len) {
 		size_t i;
 
+		if(neg)
+			io_output_write(output, str, len);
+
 		for(i = len; i < width; i++)
 			io_output_ch(output, pad);
 
-		io_output_write(output, str, len);
+		if(!neg)
+			io_output_write(output, str, len);
 	}
 	else if(width > 0)
 		io_output_write(output, str, width);
@@ -359,3 +393,6 @@ void io_format_uint(struct io_output_t output, unsigned int value, uint8_t base,
 
 	io_output_write(output, buf + len - i, width ?: i);
 }
+
+//_export
+//void io_format_float(struct io_output_t output, float value, 

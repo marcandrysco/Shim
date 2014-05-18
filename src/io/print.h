@@ -16,13 +16,13 @@
 
 /**
  * Print callback modifiers structure.
- *   @zero: Zero padding flag.
+ *   @zero, neg: Zero padding, and negative flag.
  *   @width: The field width.
  */
 
 struct io_print_mod_t {
-	bool zero;
-	int16_t width;
+	bool zero, neg;
+	uint16_t width;
 };
 
 /**
@@ -67,8 +67,9 @@ void io_printf_uint(struct io_output_t output, struct io_print_mod_t *mod, struc
 void io_printf_hex(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 void io_printf_char(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 void io_printf_chunk(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
+void io_printf_float(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 
-void io_format_str(struct io_output_t output, const char *str, int16_t width, char pad);
+void io_format_str(struct io_output_t output, const char *str, uint16_t width, bool neg, char pad);
 void io_format_int(struct io_output_t output, int value, uint8_t base, int16_t width, bool pad);
 void io_format_uint(struct io_output_t output, unsigned int value, uint8_t base, int16_t width, bool pad);
 

@@ -1,7 +1,9 @@
 #include "../common.h"
 #include "chunk.h"
+#include "../mem/base.h"
 #include "../string/base.h"
 #include "../types/strbuf.h"
+#include "device.h"
 #include "output.h"
 #include "print.h"
 
@@ -17,6 +19,9 @@ void _impl_mem_free(void *ptr);
  * local function declarations
  */
 
+static size_t buf_write(char **dest, const void *restrict buf, size_t nbytes);
+static void buf_close(char **dest);
+
 static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes);
 
 static void str_proc(struct io_output_t output, void *arg);
@@ -28,13 +33,8 @@ static void indent_proc(struct io_output_t output, void *arg);
  * local variables
  */
 
-static struct io_output_i len_iface = {
-	{
-		NULL,
-		NULL
-	},
-	(io_write_f)len_write
-};
+static struct io_output_i buf_iface = { { io_blank_ctrl, (io_close_f)buf_close }, (io_write_f)buf_write };
+static struct io_output_i len_iface = { { io_blank_ctrl, io_blank_close }, (io_write_f)len_write };
 
 /*
  * global variables
@@ -74,6 +74,46 @@ char *io_chunk_proc_str(struct io_chunk_t chunk)
 	return strbuf_done(&buf);
 }
 
+
+/**
+ * Process a chunk writing data to a buffer.
+ *   @chunk: The chunk.
+ *   &returns: the total number of bytes written.
+ */
+
+_export
+void io_chunk_proc_buf(struct io_chunk_t chunk, char *buf)
+{
+	io_chunk_proc(chunk, (struct io_output_t){ &buf, &buf_iface });
+}
+
+/**
+ * Write callback for a length.
+ *   @dest: The destination buffer.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes to write.
+ *   &returns: The number of bytes to written.
+ */
+
+static size_t buf_write(char **dest, const void *restrict buf, size_t nbytes)
+{
+	mem_copy(*dest, buf, nbytes);
+	*dest += nbytes;
+
+	return nbytes;
+}
+
+/**
+ * Close the buffer, writing a null byte.
+ *   @dest: The destination buffer.
+ */
+
+static void buf_close(char **dest)
+{
+	**dest = '\0';
+}
+
+
 /**
  * Process a chunk, retrieve the total length written.
  *   @chunk: The chunk.
@@ -83,7 +123,7 @@ char *io_chunk_proc_str(struct io_chunk_t chunk)
 _export
 size_t io_chunk_proc_len(struct io_chunk_t chunk)
 {
-	size_t len;
+	size_t len = 0;
 	struct io_output_t output = { &len, &len_iface };
 
 	io_chunk_proc(chunk, output);

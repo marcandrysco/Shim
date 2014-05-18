@@ -67,6 +67,7 @@ Target
 		Source	"src/io/posix/output.c"
 	EndIf
 
+	Extra	"src/math/float.h"
 	Extra	"src/math/func.h"
 	Source	"src/math/algo.c"
 	Source	"src/math/rand.c"
@@ -120,7 +121,11 @@ Target
 	Source	"src/types/compare.c"
 	Source	"src/types/defs.c"
 	Source	"src/types/float.c"
+	Source	"src/types/integer.c"
+	Source	"src/types/iter.c"
 	Source	"src/types/llist.c"
 	Source	"src/types/queue.c"
 	Source	"src/types/strbuf.c"
+	Source	"src/types/type.c"
+	Source	"src/types/value.c"
 EndTarget

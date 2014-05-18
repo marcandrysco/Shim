@@ -15,3 +15,13 @@ bool io_blank_ctrl(void *ref, unsigned int id, void *data)
 {
 	return false;
 }
+
+/**
+ * Blank device close function.
+ *   @ref: The reference.
+ */
+
+_export
+void io_blank_close(void *ref)
+{
+}
