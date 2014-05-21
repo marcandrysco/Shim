@@ -463,7 +463,7 @@ void avltree_node_clear(struct avltree_node_t *root, avltree_delete_node_f delet
  */
 
 _export
-struct avltree_iter_t avltree_node_iter_new(struct avltree_node_t *root)
+struct avltree_iter_t avltree_node_iter_begin(struct avltree_node_t *root)
 {
 	struct avltree_iter_t iter;
 
@@ -476,24 +476,6 @@ struct avltree_iter_t avltree_node_iter_new(struct avltree_node_t *root)
 		iter.i = -2;
 
 	return iter;
-}
-
-/**
- * Initialize an AVL tree iterator across all nodes from the root.
- *   @iter: The tree iterator to initialize.
- *   @root: The root node.
- */
-
-_export
-void avltree_node_iter_init(struct avltree_iter_t *iter, struct avltree_node_t *root)
-{
-	if(root != NULL) {
-		iter->i = 0;
-		iter->stack[0] = root;
-		iter->state[0] = 0;
-	}
-	else
-		iter->i = -2;
 }
 
 /**
@@ -884,7 +866,7 @@ void avltree_merge(struct avltree_t *dest, struct avltree_t *src)
 	struct avltree_iter_t iter;
 	struct avltree_node_t *node;
 
-	avltree_node_iter_init(&iter, src->root);
+	iter = avltree_node_iter_begin(src->root);
 	while((node = avltree_node_iter_next_depth(&iter)) != NULL)
 		avltree_node_insert(&dest->root, node, compare_nodenode, dest->compare);
 
@@ -918,7 +900,19 @@ void avltree_clear(struct avltree_t *tree)
 _export
 struct avltree_iter_t avltree_iter(const struct avltree_t *tree)
 {
-	return avltree_node_iter_new(tree->root);
+	return avltree_node_iter_begin(tree->root);
+}
+
+/**
+ * Create a new iterator on the tree.
+ *   @tree: The AVL tree.
+ *   &returs: The iterator.
+ */
+
+_export
+struct avltree_iter_t avltree_iter_begin(const struct avltree_t *tree)
+{
+	return avltree_node_iter_begin(tree->root);
 }
 
 /**
@@ -930,7 +924,7 @@ struct avltree_iter_t avltree_iter(const struct avltree_t *tree)
  _export
 void avltree_iter_init(struct avltree_iter_t *iter, const struct avltree_t *tree)
 {
-	avltree_node_iter_init(iter, tree->root);
+	*iter = avltree_node_iter_begin(tree->root);
 }
 
 /**

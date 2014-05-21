@@ -184,7 +184,7 @@ struct avljtree_node_t *avljtree_root_remove(struct avljtree_root_t *root, const
 _export
 void avljtree_root_keyiter_init(struct avljtree_keyiter_t *iter, struct avljtree_root_t *root)
 {
-	avltree_node_iter_init(&iter->keyiter, root->bykey ? &root->bykey->key : NULL);
+	iter->keyiter = avltree_node_iter_begin(root->bykey ? &root->bykey->key : NULL);
 }
 
 /**
@@ -630,11 +630,7 @@ static void node_delete(struct avltree_node_t *node, void *arg)
 _export
 struct avljtree_keyiter_t avljtree_node_keyiter_new(struct avljtree_node_t *root)
 {
-	struct avljtree_keyiter_t iter;
-
-	avltree_node_iter_init(&iter.keyiter, root ? &root->key : NULL);
-
-	return iter;
+	return (struct avljtree_keyiter_t){ avltree_node_iter_begin(root ? &root->key : NULL) };
 }
 
 /**

@@ -144,7 +144,7 @@ void dbg_res_dump(struct io_output_t output)
 	struct ref_t *ref;
 	struct avltree_iter_t iter;
 
-	avltree_node_iter_init(&iter, res_tree);
+	iter = avltree_node_iter_begin(res_tree);
 	while((ref = (struct ref_t *)avltree_node_iter_next(&iter)) != NULL) {
 		io_printf(output, "%s:%u", ref->file, ref->line);
 

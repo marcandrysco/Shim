@@ -75,7 +75,7 @@ void io_writer_delete(struct io_writer_t *writer)
 	struct avltree_iter_t iter;
 	struct avltree_node_t *node;
 
-	avltree_node_iter_init(&iter, writer->inst);
+	iter = avltree_node_iter_begin(writer->inst);
 	while((node = avltree_node_iter_next(&iter)) != NULL)
 		mem_free(inst_cast(node));
 
