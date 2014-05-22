@@ -17,6 +17,7 @@
  * fatal function declarations
  */
 
+void _nothrow();
 _noreturn void _abort();
 _noreturn void _fatal(const char *restrict format, ...);
 
@@ -25,11 +26,13 @@ void _backtrace();
 
 /**
  * Try state structure.
+ *   @fatal: Fatal flag.
  *   @jmpbuf: The jump buffer.
  *   @prev: The previous try on the stack.
  */
 
 struct _shim_try_t {
+	bool fatal;
 	jmp_buf jmpbuf;
 
 	struct _shim_try_t *prev;

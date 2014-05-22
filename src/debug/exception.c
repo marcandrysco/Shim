@@ -41,6 +41,23 @@ static struct thread_local_t *try_local, *throw_local;
 
 
 /**
+ * Invalidate the current try statement, causing subsequent throws to be fatal
+ * exceptions. This only effects the currently active try; nested and future
+ * try statements are unaffected.
+ */
+
+_export
+void _nothrow()
+{
+	struct _shim_try_t *inst;
+
+	thread_once(&try_once, try_init);
+	inst = thread_local_get(try_local);
+	if(inst != NULL)
+		inst->fatal = true;
+}
+
+/**
  * Abort the process
  */
 
@@ -98,6 +115,7 @@ struct _shim_try_t *_shim_try_start()
 	thread_once(&try_once, try_init);
 
 	inst = mem_alloc(sizeof(struct _shim_try_t));
+	inst->fatal = false;
 	inst->prev = thread_local_get(try_local);
 
 	thread_local_set(try_local, inst);
@@ -141,6 +159,11 @@ static void try_destroy()
 }
 
 
+/**
+ * Start a catch statement, deleting the try information.
+ *   &returns: The exception string from the throw.
+ */
+
 _export
 const char *_shim_catch_start()
 {
@@ -155,6 +178,10 @@ const char *_shim_catch_start()
 
 	return thread_local_get(throw_local);
 }
+
+/**
+ * End a catch statement, deleting throw information.
+ */
 
 _export
 void _shim_catch_end()
