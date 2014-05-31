@@ -4,8 +4,21 @@
 #include "../string/base.h"
 #include "../types/strbuf.h"
 #include "device.h"
+#include "device.h"
 #include "output.h"
 #include "print.h"
+
+
+/**
+ * Bytes structure.
+ *   @rem: The number of bytes remaining.
+ *   @output: The output.
+ */
+
+struct nbytes_t {
+	size_t nbytes;
+	struct io_output_t output;
+};
 
 
 /*
@@ -18,6 +31,8 @@ void _impl_mem_free(void *ptr);
 /*
  * local function declarations
  */
+
+static size_t nbytes_write(struct nbytes_t *info, const void *restrict buf, size_t nbytes);
 
 static size_t buf_write(char **dest, const void *restrict buf, size_t nbytes);
 static void buf_close(char **dest);
@@ -33,6 +48,7 @@ static void indent_proc(struct io_output_t output, void *arg);
  * local variables
  */
 
+static struct io_output_i nbytes_iface = { { io_blank_ctrl, io_blank_close }, (io_write_f)nbytes_write };
 static struct io_output_i buf_iface = { { io_blank_ctrl, (io_close_f)buf_close }, (io_write_f)buf_write };
 static struct io_output_i len_iface = { { io_blank_ctrl, io_blank_close }, (io_write_f)len_write };
 
@@ -76,6 +92,40 @@ char *io_chunk_proc_str(struct io_chunk_t chunk)
 
 
 /**
+ * Process a chunk writing a limited number of bytes.
+ *   @chunk: The chunk.
+ *   &returns: the total number of bytes written.
+ */
+
+_export
+void io_chunk_proc_nbytes(struct io_chunk_t chunk, struct io_output_t output, size_t nbytes)
+{
+	struct nbytes_t info = { nbytes, output };
+
+	return io_chunk_proc(chunk, (struct io_output_t){ &info, &nbytes_iface });
+}
+
+/**
+ * Write callback for a limited number of bytes..
+ *   @dest: The destination buffer.
+ *   @buf: The buffer.
+ *   @nbytes: The number of bytes to write.
+ *   &returns: The number of bytes to written.
+ */
+
+static size_t nbytes_write(struct nbytes_t *info, const void *restrict buf, size_t nbytes)
+{
+	if(nbytes >= info->nbytes)
+		nbytes = info->nbytes;
+
+	nbytes = io_output_write(info->output, buf, nbytes);
+	info->nbytes -= nbytes;
+
+	return nbytes;
+}
+
+
+/**
  * Process a chunk writing data to a buffer.
  *   @chunk: The chunk.
  *   &returns: the total number of bytes written.
@@ -88,7 +138,7 @@ void io_chunk_proc_buf(struct io_chunk_t chunk, char *buf)
 }
 
 /**
- * Write callback for a length.
+ * Write callback for a buffer.
  *   @dest: The destination buffer.
  *   @buf: The buffer.
  *   @nbytes: The number of bytes to write.
@@ -241,7 +291,7 @@ struct io_chunk_t io_chunk_indent(const unsigned int *indent)
 static void indent_proc(struct io_output_t output, void *arg)
 {
 	unsigned int n = *(unsigned int *)arg;
-	static const char blank[8] = "        ";
+	static const char blank[9] = "        ";
 
 	io_print_str(output, blank + (8 - n % 8));
 

@@ -204,6 +204,19 @@ void io_vprintf_custom(struct io_output_t output, struct io_print_t *print, cons
 
 
 /**
+ * Printf-style chunk output.
+ *   @device: The output device.
+ *   @mod: The modifier.
+ *   @args: The variable argument list with an upcoming string.
+ */
+
+_export
+void io_printf_chunk(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list)
+{
+	io_format_chunk(output, va_arg(list->args, struct io_chunk_t), mod->width, mod->neg, ' ');
+}
+
+/**
  * Printf-style string output.
  *   @device: The output device.
  *   @mod: The modifier.
@@ -271,19 +284,6 @@ void io_printf_char(struct io_output_t output, struct io_print_mod_t *mod, struc
 }
 
 /**
- * Printf-style chunk output.
- *   @device: The output device.
- *   @mod: The modifier.
- *   @args: The variable argument list with an upcoming string.
- */
-
-_export
-void io_printf_chunk(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list)
-{
-	io_chunk_proc(va_arg(list->args, struct io_chunk_t), output);
-}
-
-/**
  * Printf-style float output.
  *   @device: The output device.
  *   @mod: The modifier.
@@ -308,6 +308,39 @@ void io_printf_float(struct io_output_t output, struct io_print_mod_t *mod, stru
 
 
 /**
+ * Format a chunk.
+ *   @output: The output device.
+ *   @chunk: The chunk.
+ *   @width: The width.
+ *   @neg: Negative alignment.
+ *   @pad: Padding character.
+ */
+
+_export
+void io_format_chunk(struct io_output_t output, struct io_chunk_t chunk, uint16_t width, bool neg, char pad)
+{
+	if(width > 0) {
+		size_t len = io_chunk_proc_len(chunk);
+		if(width > len) {
+			uint16_t i;
+
+			if(neg)
+				io_chunk_proc(chunk, output);
+
+			for(i = len; i < width; i++)
+				io_output_ch(output, pad);
+
+			if(!neg)
+				io_chunk_proc(chunk, output);
+		}
+		else
+			io_chunk_proc(chunk, output);
+	}
+	else
+		io_chunk_proc(chunk, output);
+}
+
+/**
  * Format a string.
  *   @output: The output device.
  *   @str: The string.
@@ -323,7 +356,7 @@ void io_format_str(struct io_output_t output, const char *str, uint16_t width, b
 
 	len = str_len(str);
 	if(width > len) {
-		size_t i;
+		uint16_t i;
 
 		if(neg)
 			io_output_write(output, str, len);
