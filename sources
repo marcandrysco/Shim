@@ -50,6 +50,7 @@ Target
 
 	Extra	"src/io/defs.h"
 	Source	"src/io/chunk.c"
+	Source	"src/io/conf.c"
 	Source	"src/io/device.c"
 	Source	"src/io/file.c"
 	Source	"src/io/input.c"

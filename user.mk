@@ -20,6 +20,7 @@ HEADERS = \
 	\
 	src/io/defs.h \
 	src/io/chunk.h \
+	src/io/conf.h \
 	src/io/device.h \
 	src/io/file.h \
 	src/io/input.h \
@@ -53,8 +54,8 @@ HEADERS = \
 	src/types/avljtree.h \
 	src/types/compare.h \
 	src/types/float.h \
-	src/types/integer.c \
-	src/types/iter.c \
+	src/types/integer.h \
+	src/types/iter.h \
 	src/types/llist.h \
 	src/types/queue.h \
 	src/types/strbuf.h \
