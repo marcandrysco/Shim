@@ -32,6 +32,7 @@ void str_set(char **dest, char *src);
 void str_replace(char **dest, const char *src);
 
 void str_rtrim(char **str);
+char *str_ltrimptr(const char *str);
 
 /* %~shim.h% */
 

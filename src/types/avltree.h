@@ -15,26 +15,6 @@
 /* %shim.h% */
 
 /**
- * AVL tree definitions.
- *   @AVLTREE_MAX_HEIGHT: The maximum height of an AVL tree.
- *   @AVLTREE_NODE_INIT: An inline structure to initialize a node.
- */
-
-#define AVLTREE_MAX_HEIGHT	48
-#define AVLTREE_NODE_INIT	(struct avltree_node_t){ 0, NULL, { NULL, NULL } }
-
-
-/*
- * structure prototypes
- */
-
-struct avltree_t;
-struct avltree_node_t;
-struct avltree_ref_t;
-struct avltree_iter_t;
-
-
-/**
  * Comparison callback between a node and a key.
  *   @key: The input key.
  *   @node: The compared-to node.
@@ -89,62 +69,6 @@ typedef short (*avltree_iterate_key_f)(const void *key, void *arg);
  */
 
 typedef short (*avltree_iterate_ref_f)(struct avltree_ref_t *ref, void *arg);
-
-
-/**
- * AVL tree storage.
- *   @root: The root node.
- *   @count: The number of nodes.
- *   @compare: The comparison function.
- *   @delete: The value deletion function.
- */
-
-struct avltree_t {
-	struct avltree_node_t *root;
-
-	unsigned int count;
-
-	compare_f compare;
-	delete_f delete;
-};
-
-/**
- * AVL tree node storage.
- *   @balance: The current balance of the node, between '-2' to '2'.
- *   @parent, child: The parent and child nodes.
- */
-
-struct avltree_node_t {
-	int8_t balance;
-	struct avltree_node_t *parent, *child[2];
-};
-
-/**
- * AVL tree reference storage.
- *   @key: The key reference.
- *   @ref: The value reference.
- *   @node: The node.
- */
-
-struct avltree_ref_t {
-	const void *key;
-	void *ref;
-
-	struct avltree_node_t node;
-};
-
-/**
- * AVL tree iterator storage.
- *   @i: The current level.
- *   @stack: The stack of nodes.
- *   @state: The stack of states per level.
- */
-
-struct avltree_iter_t {
-	short i;
-	struct avltree_node_t *stack[AVLTREE_MAX_HEIGHT];
-	uint8_t state[AVLTREE_MAX_HEIGHT];
-};
 
 
 /*

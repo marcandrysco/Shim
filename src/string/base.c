@@ -284,3 +284,19 @@ void str_rtrim(char **str)
 	*(++endptr) = '\0';
 	*str = mem_realloc(*str, endptr - *str + 1);
 }
+
+/**
+ * Trhim whitespace off the left side of the string. The returned pointer
+ * will refernce a non-whitespace character.
+ *   @str: The string.
+ *   &returns: The string pointer.
+ */
+
+_export
+char *str_ltrimptr(const char *str)
+{
+	while(str_isspace(*str))
+		str++;
+
+	return (char *)str;
+}

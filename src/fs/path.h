@@ -8,7 +8,7 @@
 /* %shim.h% */
 
 /*
- * paht filesystem function declarations
+ * path filesystem function declarations
  */
 
 const char *fs_basename(const char *path);

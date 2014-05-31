@@ -37,5 +37,6 @@
  */
 
 #include "defs.h"
+#include "types/defs.h"
 
 #endif
