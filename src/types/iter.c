@@ -37,12 +37,7 @@ struct wrapper_t {
  */
 
 static void *wrapper_next(struct wrapper_t *wrapper);
-
-/*
- * local variables
- */
-
-static struct iter_i wrapper_iface = { (iter_f)wrapper_next, mem_free };
+static void wrapper_delete(struct wrapper_t *wrapper);
 
 
 /**
@@ -52,9 +47,11 @@ static struct iter_i wrapper_iface = { (iter_f)wrapper_next, mem_free };
  *   @arg: The argument.
  */
 
+_export
 struct iter_t iter_wrapper(struct iter_t inner, iter_wrapper_f func, void *arg)
 {
 	struct wrapper_t *wrapper;
+	static struct iter_i wrapper_iface = { (iter_f)wrapper_next, (delete_f)wrapper_delete };
 
 	wrapper = mem_alloc(sizeof(struct wrapper_t));
 	*wrapper = (struct wrapper_t){ inner, func, arg };
@@ -71,4 +68,15 @@ struct iter_t iter_wrapper(struct iter_t inner, iter_wrapper_f func, void *arg)
 static void *wrapper_next(struct wrapper_t *wrapper)
 {
 	return wrapper->func(iter_next(wrapper->inner), wrapper->arg);
+}
+
+/**
+ * Delete a iterator wrapper.
+ *   @wrapper: THe wrapper.
+ */
+
+static void wrapper_delete(struct wrapper_t *wrapper)
+{
+	iter_delete(wrapper->inner);
+	mem_free(wrapper);
 }
