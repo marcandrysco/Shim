@@ -457,6 +457,17 @@ void avltree_node_clear(struct avltree_node_t *root, avltree_delete_node_f delet
 
 
 /**
+ * Begin a blank node iterator.
+ *   &returns: The iterator.
+ */
+
+_export
+struct avltree_iter_t avltree_node_iter_blank()
+{
+	return (struct avltree_iter_t){ .i = -2 };
+}
+
+/**
  * Create a new iterator on the tree.
  *   @root: The root node.
  *   &returs: The iterator.
@@ -467,13 +478,13 @@ struct avltree_iter_t avltree_node_iter_begin(struct avltree_node_t *root)
 {
 	struct avltree_iter_t iter;
 
-	if(root != NULL) {
+	if(root == NULL)
+		return avltree_node_iter_blank(root);
+	else {
 		iter.i = 0;
 		iter.stack[0] = root;
 		iter.state[0] = 0;
 	}
-	else
-		iter.i = -2;
 
 	return iter;
 }
@@ -901,6 +912,17 @@ _export
 struct avltree_iter_t avltree_iter(const struct avltree_t *tree)
 {
 	return avltree_node_iter_begin(tree->root);
+}
+
+/**
+ * Begin a blank iterator.
+ *   &returns: The iterator.
+ */
+
+_export
+struct avltree_iter_t avltree_iter_blank()
+{
+	return avltree_node_iter_blank();
 }
 
 /**

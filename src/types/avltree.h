@@ -89,6 +89,7 @@ void avltree_node_insert(struct avltree_node_t **root, struct avltree_node_t *no
 struct avltree_node_t *avltree_node_remove(struct avltree_node_t **root, const void *key, avltree_compare_nodekey_f compare, void *arg);
 void avltree_node_clear(struct avltree_node_t *root, avltree_delete_node_f delete, void *arg);
 
+struct avltree_iter_t avltree_node_iter_blank();
 struct avltree_iter_t avltree_node_iter_begin(struct avltree_node_t *root);
 struct avltree_node_t *avltree_node_iter_prev(struct avltree_iter_t *iter);
 struct avltree_node_t *avltree_node_iter_next(struct avltree_iter_t *iter);
@@ -120,6 +121,7 @@ void avltree_merge(struct avltree_t *dest, struct avltree_t *src);
 void avltree_clear(struct avltree_t *tree);
 
 struct avltree_iter_t avltree_iter(const struct avltree_t *tree);
+struct avltree_iter_t avltree_iter_blank();
 struct avltree_iter_t avltree_iter_begin(const struct avltree_t *tree);
 void avltree_iter_init(struct avltree_iter_t *iter, const struct avltree_t *tree);
 void *avltree_iter_prev(struct avltree_iter_t *iter);
