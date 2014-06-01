@@ -241,7 +241,7 @@ void _shim_sthrow(const char *file, unsigned int line, char *restrict error)
 
 	thread_once(&try_once, try_init);
 	inst = thread_local_get(try_local);
-	if(inst == NULL)
+	if((inst == NULL) || (inst->fatal))
 		_fatal("Unhandled exception.\n%s:%u:%s", file, line, error);
 
 	thread_once(&throw_once, throw_init);
