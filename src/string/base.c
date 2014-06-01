@@ -74,6 +74,24 @@ bool str_isequal(const char *s1, const char *s2)
 }
 
 /**
+ * Determine if a string is a prefix of a reference string.
+ *   @str: The reference string.
+ *   @prefix: The prefix to test.
+ *   &returns: True if a preefix, false otherwise.
+ */
+
+_export
+bool str_isprefix(const char *str, const char *prefix)
+{
+	while(*prefix != '\0') {
+		if(*str++ != *prefix++)
+			return false;
+	}
+
+	return true;
+}
+
+/**
  * Compare two string.
  *   @s1: The first string.
  *   @s2: The second string.
@@ -299,4 +317,20 @@ char *str_ltrimptr(const char *str)
 		str++;
 
 	return (char *)str;
+}
+
+
+/**
+ * Shorten a string to the longest substring.
+ *   @str: The string to shorten.
+ *   @sub: The substring to match against.
+ */
+
+_export
+void str_longest(char *str, const char *sub)
+{
+	while(*str == *sub)
+		str++, sub++;
+
+	*str = '\0';
 }

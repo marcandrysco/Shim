@@ -17,6 +17,7 @@ void str_copy(char *restrict dest, const char *restrict src);
 size_t str_ncopy(char *restrict dest, const char *restrict src, size_t nbytes);
 
 bool str_isequal(const char *s1, const char *s2);
+bool str_isprefix(const char *str, const char *prefix);
 int str_cmp(const char *s1, const char *s2);
 
 char *str_chr(const char *str, char ch);
@@ -33,6 +34,8 @@ void str_replace(char **dest, const char *src);
 
 void str_rtrim(char **str);
 char *str_ltrimptr(const char *str);
+
+void str_longest(char *str, const char *sub);
 
 /* %~shim.h% */
 
