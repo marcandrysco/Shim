@@ -56,6 +56,12 @@ static void wrapper_delete(struct wrapper_t *wrapper);
 static void *filter_next(struct filter_t *filter);
 static void filter_delete(struct filter_t *filter);
 
+/*
+ * global variables
+ */
+
+_export struct iter_filter_h iter_filter_null = { NULL, NULL };
+
 
 /**
  * Create a wrapper around an inner iterator.
@@ -102,18 +108,18 @@ static void wrapper_delete(struct wrapper_t *wrapper)
 /**
  * Create a filter around an inner iterator.
  *   @inner: The inner iterator.
- *   @func: The translation function.
- *   @arg: The argument.
+ *   @filter: The filter handler.
+ *   &returns: The iterator.
  */
 
 _export
-struct iter_t iter_filter(struct iter_t inner, iter_filter_f func, void *arg)
+struct iter_t iter_filter(struct iter_t inner, struct iter_filter_h handler)
 {
 	struct filter_t *filter;
 	static struct iter_i filter_iface = { (iter_f)filter_next, (delete_f)filter_delete };
 
 	filter = mem_alloc(sizeof(struct filter_t));
-	*filter = (struct filter_t){ inner, func, arg };
+	*filter = (struct filter_t){ inner, handler.func, handler.arg };
 
 	return (struct iter_t){ filter, &filter_iface };
 }
