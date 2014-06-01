@@ -31,6 +31,20 @@ struct wrapper_t {
 	void *arg;
 };
 
+/**
+ * Filter structure.
+ *   inner: The inner iterator.
+ *   @func: The translation function.
+ *   @arg: The argument.
+ */
+
+struct filter_t {
+	struct iter_t inner;
+
+	iter_filter_f func;
+	void *arg;
+};
+
 
 /*
  * local function declarations
@@ -38,6 +52,9 @@ struct wrapper_t {
 
 static void *wrapper_next(struct wrapper_t *wrapper);
 static void wrapper_delete(struct wrapper_t *wrapper);
+
+static void *filter_next(struct filter_t *filter);
+static void filter_delete(struct filter_t *filter);
 
 
 /**
@@ -79,4 +96,54 @@ static void wrapper_delete(struct wrapper_t *wrapper)
 {
 	iter_delete(wrapper->inner);
 	mem_free(wrapper);
+}
+
+
+/**
+ * Create a filter around an inner iterator.
+ *   @inner: The inner iterator.
+ *   @func: The translation function.
+ *   @arg: The argument.
+ */
+
+_export
+struct iter_t iter_filter(struct iter_t inner, iter_filter_f func, void *arg)
+{
+	struct filter_t *filter;
+	static struct iter_i filter_iface = { (iter_f)filter_next, (delete_f)filter_delete };
+
+	filter = mem_alloc(sizeof(struct filter_t));
+	*filter = (struct filter_t){ inner, func, arg };
+
+	return (struct iter_t){ filter, &filter_iface };
+}
+
+/**
+ * Retrieve the next reference from the filter.
+ *   @filter: The filter.
+ *   &returns: The reference.
+ */
+
+static void *filter_next(struct filter_t *filter)
+{
+	void *ref;
+
+	while((ref = iter_next(filter->inner)) != NULL) {
+		ref = filter->func(ref, filter->arg);
+		if(ref != NULL)
+			return ref;
+	}
+
+	return NULL;
+}
+
+/**
+ * Delete a iterator filter.
+ *   @filter: THe filter.
+ */
+
+static void filter_delete(struct filter_t *filter)
+{
+	iter_delete(filter->inner);
+	mem_free(filter);
 }

@@ -16,12 +16,22 @@
 
 typedef void *(*iter_wrapper_f)(void *ref, void *arg);
 
+/**
+ * Wrapper callback function.
+ *   @ref: The input reference.
+ *   @arg: The argument.
+ *   &returns: The translated reference or null to ignore.
+ */
+
+typedef void *(*iter_filter_f)(void *ref, void *arg);
+
 
 /*
  * iterator function declarations
  */
 
 struct iter_t iter_wrapper(struct iter_t inner, iter_wrapper_f func, void *arg);
+struct iter_t iter_filter(struct iter_t inner, iter_filter_f func, void *arg);
 
 /* %~shim.h% */
 
