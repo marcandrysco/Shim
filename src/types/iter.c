@@ -153,3 +153,16 @@ static void filter_delete(struct filter_t *filter)
 	iter_delete(filter->inner);
 	mem_free(filter);
 }
+
+
+/**
+ * Create an iterator from an enumeration handler.
+ *   @handler: The enumeration handler.
+ *   &returns: The iterator.
+ */
+
+_export
+struct iter_t iter_enum(struct iter_enum_h handler)
+{
+	return handler.func(handler.arg);
+}
