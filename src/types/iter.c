@@ -1,6 +1,8 @@
 #include "../common.h"
 #include "iter.h"
+#include "../io/chunk.h"
 #include "../mem/manage.h"
+#include "../string/base.h"
 #include "defs.h"
 
 
@@ -165,4 +167,22 @@ _export
 struct iter_t iter_enum(struct iter_enum_h handler)
 {
 	return handler.func(handler.arg);
+}
+
+
+static const char *filter_chunkstr(struct io_chunk_t *chunk, void *arg)
+{
+	char **buf = arg;
+
+	if((chunk != NULL) && !io_chunk_isnull(*chunk))
+		str_set(buf, io_chunk_proc_str(*chunk));
+	else
+		str_replace(buf, NULL);
+
+	return *buf;
+}
+
+struct iter_filter_h iter_filter_chunkstr(char **buf)
+{
+	return (struct iter_filter_h){ (iter_filter_f)filter_chunkstr, buf };
 }

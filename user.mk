@@ -1,5 +1,6 @@
 HEADERS = \
 	src/defs.h \
+	src/io/defs.h \
 	src/types/defs.h \
 	\
 	src/app/path.h \
@@ -18,12 +19,12 @@ HEADERS = \
 	src/mem/base.h \
 	src/mem/manage.h \
 	\
-	src/io/defs.h \
 	src/io/chunk.h \
 	src/io/conf.h \
 	src/io/device.h \
 	src/io/file.h \
 	src/io/input.h \
+	src/io/iter.h \
 	src/io/object.h \
 	src/io/output.h \
 	src/io/print.h \

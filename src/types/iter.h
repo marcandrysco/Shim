@@ -72,6 +72,34 @@ struct iter_t iter_wrapper(struct iter_t inner, iter_wrapper_f func, void *arg);
 struct iter_t iter_filter(struct iter_t inner, struct iter_filter_h filter);
 struct iter_t iter_enum(struct iter_enum_h handler);
 
+/*
+ * filter function declarations
+ */
+
+struct iter_filter_h iter_filter_chunkstr(char **buf);
+
+
+/**
+ * Obtain the next iterator reference.
+ *   @iter: The iterator.
+ *   &returns: The reference. 'NULL' if at the end of the iterator.
+ */
+
+static inline void *iter_next(struct iter_t iter)
+{
+	return iter.iface->next(iter.ref);
+}
+
+/**
+ * Delete the iterator.
+ *   @iter: The iterator.
+ */
+
+static inline void iter_delete(struct iter_t iter)
+{
+	iter.iface->delete(iter.ref);
+}
+
 
 /**
  * Check if a filter is null.

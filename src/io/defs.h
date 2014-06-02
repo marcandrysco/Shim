@@ -215,6 +215,27 @@ enum io_ctrl_e {
 };
 #define IO_CTRL_EOS	(1)
 
+
+/**
+ * Chunked output callback.
+ *   @output: The output device.
+ *   @arg: The argument.
+ */
+
+typedef void (*io_chunk_f)(struct io_output_t output, void *arg);
+
+/**
+ * Chunked output structure.
+ *   @func: The callback function.
+ *   @arg: The callback argument.
+ */
+
+struct io_chunk_t {
+	io_chunk_f func;
+	void *arg;
+};
+
+
 /* %~shim.h% */
 
 /*

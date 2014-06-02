@@ -64,28 +64,6 @@ struct iter_t {
 };
 
 
-/**
- * Obtain the next iterator reference.
- *   @iter: The iterator.
- *   &returns: The reference. 'NULL' if at the end of the iterator.
- */
-
-static inline void *iter_next(struct iter_t iter)
-{
-	return iter.iface->next(iter.ref);
-}
-
-/**
- * Delete the iterator.
- *   @iter: The iterator.
- */
-
-static inline void iter_delete(struct iter_t iter)
-{
-	iter.iface->delete(iter.ref);
-}
-
-
 /*
  * common implementation variables
  */
