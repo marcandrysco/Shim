@@ -259,6 +259,7 @@ void _shim_sthrow(const char *file, unsigned int line, char *restrict error)
 static void throw_init()
 {
 	throw_local = thread_local_new(NULL);
+	thread_local_set(throw_local, NULL);
 	sys_atexit(throw_destroy);
 }
 
@@ -268,5 +269,6 @@ static void throw_init()
 
 static void throw_destroy()
 {
+	mem_delete(thread_local_get(throw_local));
 	thread_local_delete(throw_local);
 }
