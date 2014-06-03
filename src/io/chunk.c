@@ -49,7 +49,6 @@ static void indent_proc(struct io_output_t output, void *arg);
  */
 
 static struct io_output_i nbytes_iface = { { io_blank_ctrl, io_blank_close }, (io_write_f)nbytes_write };
-static struct io_output_i buf_iface = { { io_blank_ctrl, (io_close_f)buf_close }, (io_write_f)buf_write };
 static struct io_output_i len_iface = { { io_blank_ctrl, io_blank_close }, (io_write_f)len_write };
 
 /*
@@ -126,7 +125,7 @@ static size_t nbytes_write(struct nbytes_t *info, const void *restrict buf, size
 
 
 /**
- * Process a chunk writing data to a buffer.
+ * Process a chunk writing data to a string buffer.
  *   @chunk: The chunk.
  *   &returns: the total number of bytes written.
  */
@@ -134,7 +133,10 @@ static size_t nbytes_write(struct nbytes_t *info, const void *restrict buf, size
 _export
 void io_chunk_proc_buf(struct io_chunk_t chunk, char *buf)
 {
-	io_chunk_proc(chunk, (struct io_output_t){ &buf, &buf_iface });
+	static struct io_output_i iface = { { io_blank_ctrl, (io_close_f)buf_close }, (io_write_f)buf_write };
+
+	io_chunk_proc(chunk, (struct io_output_t){ &buf, &iface });
+	*buf = '\0';
 }
 
 /**
