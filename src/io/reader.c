@@ -74,7 +74,7 @@ void io_reader_delete(struct io_reader_t *reader)
 	struct avltree_node_t *node;
 
 	iter = avltree_node_iter_begin(reader->inst);
-	while((node = avltree_node_iter_next(&iter)) != NULL)
+	while((node = avltree_node_iter_next_depth(&iter)) != NULL)
 		mem_free(inst_cast(node));
 
 	mem_free(reader);
