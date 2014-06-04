@@ -90,6 +90,10 @@ bool test_str_printf()
 	if(!str_isequal(buf, "g L"))
 		return printf("failed\n"), false;
 
+	str_nprintf(buf, 6, "%sstr", "long");
+	if(!str_isequal(buf, "longs"))
+		return printf("failed\n"), false;
+
 	printf("okay\n");
 
 	return true;

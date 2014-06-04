@@ -53,7 +53,6 @@ static void unimpl_close(void *ref);
  * local variables
  */
 
-static struct io_output_i buf_iface = { { unimpl_ctrl, (io_close_f)buf_delete }, (io_write_f)buf_write };
 static struct io_output_i len_iface = { { unimpl_ctrl, unimpl_close }, (io_write_f)len_write };
 static struct io_output_i accum_iface = { { unimpl_ctrl, (io_close_f)accum_delete }, (io_write_f)accum_write };
 
@@ -73,11 +72,12 @@ _export
 struct io_output_t str_output_buf(char *buf, size_t nbytes, size_t *nread)
 {
 	struct buf_t *inst;
+	static struct io_output_i iface = { { unimpl_ctrl, (io_close_f)buf_delete }, (io_write_f)buf_write };
 
 	inst = mem_alloc(sizeof(struct buf_t));
 	*inst = (struct buf_t){ buf, nbytes - 1, nread };
 
-	return (struct io_output_t){ inst, &buf_iface };
+	return (struct io_output_t){ inst, &iface };
 }
 
 /**
@@ -111,6 +111,7 @@ static size_t buf_write(struct buf_t *inst, const void *restrict buf, size_t nby
 	}
 	else {
 		mem_copy(inst->buf, buf, inst->nbytes);
+		inst->buf += inst->nbytes;
 		inst->nbytes = 0;
 	}
 
