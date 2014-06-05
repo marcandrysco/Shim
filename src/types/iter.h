@@ -76,8 +76,6 @@ struct iter_t iter_enum(struct iter_enum_h handler);
  * filter function declarations
  */
 
-struct iter_filter_h iter_filter_chunkstr(char **buf);
-
 
 /**
  * Obtain the next iterator reference.

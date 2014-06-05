@@ -102,7 +102,7 @@ void llist_root_remove(struct llist_root_t *root, struct llist_node_t *node);
  * linked list function declarations
  */
 
-void llist_init(struct llist_t *list, delete_f delete);
+struct llist_t llist_empty(delete_f delete);
 struct llist_t *llist_new(delete_f delete);
 void llist_destroy(struct llist_t *list);
 void llist_delete(struct llist_t *list);
@@ -112,6 +112,9 @@ struct llist_inst_t *llist_append(struct llist_t *list, void *ref);
 
 struct llist_inst_t *llist_insert_before(struct llist_t *list, struct llist_inst_t *cur, void *ref);
 struct llist_inst_t *llist_insert_after(struct llist_t *list, struct llist_inst_t *cur, void *ref);
+
+struct iter_t llist_iter(struct llist_t *list);
+struct iter_t llist_asiter(struct llist_t *list);
 
 /* %~shim.h% */
 

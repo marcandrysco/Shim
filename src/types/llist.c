@@ -8,6 +8,9 @@
  * local function declarations
  */
 
+static void *iter_next(struct llist_node_t **node);
+static void *asiter_next(struct llist_t *list);
+
 static struct llist_inst_t *inst_cast(struct llist_node_t *node);
 
 
@@ -166,11 +169,15 @@ void llist_root_remove(struct llist_root_t *root, struct llist_node_t *node)
  */
 
 _export
-void llist_init(struct llist_t *list, delete_f delete)
+struct llist_t llist_empty(delete_f delete)
 {
-	list->len = 0;
-	list->delete = delete;
-	llist_root_init(&list->root);
+	struct llist_t list;
+
+	list.len = 0;
+	list.delete = delete;
+	llist_root_init(&list.root);
+
+	return list;
 }
 
 /**
@@ -185,7 +192,7 @@ struct llist_t *llist_new(delete_f delete)
 	struct llist_t *list;
 
 	list = mem_alloc(sizeof(struct llist_t));
-	llist_init(list, delete);
+	*list  = llist_empty(delete);
 
 	return list;
 }
@@ -309,6 +316,86 @@ struct llist_inst_t *llist_insert_after(struct llist_t *list, struct llist_inst_
 	llist_root_insert_after(&list->root, &cur->node, &inst->node);
 
 	return inst;
+}
+
+
+/**
+ * Obtain an iterator over a list.
+ *   @list: The list.
+ *   &returns: The iterator.
+ */
+
+_export
+struct iter_t llist_iter(struct llist_t *list)
+{
+	struct llist_node_t **node;
+	static const struct iter_i iface = { (iter_f)iter_next, mem_free };
+
+	node = mem_alloc(sizeof(void *));
+	*node = list->root.head;
+
+	return (struct iter_t){ node, &iface };
+}
+
+/**
+ * Retrieve the next reference from the iterator.
+ *   @node: The node reference.
+ *   &returns: The reference or null.
+ */
+
+static void *iter_next(struct llist_node_t **node)
+{
+	void *ref;
+
+	if(*node != NULL) {
+		ref = inst_cast(*node)->ref;
+		*node = (*node)->next;
+	}
+	else
+		ref = NULL;
+
+	return ref;
+
+}
+
+/**
+ * Create an iterator from the list, destroying the list once the iterator gets
+ * deleted. The list must be in heap, created with 'llist_new'.
+ *   @list: The list.
+ *   &returns: The iterator.
+ */
+
+_export
+struct iter_t llist_asiter(struct llist_t *list)
+{
+	static const struct iter_i iface = { (iter_f)asiter_next, (delete_f)llist_delete };
+
+	return (struct iter_t){ list, &iface };
+}
+
+/**
+ * Retrieve the next reference from the list as an iterator.
+ *   @list: The list.
+ *   &returns: The reference or null.
+ */
+
+static void *asiter_next(struct llist_t *list)
+{
+	void *ref;
+	struct llist_node_t *node;
+	struct llist_inst_t *inst;
+
+	if(list->root.head == NULL)
+		return NULL;
+
+	node = list->root.head;
+	list->root.head = node->next;
+	inst = inst_cast(node);
+	ref = inst->ref;
+
+	mem_free(inst);
+
+	return ref;
 }
 
 
