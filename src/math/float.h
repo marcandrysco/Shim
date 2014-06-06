@@ -7,6 +7,17 @@
 
 /* %shim.h% */
 
+/**
+ * Double-precision floating-point absolute value.
+ *   @val: The value.
+ *   &returns: The absolute value.
+ */
+
+static inline double m_dblabs(double val)
+{
+	return fabs(val);
+}
+
 
 static inline double m_rnd(double val, double mul)
 {
