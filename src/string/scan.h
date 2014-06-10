@@ -8,8 +8,10 @@
 /* %shim.h% */
 
 /*
- * string scannin function declarations
+ * string scanning function declarations
  */
+
+int8_t str_getdigit(char ch);
 
 unsigned long str_toulong(const char *str, char **endptr);
 bool str_endchk(const char *str);

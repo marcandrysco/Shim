@@ -6,6 +6,33 @@
 #include "io.h"
 
 
+/**
+ * Retrieve the raw digit from a character.
+ *   @ch: The character.
+ *   &returns: The digit value, or '-1' on invalid digit.
+ */
+
+_export
+int8_t str_getdigit(char ch)
+{
+	if((ch >= '0') && (ch <= '9'))
+		return ch - '0';
+	else if((ch >= 'a') && (ch <= 'z'))
+		return ch - 'a' + 10;
+	else if((ch >= 'A') && (ch <= 'Z'))
+		return ch - 'a' + 10;
+	return
+		-1;
+}
+
+
+/**
+ * Convert a string to an unsigned long value.
+ *   @str: The string.
+ *   @endptr: Optional. The end pointer.
+ *   &returns: The value.
+ */
+
 _export
 unsigned long str_toulong(const char *str, char **endptr)
 {
