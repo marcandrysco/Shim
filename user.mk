@@ -55,10 +55,13 @@ HEADERS = \
 	src/types/avljtree.h \
 	src/types/compare.h \
 	src/types/float.h \
+	src/types/integer.h \
 	src/types/iter.h \
 	src/types/llist.h \
 	src/types/queue.h \
 	src/types/strbuf.h \
+	src/types/type.h \
+	src/types/value.h \
 
 ifeq ($(bmake_HOST),windows)
 else
