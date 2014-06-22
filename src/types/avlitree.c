@@ -41,6 +41,395 @@ static struct iter_i refiter_iface = { (iter_f)avlitree_iter_next_ref, mem_free 
 
 
 /**
+ * Create an empty root.
+ *   &returns: The root.
+ */
+
+_export
+struct avlitree_root_t avlitree_root_empty()
+{
+	return (struct avlitree_root_t){ NULL };
+}
+
+
+/**
+ * Retrieve the first node from the root.
+ *   @root: The root.
+ *   &returns: The first node from the root, or 'NULL' if no elements exist.
+ */
+
+_export
+struct avlitree_node_t *avlitree_root_first(struct avlitree_root_t *root)
+{
+	struct avlitree_node_t *node = root->node;
+
+	if(node == NULL)
+		return NULL;
+
+	while(node->child[LEFT] != NULL)
+		node = node->child[LEFT];
+
+	return node;
+}
+
+/**
+ * Retrieve the last node from the root.
+ *   @root: The root.
+ *   &returns: The last node from the root, or 'NULL' if no elements exist.
+ */
+
+_export
+struct avlitree_node_t *avlitree_root_last(struct avlitree_root_t *root)
+{
+	struct avlitree_node_t *node = root->node;
+
+	if(node == NULL)
+		return NULL;
+
+	while(node->child[RIGHT] != NULL)
+		node = node->child[RIGHT];
+
+	return node;
+}
+
+/**
+ * Look up an AVL index tree node from the root.
+ *   @root: The root.
+ *   @index: The index.
+ *   &returns: The node if found, 'NULL' if not requested index was too large.
+ */
+
+_export
+struct avlitree_node_t *avlitree_root_get(struct avlitree_root_t *root, unsigned int index)
+{
+	int cmp;
+	unsigned int cur, left;
+	struct avlitree_node_t *node = root->node;
+
+	cur = 0;
+
+	while(node != NULL) {
+		left = cur;
+
+		if(node->child[LEFT] != NULL)
+			left += node->child[LEFT]->count;
+
+		cmp = (int)index - (int)left;
+		if(cmp == 0)
+			return node;
+
+		if(CMP2NODE(cmp) == RIGHT)
+			cur = left + 1;
+
+		node = node->child[CMP2NODE(cmp)];
+	}
+
+	if(cur <= index)
+		return NULL;
+
+	_fatal("Invalid tree data.");
+}
+
+
+/**
+ * Insert a new node at the given index.
+ *   @root: The root.
+ *   @index: The destination index.
+ *   @node: The node.
+ */
+
+_export
+void avlitree_root_insert(struct avlitree_root_t *root, unsigned int index, struct avlitree_node_t *node)
+{
+	short i, ii;
+	unsigned int cur, left;
+	uint8_t dir[AVLITREE_MAX_HEIGHT];
+	struct avlitree_node_t *stack[AVLITREE_MAX_HEIGHT];
+
+	*node = AVLITREE_NODE_INIT;
+
+	if(root->node == NULL) {
+		root->node = node;
+		node->parent = NULL;
+
+		return;
+	}
+
+	cur = 0;
+	stack[0] = root->node;
+
+	for(i = 0; i < AVLITREE_MAX_HEIGHT; i++) {
+		if(stack[i] == NULL)
+			break;
+
+		left = cur;
+
+		if(stack[i]->child[LEFT] != NULL)
+			left += stack[i]->child[LEFT]->count;
+
+		dir[i] = index > left ? RIGHT : LEFT;
+		if(dir[i] == RIGHT)
+			cur = left + 1;
+
+		stack[i+1] = stack[i]->child[dir[i]];
+
+	}
+	if(i == AVLITREE_MAX_HEIGHT)
+		throw("Tree too tall.");
+
+	i--;
+	stack[i]->child[dir[i]] = node;
+	node->parent = stack[i];
+
+	for(ii = i; ii > -1; ii--)
+		stack[ii]->count++;
+	
+	stack[i]->balance += NODEDIR(dir[i]);
+
+	if(stack[i]->child[OTHERNODE(dir[i])] != NULL)
+		return;
+
+	while(i-- > 0) {
+		struct avlitree_node_t *node;
+
+		stack[i]->balance += NODEDIR(dir[i]);
+
+		if(stack[i]->balance == 0)
+			break;
+
+		if((stack[i]->balance > -2) && (stack[i]->balance < 2))
+			continue;
+
+		if(dir[i+1] == CMP2NODE(stack[i]->balance))
+			node = rotate_single(stack[i], OTHERNODE(CMP2NODE(stack[i]->balance)));
+		else
+			node = rotate_double(stack[i], OTHERNODE(CMP2NODE(stack[i]->balance)));
+
+		if(i == 0)
+			root->node = node;
+		else
+			stack[i-1]->child[dir[i-1]] = node;
+		
+		break;
+	}
+}
+
+/**
+ * Remove a node from the AVL index tree.
+ *   @root: The root.
+ *   @index: The index of the element to remove.
+ *   &returns: The removed node or null.
+ */
+
+_export
+struct avlitree_node_t *avlitree_root_slice(struct avlitree_root_t *root, unsigned int index)
+{
+	short i, ii;
+	unsigned int cur, left;
+	uint8_t dir[AVLITREE_MAX_HEIGHT];
+	struct avlitree_node_t *stack[AVLITREE_MAX_HEIGHT], *node, *retval;
+
+	cur = 0;
+	stack[0] = root->node;
+
+	for(i = 0; i < AVLITREE_MAX_HEIGHT; i++) {
+		if(stack[i] == NULL)
+			return NULL;
+
+		left = cur;
+
+		if(stack[i]->child[LEFT] != NULL)
+			left += stack[i]->child[LEFT]->count;
+
+		if(index == left)
+			break;
+
+		dir[i] = index > left ? RIGHT : LEFT;
+		if(dir[i] == RIGHT)
+			cur = left + 1;
+
+		stack[i+1] = stack[i]->child[dir[i]];
+	}
+
+	for(ii = i - 1; ii != -1; ii--)
+		stack[ii]->count--;
+
+	dir[i] = CMP2NODE(stack[i]->balance);
+
+	ii = i;
+	node = stack[i]->child[dir[i]];
+	if(node != NULL) {
+		while(node->child[OTHERNODE(dir[ii])] != NULL) {
+			i++;
+			stack[i] = node;
+			dir[i] = OTHERNODE(dir[ii]);
+			node = node->child[dir[i]];
+		}
+
+		stack[i]->child[dir[i]] = node->child[dir[ii]];
+		i++;
+
+		if(stack[ii]->child[LEFT] != NULL)
+			stack[ii]->child[LEFT]->parent = node;
+
+		if(stack[ii]->child[RIGHT] != NULL)
+			stack[ii]->child[RIGHT]->parent = node;
+
+		node->child[LEFT] = stack[ii]->child[LEFT];
+		node->child[RIGHT] = stack[ii]->child[RIGHT];
+		node->balance = stack[ii]->balance;
+	}
+
+	if(ii == 0) {
+		root->node = node;
+
+		if(node != NULL)
+			node->parent = NULL;
+	}
+	else {
+		stack[ii-1]->child[dir[ii-1]] = node;
+
+		if(node != NULL)
+			node->parent = stack[ii-1];
+	}
+
+	retval = stack[ii];
+	stack[ii] = node;
+
+	while(i-- > 0) {
+		stack[i]->balance -= NODEDIR(dir[i]);
+
+		if((stack[i]->balance > 1) || (stack[i]->balance < -1)) {
+			if(stack[i]->balance == -2 * stack[i]->child[CMP2NODE(stack[i]->balance/2)]->balance)
+				node = rotate_double(stack[i], OTHERNODE(CMP2NODE(stack[i]->balance)));
+			else
+				node = rotate_single(stack[i], OTHERNODE(CMP2NODE(stack[i]->balance)));
+
+			if(i == 0)
+				root->node = node;
+			else
+				stack[i-1]->child[dir[i-1]] = node;
+
+			stack[i] = node;
+		}
+
+		if(stack[i]->balance != 0)
+			break;
+	}
+
+	return retval;
+}
+
+/**
+ * Given an index, replace the node. The node will not be added if the index
+ * does not exist.
+ *   @root; The root.
+ *   @index: The index.
+ *   @node: The node to add.
+ *   &returns: The displaced node if found, null ortherwise.
+ */
+
+_export
+struct avlitree_node_t *avlitree_root_set(struct avlitree_root_t *root, unsigned int index, struct avlitree_node_t *node)
+{
+	unsigned int cur, left;
+	struct avlitree_node_t *sel = root->node;
+
+	cur = 0;
+
+	while(sel != NULL) {
+		left = cur;
+
+		if(sel->child[LEFT] != NULL)
+			left += sel->child[LEFT]->count;
+
+		if(index == left)
+			break;
+
+		if(index > left)
+			cur = left + 1;
+
+		sel = sel->child[index > left ? RIGHT : LEFT];
+	}
+
+	if(sel == NULL) {
+		if(cur >= index)
+			return NULL;
+
+		_fatal("Invalid tree data.");
+	}
+
+	if(sel == root->node)
+		root->node = node;
+	else
+		sel->parent->child[MYDIR(sel)] = node;
+
+	*node = *sel;
+
+	return sel;
+}
+
+
+/**
+ * Retrieve the previous node.
+ *   @node: The current node.
+ *   &returns: The previous node or null.
+ */
+
+_export
+struct avlitree_node_t *avlitree_node_prev(struct avlitree_node_t *node)
+{
+	if(node->child[LEFT] != NULL) {
+		node = node->child[LEFT];
+
+		while(node->child[RIGHT] != NULL)
+			node = node->child[RIGHT];
+
+		return node;
+	}
+	else {
+		while(node->parent != NULL) {
+			if(node->parent->child[RIGHT] == node)
+				break;
+
+			node = node->parent;
+		}
+
+		return node->parent;
+	}
+}
+
+/**
+ * Retrieve the next node.
+ *   @node: The current node.
+ *   &returns: The next node or null.
+ */
+
+_export
+struct avlitree_node_t *avlitree_node_next(struct avlitree_node_t *node)
+{
+	if(node->child[RIGHT] != NULL) {
+		node = node->child[RIGHT];
+
+		while(node->child[LEFT] != NULL)
+			node = node->child[LEFT];
+
+		return node;
+	}
+	else {
+		while(node->parent != NULL) {
+			if(node->parent->child[LEFT] == node)
+				break;
+
+			node = node->parent;
+		}
+
+		return node->parent;
+	}
+}
+
+
+/**
  * Retrieve the first node from the tree.
  *   @root: The root.
  *   &returns: The first node from the root, or 'NULL' if no elements exist.

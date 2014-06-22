@@ -128,7 +128,7 @@ struct avljtree_idxiter_t {
  * avl joint tree root function declarations
  */
 
-void avljtree_root_init(struct avljtree_root_t *root);
+struct avljtree_root_t avljtree_root_empty();
 
 struct avljtree_node_t *avljtree_root_idxfirst(struct avljtree_root_t *root);
 struct avljtree_node_t *avljtree_root_idxlast(struct avljtree_root_t *root);

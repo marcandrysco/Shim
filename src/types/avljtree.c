@@ -41,15 +41,14 @@ static struct iter_i idxiter_refs_iface = { (iter_f)avljtree_idxiter_next_ref, m
 
 
 /**
- * Initialize the tree root.
- *   @root: The root.
+ * Create an empty root.
+ *   &returns: The root.
  */
 
 _export
-void avljtree_root_init(struct avljtree_root_t *root)
+struct avljtree_root_t avljtree_root_empty()
 {
-	root->bykey = NULL;
-	root->byidx = NULL;
+	return (struct avljtree_root_t){ NULL, NULL };
 }
 
 

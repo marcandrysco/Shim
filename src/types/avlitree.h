@@ -72,6 +72,15 @@ struct avlitree_node_t {
 };
 
 /**
+ * AVL joint tree root structure.
+ *   @node: The root node.
+ */
+
+struct avlitree_root_t {
+	struct avlitree_node_t *node;
+};
+
+/**
  * AVL index tree reference storage.
  *   @ref: The value reference.
  *   @node: The node.
@@ -100,6 +109,19 @@ struct avlitree_iter_t {
 /*
  * avl index tree node function declarations
  */
+
+struct avlitree_root_t avlitree_root_empty();
+
+struct avlitree_node_t *avlitree_root_first(struct avlitree_root_t *root);
+struct avlitree_node_t *avlitree_root_last(struct avlitree_root_t *root);
+struct avlitree_node_t *avlitree_root_get(struct avlitree_root_t *root, unsigned int index);
+
+void avlitree_root_insert(struct avlitree_root_t *root, unsigned int index, struct avlitree_node_t *node);
+struct avlitree_node_t *avlitree_root_slice(struct avlitree_root_t *root, unsigned int index);
+struct avlitree_node_t *avlitree_root_set(struct avlitree_root_t *root, unsigned int index, struct avlitree_node_t *node);
+
+struct avlitree_node_t *avlitree_node_prev(struct avlitree_node_t *node);
+struct avlitree_node_t *avlitree_node_next(struct avlitree_node_t *node);
 
 struct avlitree_node_t *avlitree_node_first(struct avlitree_node_t *root);
 struct avlitree_node_t *avlitree_node_last(struct avlitree_node_t *root);
