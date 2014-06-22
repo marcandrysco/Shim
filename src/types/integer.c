@@ -265,7 +265,6 @@ void integer_mul_ushort(struct integer_t **integer, unsigned short val)
  *   &returns: The remainder
  */
 
-#include <stdio.h>
 _export
 unsigned short integer_div_ushort(struct integer_t **integer, unsigned short val)
 {
