@@ -32,6 +32,18 @@ static inline uint32_t m_uint32max(uint32_t a, uint32_t b)
 }
 
 /**
+ * Unsigned integer minimum.
+ *   @a: The first parameter.
+ *   @b: The second peramater.
+ *   &returns: The minimum.
+ */
+
+static inline unsigned int m_uintmin(unsigned int a, unsigned int b)
+{
+	return (a < b) ? a : b;
+}
+
+/**
  * Unsigned integer maximum.
  *   @a: The first parameter.
  *   @b: The second peramater.

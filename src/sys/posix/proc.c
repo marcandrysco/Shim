@@ -5,7 +5,6 @@
 #include "../../debug/res.h"
 #include "../../mem/manage.h"
 #include "../../thread/base.h"
-#include "../../thread/host.h"
 #include "../../types/llist.h"
 
 
