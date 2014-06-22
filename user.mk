@@ -54,6 +54,7 @@ HEADERS = \
 	src/types/avlitree.h \
 	src/types/avljtree.h \
 	src/types/compare.h \
+	src/types/enum.h \
 	src/types/float.h \
 	src/types/integer.h \
 	src/types/iter.h \

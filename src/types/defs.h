@@ -53,7 +53,7 @@ struct iter_i {
 };
 
 /**
- * Iteator instance storage structure.
+ * Iterator storage structure.
  *   @ref: The internal reference.
  *   @iface: The iterator interface.
  */
@@ -61,6 +61,37 @@ struct iter_i {
 struct iter_t {
 	void *ref;
 	const struct iter_i *iface;
+};
+
+
+/**
+ * Create an iterator.
+ *   @ref: The enumerator reference.
+ *   &returns: The iterator.
+ */
+
+typedef struct iter_t (*enum_f)(void *ref);
+
+/**
+ * Iterator interface structure.
+ *   @iter: The iterator function.
+ *   @delete: The internal deletion function.
+ */
+
+struct enum_i {
+	enum_f iter;
+	delete_f delete;
+};
+
+/**
+ * Enumerator storage structure.
+ *   @ref: The internal reference.
+ *   @iface: The enumerator interface.
+ */
+
+struct enum_t {
+	void *ref;
+	const struct enum_i *iface;
 };
 
 
