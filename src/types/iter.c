@@ -3,7 +3,7 @@
 #include "../io/chunk.h"
 #include "../mem/manage.h"
 #include "../string/base.h"
-#include "defs.h"
+#include "filter.h"
 
 
 /**
@@ -21,7 +21,7 @@ struct inst_t {
 
 /**
  * Wrapper structure.
- *   inner: The inner iterator.
+ *   @inner: The inner iterator.
  *   @func: The translation function.
  *   @arg: The argument.
  */
@@ -34,17 +34,15 @@ struct wrapper_t {
 };
 
 /**
- * Filter structure.
- *   inner: The inner iterator.
- *   @func: The translation function.
+ * Filter application structure.
+ *   @iter: The inner iterator.
+ *   @func: The application function.
  *   @arg: The argument.
  */
 
-struct filter_t {
-	struct iter_t inner;
-
-	iter_filter_f func;
-	void *arg;
+struct apply_t {
+	struct iter_t iter;
+	struct filter_t filter;
 };
 
 
@@ -55,14 +53,12 @@ struct filter_t {
 static void *wrapper_next(struct wrapper_t *wrapper);
 static void wrapper_delete(struct wrapper_t *wrapper);
 
-static void *filter_next(struct filter_t *filter);
-static void filter_delete(struct filter_t *filter);
+static void *apply_next(struct apply_t *apply);
+static void apply_delete(struct apply_t *apply);
 
 /*
  * global variables
  */
-
-_export struct iter_filter_h iter_filter_null = { NULL, NULL };
 
 
 /**
@@ -110,34 +106,34 @@ static void wrapper_delete(struct wrapper_t *wrapper)
 /**
  * Create a filter around an inner iterator.
  *   @inner: The inner iterator.
- *   @filter: The filter handler.
+ *   @filter: The filter.
  *   &returns: The iterator.
  */
 
 _export
-struct iter_t iter_filter(struct iter_t inner, struct iter_filter_h handler)
+struct iter_t iter_filter(struct iter_t iter, struct filter_t filter)
 {
-	struct filter_t *filter;
-	static struct iter_i filter_iface = { (iter_f)filter_next, (delete_f)filter_delete };
+	struct apply_t *apply;
+	static struct iter_i iface = { (iter_f)apply_next, (delete_f)apply_delete };
 
-	filter = mem_alloc(sizeof(struct filter_t));
-	*filter = (struct filter_t){ inner, handler.func, handler.arg };
+	apply = mem_alloc(sizeof(struct apply_t));
+	*apply = (struct apply_t){ iter, filter };
 
-	return (struct iter_t){ filter, &filter_iface };
+	return (struct iter_t){ apply, &iface };
 }
 
 /**
  * Retrieve the next reference from the filter.
- *   @filter: The filter.
+ *   @apply: The application structure.
  *   &returns: The reference.
  */
 
-static void *filter_next(struct filter_t *filter)
+static void *apply_next(struct apply_t *apply)
 {
 	void *ref;
 
-	while((ref = iter_next(filter->inner)) != NULL) {
-		ref = filter->func(ref, filter->arg);
+	while((ref = iter_next(apply->iter)) != NULL) {
+		ref = filter_apply(apply->filter, ref);
 		if(ref != NULL)
 			return ref;
 	}
@@ -147,13 +143,14 @@ static void *filter_next(struct filter_t *filter)
 
 /**
  * Delete a iterator filter.
- *   @filter: THe filter.
+ *   @apply: The application structure.
  */
 
-static void filter_delete(struct filter_t *filter)
+static void apply_delete(struct apply_t *apply)
 {
-	iter_delete(filter->inner);
-	mem_free(filter);
+	iter_delete(apply->iter);
+	filter_delete(apply->filter);
+	mem_free(apply);
 }
 
 

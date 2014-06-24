@@ -13,6 +13,12 @@
 
 extern struct enum_t enum_blank;
 
+/*
+ * enumerator function declarations
+ */
+
+struct enum_t enum_new(enum_f func, void *arg);
+
 
 /**
  * Create the iterator from an enumerator.

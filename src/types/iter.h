@@ -18,27 +18,6 @@ typedef void *(*iter_wrapper_f)(void *ref, void *arg);
 
 
 /**
- * Wrapper callback function.
- *   @ref: The input reference.
- *   @arg: The argument.
- *   &returns: The translated reference or null to ignore.
- */
-
-typedef void *(*iter_filter_f)(void *ref, void *arg);
-
-/**
- * Filter handler structure.
- *   @func: The function.
- *   @arg: The argument.
- */
-
-struct iter_filter_h {
-	iter_filter_f func;
-	void *arg;
-};
-
-
-/**
  * Enumerate callback function.
  *   @arg: The argument.
  *   &returns: The iterator.
@@ -69,7 +48,7 @@ extern struct iter_filter_h iter_filter_null;
  */
 
 struct iter_t iter_wrapper(struct iter_t inner, iter_wrapper_f func, void *arg);
-struct iter_t iter_filter(struct iter_t inner, struct iter_filter_h filter);
+struct iter_t iter_filter(struct iter_t iter, struct filter_t filter);
 struct iter_t iter_enum(struct iter_enum_h handler);
 
 /*
@@ -96,18 +75,6 @@ static inline void *iter_next(struct iter_t iter)
 static inline void iter_delete(struct iter_t iter)
 {
 	iter.iface->delete(iter.ref);
-}
-
-
-/**
- * Check if a filter is null.
- *   @filter: The filter.
- *   &returns: True if null, false otherwise.
- */
-
-static inline bool iter_filter_isnull(struct iter_filter_h filter)
-{
-	return (filter.func == NULL) && (filter.arg == NULL);
 }
 
 /* %~shim.h% */

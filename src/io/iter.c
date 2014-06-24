@@ -11,7 +11,7 @@
  *   @handler: The filter handler.
  */
 
-struct filter_t {
+struct inst_t {
 	struct iter_t inner;
 
 	struct io_filter_h handler;
@@ -22,8 +22,8 @@ struct filter_t {
  * local function declarations
  */
 
-static struct io_chunk_t filter_next(struct filter_t *filter);
-static void filter_delete(struct filter_t *filter);
+static struct io_chunk_t filter_next(struct inst_t *filter);
+static void filter_delete(struct inst_t *filter);
 
 
 /**
@@ -36,11 +36,11 @@ static void filter_delete(struct filter_t *filter);
 _export
 struct io_iter_t io_iter_filter(struct iter_t inner, struct io_filter_h handler)
 {
-	struct filter_t *filter;
+	struct inst_t *filter;
 	static struct io_iter_i iface = { (io_iter_f)filter_next, (delete_f)filter_delete };
 
-	filter = mem_alloc(sizeof(struct filter_t));
-	*filter = (struct filter_t){ inner, handler };
+	filter = mem_alloc(sizeof(struct inst_t));
+	*filter = (struct inst_t){ inner, handler };
 
 	return (struct io_iter_t){ filter, &iface };
 }
@@ -51,7 +51,7 @@ struct io_iter_t io_iter_filter(struct iter_t inner, struct io_filter_h handler)
  *   &returns: The reference.
  */
 
-static struct io_chunk_t filter_next(struct filter_t *filter)
+static struct io_chunk_t filter_next(struct inst_t *filter)
 {
 	void *ref;
 	struct io_chunk_t chunk;
@@ -70,7 +70,7 @@ static struct io_chunk_t filter_next(struct filter_t *filter)
  *   @filter: THe filter.
  */
 
-static void filter_delete(struct filter_t *filter)
+static void filter_delete(struct inst_t *filter)
 {
 	iter_delete(filter->inner);
 	mem_free(filter);

@@ -73,7 +73,7 @@ struct iter_t {
 typedef struct iter_t (*enum_f)(void *ref);
 
 /**
- * Iterator interface structure.
+ * Enumerator interface structure.
  *   @iter: The iterator function.
  *   @delete: The internal deletion function.
  */
@@ -92,6 +92,47 @@ struct enum_i {
 struct enum_t {
 	void *ref;
 	const struct enum_i *iface;
+};
+
+
+/**
+ * Filter an input element.
+ *   @ref: The filter reference.
+ *   @in: The input.
+ *   &returns: The output reference or null.
+ */
+
+typedef void *(*filter_f)(void *ref, void *in);
+
+/**
+ * Filter an input element.
+ *   @in: The input.
+ *   @arg: The argument.
+ *   &returns: The output reference or null.
+ */
+
+typedef void *(*filter_apply_f)(void *in, void *arg);
+
+/**
+ * Filter interface structure.
+ *   @apply: The filter application function.
+ *   @delete: The internal deletion function.
+ */
+
+struct filter_i {
+	filter_f apply;
+	delete_f delete;
+};
+
+/**
+ * Enumerator storage structure.
+ *   @ref: The internal reference.
+ *   @iface: The filter interface.
+ */
+
+struct filter_t {
+	void *ref;
+	const struct filter_i *iface;
 };
 
 
