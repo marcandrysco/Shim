@@ -18,6 +18,7 @@ extern struct enum_t enum_blank;
  */
 
 struct enum_t enum_new(enum_f func, void *arg);
+struct enum_t enum_filter(struct enum_t inner, struct filter_t filter);
 
 
 /**
