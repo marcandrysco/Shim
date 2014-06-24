@@ -7,6 +7,14 @@
 
 /* %shim.h% */
 
+/*
+ * structure prototypes
+ */
+
+struct io_chunk_t;
+struct io_filter_t;
+
+
 /**
  * I/O iterator function.
  *   @ref: The reference.
@@ -38,31 +46,11 @@ struct io_iter_t {
 };
 
 
-/**
- * Obtain the next iterator reference.
- *   @ref: The iterator reference.
- *   &returns: The reference. 'NULL' if at the end of the iterator.
- */
-
-typedef struct io_chunk_t (*io_filter_f)(void *ref, void *arg);
-
-/**
- * Filter handler structure.
- *   @func: The function.
- *   @arg: The argument.
- */
-
-struct io_filter_h {
-	io_filter_f func;
-	void *arg;
-};
-
-
 /*
  * i/o iterator function declarations
  */
 
-struct io_iter_t io_iter_filter(struct iter_t inner, struct io_filter_h handler);
+struct io_iter_t io_iter_filter(struct iter_t inner, struct io_filter_t apply);
 
 
 /**
@@ -84,18 +72,6 @@ static inline struct io_chunk_t io_iter_next(struct io_iter_t iter)
 static inline void io_iter_delete(struct io_iter_t iter)
 {
 	iter.iface->delete(iter.ref);
-}
-
-
-/**
- * Apply a filter to a reference.
- *   @filter: The filter.
- *   @ref: The reference.
- */
-
-static inline struct io_chunk_t io_filter_apply(struct io_filter_h filter, void *ref)
-{
-	return filter.func(ref, filter.arg);
 }
 
 /* %~shim.h% */

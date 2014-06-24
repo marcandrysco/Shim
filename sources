@@ -53,6 +53,7 @@ Target
 	Source	"src/io/conf.c"
 	Source	"src/io/device.c"
 	Source	"src/io/file.c"
+	Source	"src/io/filter.c"
 	Source	"src/io/input.c"
 	Source	"src/io/iter.c"
 	Source	"src/io/object.c"

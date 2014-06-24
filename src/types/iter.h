@@ -38,22 +38,12 @@ struct iter_enum_h {
 
 
 /*
- * iterator variables
- */
-
-extern struct iter_filter_h iter_filter_null;
-
-/*
  * iterator function declarations
  */
 
 struct iter_t iter_wrapper(struct iter_t inner, iter_wrapper_f func, void *arg);
 struct iter_t iter_filter(struct iter_t iter, struct filter_t filter);
 struct iter_t iter_enum(struct iter_enum_h handler);
-
-/*
- * filter function declarations
- */
 
 
 /**

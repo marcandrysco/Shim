@@ -23,6 +23,7 @@ HEADERS = \
 	src/io/conf.h \
 	src/io/device.h \
 	src/io/file.h \
+	src/io/filter.h \
 	src/io/input.h \
 	src/io/iter.h \
 	src/io/object.h \
