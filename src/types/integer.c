@@ -318,7 +318,7 @@ void integer_print(const struct integer_t *integer, struct io_output_t output)
 	if(integer->neg)
 		*str-- = '-';
 
-	io_output_write(output, str+1, sizeof(buf) - (str - buf) );
+	io_output_write(output, str+1, sizeof(buf) - (str - buf + 1) );
 }
 
 /**
