@@ -110,6 +110,11 @@ void llist_delete(struct llist_t *list);
 struct llist_inst_t *llist_prepend(struct llist_t *list, void *ref);
 struct llist_inst_t *llist_append(struct llist_t *list, void *ref);
 
+void *llist_front(struct llist_t *list);
+void *llist_front_remove(struct llist_t *list);
+void *llist_back(struct llist_t *list);
+void *llist_back_remove(struct llist_t *list);
+
 struct llist_inst_t *llist_insert_before(struct llist_t *list, struct llist_inst_t *cur, void *ref);
 struct llist_inst_t *llist_insert_after(struct llist_t *list, struct llist_inst_t *cur, void *ref);
 

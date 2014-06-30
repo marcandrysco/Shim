@@ -275,6 +275,96 @@ struct llist_inst_t *llist_append(struct llist_t *list, void *ref)
 
 
 /**
+ * Retrieve thefirst element from the front of the list.
+ *   @list: The list.
+ *   &returns: The reference or null.
+ */
+
+_export
+void *llist_front(struct llist_t *list)
+{
+	struct llist_node_t *node;
+
+	node = list->root.head;
+	if(node == NULL)
+		return NULL;
+
+	return inst_cast(node)->ref;
+}
+
+/**
+ * Remove an element from the front of the list.
+ *   @list: The list.
+ *   &returns: The reference or null.
+ */
+
+_export
+void *llist_front_remove(struct llist_t *list)
+{
+	void *ref;
+	struct llist_node_t *node;
+	struct llist_inst_t *inst;
+
+	node = list->root.head;
+	if(node == NULL)
+		return NULL;
+
+	inst = inst_cast(node);
+	list->root.head = node->next;
+
+	ref = inst->ref;
+	mem_free(inst);
+
+	return ref;
+}
+
+
+/**
+ * Retrieve thefirst element from the back of the list.
+ *   @list: The list.
+ *   &returns: The reference or null.
+ */
+
+_export
+void *llist_back(struct llist_t *list)
+{
+	struct llist_node_t *node;
+
+	node = list->root.tail;
+	if(node == NULL)
+		return NULL;
+
+	return inst_cast(node)->ref;
+}
+
+/**
+ * Remove an element from the back of the list.
+ *   @list: The list.
+ *   &returns: The reference or null.
+ */
+
+_export
+void *llist_back_remove(struct llist_t *list)
+{
+	void *ref;
+	struct llist_node_t *node;
+	struct llist_inst_t *inst;
+
+	node = list->root.tail;
+	if(node == NULL)
+		return NULL;
+
+	inst = inst_cast(node);
+	list->root.head = node->next;
+
+	ref = inst->ref;
+	mem_free(inst);
+
+	return ref;
+}
+
+
+/**
  * Insert a reference before the cursor.
  *   @list: The list.
  *   @cur: The cursor instance.
@@ -381,21 +471,7 @@ struct iter_t llist_asiter(struct llist_t *list)
 
 static void *asiter_next(struct llist_t *list)
 {
-	void *ref;
-	struct llist_node_t *node;
-	struct llist_inst_t *inst;
-
-	if(list->root.head == NULL)
-		return NULL;
-
-	node = list->root.head;
-	list->root.head = node->next;
-	inst = inst_cast(node);
-	ref = inst->ref;
-
-	mem_free(inst);
-
-	return ref;
+	return llist_front_remove(list);
 }
 
 
