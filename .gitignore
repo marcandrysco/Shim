@@ -17,13 +17,13 @@ test/fs/fs
 test/sanity/sanity
 test/safety/safety
 test/thread/threads
+test/types/types
 
 # build files
 config.h
 config.log
 config.status
 config.args
-configure
 sources.mk
 Makefile
 .deps
