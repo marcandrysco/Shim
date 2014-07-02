@@ -904,17 +904,25 @@ struct avlitree_node_t *avlitree_node_iter_next(struct avlitree_iter_t *iter)
 /**
  * Initialize the AVL index tree.
  *   @tree: The uninitialized AVL index tree.
- *   @delete: Optional. The callback to delete references. Set to 'NULL' if
- *     unused.
- *   &prop: noerror
+ *   @delete: Optional. The callback to delete references.
  */
 
 _export
 void avlitree_init(struct avlitree_t *tree, delete_f delete)
 {
-	tree->root = NULL;
-	tree->count = 0;
-	tree->delete = delete;
+	*tree = avlitree_empty(delete);
+}
+
+/**
+ * Create an empty AVL index tree.
+ *   @delete: Optional. The callback to delete references.
+ *   &returns: The AVL index tree.
+ */
+
+_export
+struct avlitree_t avlitree_empty(delete_f delete)
+{
+	return (struct avlitree_t){ NULL, 0, delete };
 }
 
 /**

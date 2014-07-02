@@ -141,6 +141,7 @@ struct avlitree_node_t *avlitree_node_iter_next(struct avlitree_iter_t *iter);
  */
 
 void avlitree_init(struct avlitree_t *tree, delete_f delete);
+struct avlitree_t avlitree_empty(delete_f delete);
 struct avlitree_t *avlitree_new(delete_f delete);
 void avlitree_destroy(struct avlitree_t *tree);
 void avlitree_delete(struct avlitree_t *tree);
