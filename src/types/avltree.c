@@ -20,6 +20,18 @@
 #define NODEDIR(node)	(node == RIGHT ? 1 : -1)
 
 
+/**
+ * As iter structure.
+ *   @tree: The tree.
+ *   @iter: The iterator.
+ */
+
+struct asiter_t {
+	struct avltree_t *tree;
+	struct avltree_iter_t iter;
+};
+
+
 /*
  * local function declarations
  */
@@ -28,6 +40,9 @@ static int compare_nodekey(const void *key, const struct avltree_node_t *node, v
 static int compare_nodenode(const struct avltree_node_t *n1, const struct avltree_node_t *n2, void *arg);
 
 static void ref_del(struct avltree_node_t *node, void *arg);
+
+static void *asiter_next(struct asiter_t *info);
+static void asiter_delete(struct asiter_t *info);
 
 static struct avltree_node_t *rotate_single(struct avltree_node_t *node, uint8_t dir);
 static struct avltree_node_t *rotate_double(struct avltree_node_t *node, uint8_t dir);
@@ -1077,6 +1092,48 @@ struct iter_t avltree_iter_refs_new(const struct avltree_t *tree)
 	avltree_iter_init(iter.ref, tree);
 
 	return iter;
+}
+
+
+/**
+ * Create a new iterator over the references, deleting the tree in the end.
+ *   @tree: The AVL tree.
+ *   &returns: The iterator.
+ */
+
+_export
+struct iter_t avltree_asiter(struct avltree_t *tree)
+{
+	struct asiter_t *info;
+	static const struct iter_i iface = { (iter_f)asiter_next, (delete_f)asiter_delete };
+
+	info = mem_alloc(sizeof(struct asiter_t));
+	info->tree = tree;
+	info->iter = avltree_iter_begin(info->tree);
+
+	return (struct iter_t){ info, &iface };
+}
+
+/**
+ * Retrieve the next reference from the information structure.
+ *   @info: The information structure.
+ *   &returns: The reference or null.
+ */
+
+static void *asiter_next(struct asiter_t *info)
+{
+	return avltree_iter_next(&info->iter);
+}
+
+/**
+ * Delete the asiter structure.
+ *   @info: The info structure.
+ */
+
+static void asiter_delete(struct asiter_t *info)
+{
+	avltree_delete(info->tree);
+	mem_free(info);
 }
 
 

@@ -133,6 +133,8 @@ struct iter_t avltree_iter_new(const struct avltree_t *tree);
 struct iter_t avltree_iter_keys_new(const struct avltree_t *tree);
 struct iter_t avltree_iter_refs_new(const struct avltree_t *tree);
 
+struct iter_t avltree_asiter(struct avltree_t *tree);
+
 void avltree_iterate(const struct avltree_t *tree, avltree_iterate_f func, void *arg);
 void avltree_iterate_keys(const struct avltree_t *tree, avltree_iterate_key_f func, void *arg);
 void avltree_iterate_refs(const struct avltree_t *tree, avltree_iterate_ref_f func, void *arg);
