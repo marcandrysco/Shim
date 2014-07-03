@@ -82,6 +82,30 @@ static inline size_t m_sizemin(size_t a, size_t b)
 
 
 /**
+ * Double maximum.
+ *   @left: The left value.
+ *   @right: The right value.
+ *   &returns: The maximum.
+ */
+
+static inline double m_dblmax(double a, double b)
+{
+	return (a > b) ? a : b;
+}
+
+/**
+ * Double minimum.
+ *   @left: The left value.
+ *   @right: The right value.
+ *   &returns: The minimum.
+ */
+
+static inline double m_dblmin(double a, double b)
+{
+	return (a < b) ? a : b;
+}
+
+/**
  * Double modulus operator.
  *   @a: The input value.
  *   @b: The modulus.
