@@ -34,6 +34,7 @@ static inline struct m_rand_t m_rand_new(uint32_t seed)
  */
 
 uint32_t m_rand_next(struct m_rand_t *rand);
+double m_rand_nextd(struct m_rand_t *rand);
 
 /*
  * random function declarations
