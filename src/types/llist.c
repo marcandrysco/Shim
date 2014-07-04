@@ -410,6 +410,39 @@ struct llist_inst_t *llist_insert_after(struct llist_t *list, struct llist_inst_
 
 
 /**
+ * Begin an iterator.
+ *   @list: The list.
+ *   &returns: The iterator.
+ */
+
+_export
+struct llist_iter_t llist_iter_begin(struct llist_t *list)
+{
+	return (struct llist_iter_t){ inst_cast(list->root.head) };
+}
+
+/**
+ * Retrieve the next reference from the linked-list iterator.
+ *   @iter: The iterator.
+ *   &returns: The reference or null.
+ */
+
+_export
+void *llist_iter_next(struct llist_iter_t *iter)
+{
+	void *ref;
+
+	if(iter->inst == NULL)
+		return NULL;
+
+	ref = iter->inst->ref;
+	iter->inst = iter->inst->node.next ? inst_cast(iter->inst->node.next) : NULL;
+
+	return ref;
+}
+
+
+/**
  * Obtain an iterator over a list.
  *   @list: The list.
  *   &returns: The iterator.
@@ -445,7 +478,6 @@ static void *iter_next(struct llist_node_t **node)
 		ref = NULL;
 
 	return ref;
-
 }
 
 /**

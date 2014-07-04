@@ -71,14 +71,11 @@ struct llist_inst_t {
 
 /**
  * Linked list iterator.
- *   @list: The list.
- *   @cur: The cursor instance.
+ *   @inst: The current instance.
  */
 
 struct llist_iter_t {
-	struct llist_t *list;
-
-	struct llist_inst_t *cur;
+	struct llist_inst_t *inst;
 };
 
 
@@ -117,6 +114,9 @@ void *llist_back_remove(struct llist_t *list);
 
 struct llist_inst_t *llist_insert_before(struct llist_t *list, struct llist_inst_t *cur, void *ref);
 struct llist_inst_t *llist_insert_after(struct llist_t *list, struct llist_inst_t *cur, void *ref);
+
+struct llist_iter_t llist_iter_begin(struct llist_t *list);
+void *llist_iter_next(struct llist_iter_t *iter);
 
 struct iter_t llist_iter(struct llist_t *list);
 struct iter_t llist_asiter(struct llist_t *list);

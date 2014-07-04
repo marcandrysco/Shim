@@ -114,6 +114,7 @@ void *avltree_atleast(const struct avltree_t *tree, const void *key);
 void *avltree_atmost(const struct avltree_t *tree, const void *key);
 
 void avltree_insert(struct avltree_t *tree, const void *key, void *ref);
+void avltree_insert_ref(struct avltree_t *tree, void *ref);
 void *avltree_remove(struct avltree_t *tree, const void *key);
 void avltree_purge(struct avltree_t *tree, const void *key);
 

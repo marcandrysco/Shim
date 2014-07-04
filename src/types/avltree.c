@@ -835,6 +835,18 @@ void avltree_insert(struct avltree_t *tree, const void *key, void *ref)
 }
 
 /**
+ * Insert a reference as both the key and value.
+ *   @tree: The tree.
+ *   @ref: The reference.
+ */
+
+_export
+void avltree_insert_ref(struct avltree_t *tree, void *ref)
+{
+	avltree_insert(tree, ref, ref);
+}
+
+/**
  * Remove a reference from an AVL tree.
  *   @tree: The AVL tree.
  *   @key: The key reference.
