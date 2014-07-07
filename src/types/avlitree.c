@@ -1131,7 +1131,7 @@ void avlitree_prepend(struct avlitree_t *tree, void *ref)
  */
 
  _export
-struct avlitree_iter_t avlitree_iter_new(const struct avlitree_t *tree)
+struct avlitree_iter_t avlitree_iter_begin(const struct avlitree_t *tree)
 {
 	return avlitree_node_iter_new(tree->root);
 }
@@ -1186,7 +1186,7 @@ struct iter_t avlitree_valiter_new(const struct avlitree_t *tree)
 
 	iter.ref = mem_alloc(sizeof(struct avlitree_iter_t));
 	iter.iface = &iter_iface;
-	*(struct avlitree_iter_t *)iter.ref = avlitree_iter_new(tree);
+	*(struct avlitree_iter_t *)iter.ref = avlitree_iter_begin(tree);
 
 	return iter;
 }
@@ -1204,7 +1204,7 @@ struct iter_t avlitree_refiter_new(const struct avlitree_t *tree)
 
 	iter.ref = mem_alloc(sizeof(struct avlitree_iter_t));
 	iter.iface = &refiter_iface;
-	*(struct avlitree_iter_t *)iter.ref = avlitree_iter_new(tree);
+	*(struct avlitree_iter_t *)iter.ref = avlitree_iter_begin(tree);
 
 	return iter;
 }
