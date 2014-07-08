@@ -30,7 +30,7 @@ extern struct iter_t iter_blank;
 struct iter_t iter_new(void *ref, iter_f next, delete_f delete);
 struct iter_t iter_wrapper(struct iter_t inner, iter_wrapper_f func, void *arg);
 struct iter_t iter_filter(struct iter_t iter, struct filter_t filter);
-struct iter_t iter_compose(struct iter_t outer, struct enum_t iter);
+struct iter_t iter_compose(struct iter_t outer, enum_f iter);
 
 
 /**

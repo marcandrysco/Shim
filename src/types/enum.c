@@ -47,7 +47,8 @@ struct sort_t {
  */
 
 struct compose_t {
-	struct enum_t outer, inner;
+	struct enum_t outer;
+	enum_f inner;
 };
 
 
@@ -236,12 +237,12 @@ static void sort_delete(struct sort_t *sort)
 /**
  * Compose two enumerators.
  *   @outer: The outer enumerator.
- *   @inner: the inner enumerator.
+ *   @inner: the inner enumerator callback.
  *   &returns: The enumerator.
  */
 
 _export
-struct enum_t enum_compose(struct enum_t outer, struct enum_t inner)
+struct enum_t enum_compose(struct enum_t outer, enum_f inner)
 {
 	struct compose_t *compose;
 	static struct enum_i iface = { (enum_f)compose_iter, (delete_f)compose_delete };
@@ -260,9 +261,7 @@ struct enum_t enum_compose(struct enum_t outer, struct enum_t inner)
 
 static struct iter_t compose_iter(struct compose_t *compose)
 {
-	struct enum_t iter = enum_new(compose->inner.ref, compose->inner.iface->iter, delete_noop);
-
-	return iter_compose(enum_iter(compose->outer), iter);
+	return iter_compose(enum_iter(compose->outer), compose->inner);
 }
 
 /**
@@ -273,6 +272,5 @@ static struct iter_t compose_iter(struct compose_t *compose)
 static void compose_delete(struct compose_t *compose)
 {
 	enum_delete(compose->outer);
-	enum_delete(compose->inner);
 	mem_free(compose);
 }

@@ -54,7 +54,8 @@ struct apply_t {
 
 struct compose_t {
 	struct iter_t inner, outer;
-	struct enum_t iter;
+
+	enum_f iter;
 };
 
 
@@ -240,12 +241,12 @@ static void apply_delete(struct apply_t *apply)
 /**
  * Create an enumerator for composed iterators and enumerators.
  *   @outer: The outer iterator.
- *   @iter: The enumerator.
+ *   @iter: The enumerator callback.
  *   &returns: The iterator.
  */
 
 _export
-struct iter_t iter_compose(struct iter_t outer, struct enum_t iter)
+struct iter_t iter_compose(struct iter_t outer, enum_f iter)
 {
 	struct compose_t *compose;
 	static struct iter_i iface = { (iter_f)compose_next, (delete_f)compose_delete };
@@ -277,7 +278,7 @@ static void *compose_next(struct compose_t *compose)
 		if(ref == NULL)
 			return NULL;
 
-		compose->inner = enum_iter(compose->iter);
+		compose->inner = compose->iter(ref);
 	}
 }
 
@@ -290,6 +291,5 @@ static void compose_delete(struct compose_t *compose)
 {
 	iter_delete(compose->inner);
 	iter_delete(compose->outer);
-	enum_delete(compose->iter);
 	mem_free(compose);
 }
