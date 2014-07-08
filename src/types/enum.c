@@ -8,13 +8,15 @@
 
 /**
  * Instance structure.
- *   @func: The function.
- *   @arg: The argument.
+ *   @ref: The reference.
+ *   @iter: the iterator callback.
+ *   @delete: The delete callback.
  */
 
 struct inst_t {
-	enum_f func;
-	void *arg;
+	void *ref;
+	enum_f iter;
+	delete_f delete;
 };
 
 /**
@@ -39,12 +41,24 @@ struct sort_t {
 	compare_f compare;
 };
 
+/**
+ * Compose structure for enumeration.
+ *   @outer, inner: The outer and inner enumerators.
+ */
+
+struct compose_t {
+	struct enum_t outer, inner;
+};
+
 
 /*
  * local function declarations
  */
 
+static struct iter_t blank_iter(void *ref);
+
 static struct iter_t inst_iter(struct inst_t *inst);
+static void inst_delete(struct inst_t *inst);
 
 static struct iter_t apply_iter(struct apply_t *apply);
 static void apply_delete(struct apply_t *apply);
@@ -52,7 +66,8 @@ static void apply_delete(struct apply_t *apply);
 static struct iter_t sort_iter(struct sort_t *sort);
 static void sort_delete(struct sort_t *sort);
 
-static struct iter_t blank_iter(void *ref);
+static struct iter_t compose_iter(struct compose_t *compose);
+static void compose_delete(struct compose_t *compose);
 
 /*
  * local variables
@@ -68,21 +83,32 @@ _export struct enum_t enum_blank = { NULL, &blank_iface };
 
 
 /**
+ * Generaete a blank iterator.
+ *   @ref: Unusued reference.
+ */
+
+static struct iter_t blank_iter(void *ref)
+{
+	return iter_blank;
+}
+
+
+/**
  * Create a new enumerator from a function and argument.
- *   @func: The function.
- *   @arg: The argument.
+ *   @ref: The reference.
+ *   @iter: The iterator callback.
+ *   @delete: The deletion callback.
  *   &returns: The enumerator.
  */
 
 _export
-struct enum_t enum_new(enum_f func, void *arg)
+struct enum_t enum_new(void *ref, enum_f iter, delete_f delete)
 {
 	struct inst_t *inst;
-	static struct enum_i iface = { (enum_f)inst_iter, mem_free };
+	static struct enum_i iface = { (enum_f)inst_iter, (delete_f)inst_delete };
 
 	inst = mem_alloc(sizeof(struct inst_t));
-	inst->func = func;
-	inst->arg = arg;
+	*inst = (struct inst_t){ ref, iter, delete };
 
 	return (struct enum_t){ inst, &iface };
 }
@@ -95,7 +121,18 @@ struct enum_t enum_new(enum_f func, void *arg)
 
 static struct iter_t inst_iter(struct inst_t *inst)
 {
-	return inst->func(inst->arg);
+	return inst->iter(inst->ref);
+}
+
+/**
+ * Delete an enumerator instance.
+ *   @inst: The instance.
+ */
+
+static void inst_delete(struct inst_t *inst)
+{
+	inst->delete(inst->ref);
+	mem_free(inst);
 }
 
 
@@ -197,11 +234,45 @@ static void sort_delete(struct sort_t *sort)
 
 
 /**
- * Generaete a blank iterator.
- *   @ref: Unusued reference.
+ * Compose two enumerators.
+ *   @outer: The outer enumerator.
+ *   @inner: the inner enumerator.
+ *   &returns: The enumerator.
  */
 
-static struct iter_t blank_iter(void *ref)
+_export
+struct enum_t enum_compose(struct enum_t outer, struct enum_t inner)
 {
-	return iter_blank;
+	struct compose_t *compose;
+	static struct enum_i iface = { (enum_f)compose_iter, (delete_f)compose_delete };
+
+	compose = mem_alloc(sizeof(struct compose_t));
+	*compose = (struct compose_t){ outer, inner };
+
+	return (struct enum_t){ compose, &iface };
+}
+
+/**
+ * Retrieve the iterator from a composed enumerator.
+ *   @compose: The composed enumerator.
+ *   &returns: The iterator.
+ */
+
+static struct iter_t compose_iter(struct compose_t *compose)
+{
+	struct enum_t iter = enum_new(compose->inner.ref, compose->inner.iface->iter, delete_noop);
+
+	return iter_compose(enum_iter(compose->outer), iter);
+}
+
+/**
+ * Delete a composed enumerator.
+ *   @compose: The composed enumerator.
+ */
+
+static void compose_delete(struct compose_t *compose)
+{
+	enum_delete(compose->outer);
+	enum_delete(compose->inner);
+	mem_free(compose);
 }

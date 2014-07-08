@@ -3,19 +3,20 @@
 #include "../io/chunk.h"
 #include "../mem/manage.h"
 #include "../string/base.h"
+#include "enum.h"
 #include "filter.h"
 
 
 /**
  * Dynamic instance structure.
  *   @ref: The reference.
- *   @func: The function.
- *   @delete: Deletion.
+ *   @next: The next callback.
+ *   @delete: Deletion callback.
  */
 
 struct inst_t {
 	void *ref;
-	iter_f func;
+	iter_f next;
 	delete_f delete;
 };
 
@@ -45,10 +46,26 @@ struct apply_t {
 	struct filter_t filter;
 };
 
+/**
+ * Composed iterator structure.
+ *   @inner, outer: The inner and our iterators.
+ *   @iter: The inner enumerator.
+ */
+
+struct compose_t {
+	struct iter_t inner, outer;
+	struct enum_t iter;
+};
+
 
 /*
  * local function declarations
  */
+
+static void *blank_next(void *ref);
+
+static void *inst_next(struct inst_t *inst);
+static void inst_delete(struct inst_t *inst);
 
 static void *wrapper_next(struct wrapper_t *wrapper);
 static void wrapper_delete(struct wrapper_t *wrapper);
@@ -56,9 +73,75 @@ static void wrapper_delete(struct wrapper_t *wrapper);
 static void *apply_next(struct apply_t *apply);
 static void apply_delete(struct apply_t *apply);
 
+static void *compose_next(struct compose_t *compose);
+static void compose_delete(struct compose_t *compose);
+
+/*
+ * local variables
+ */
+
+static struct iter_i blank_iface = { blank_next, delete_noop };
+
 /*
  * global variables
  */
+
+_export struct iter_t iter_blank = { NULL, &blank_iface };
+
+
+/**
+ * Retrieve the next reference from a blank reference.
+ *   @ref: The unused reference.
+ *   &returns: NULL.
+ */
+
+static void *blank_next(void *ref)
+{
+	return NULL;
+}
+
+
+/**
+ * Create a new iterator with given callbacks.
+ *   @ref: The reference.
+ *   @next: The next callback.
+ *   @delete: Deletion callback.
+ *   &returns: The iterator.
+ */
+
+_export
+struct iter_t iter_new(void *ref, iter_f next, delete_f delete)
+{
+	struct inst_t *inst;
+	static const struct iter_i iface = { (iter_f)inst_next, (delete_f)inst_delete };
+
+	inst = mem_alloc(sizeof(struct inst_t));
+	*inst = (struct inst_t){ ref, next, delete };
+
+	return (struct iter_t){ inst, &iface };
+}
+
+/**
+ * Retrieve the next reference from the instance.
+ *   @inst: The instance.
+ *   &returns: The reference.
+ */
+
+static void *inst_next(struct inst_t *inst)
+{
+	return inst->next(inst->ref);
+}
+
+/**
+ * Delete the instance.
+ *   @inst: The instance.
+ */
+
+static void inst_delete(struct inst_t *inst)
+{
+	inst->delete(inst->ref);
+	mem_free(inst);
+}
 
 
 /**
@@ -72,12 +155,12 @@ _export
 struct iter_t iter_wrapper(struct iter_t inner, iter_wrapper_f func, void *arg)
 {
 	struct wrapper_t *wrapper;
-	static struct iter_i wrapper_iface = { (iter_f)wrapper_next, (delete_f)wrapper_delete };
+	static struct iter_i iface = { (iter_f)wrapper_next, (delete_f)wrapper_delete };
 
 	wrapper = mem_alloc(sizeof(struct wrapper_t));
 	*wrapper = (struct wrapper_t){ inner, func, arg };
 
-	return (struct iter_t){ wrapper, &wrapper_iface };
+	return (struct iter_t){ wrapper, &iface };
 }
 
 /**
@@ -155,13 +238,58 @@ static void apply_delete(struct apply_t *apply)
 
 
 /**
- * Create an iterator from an enumeration handler.
- *   @handler: The enumeration handler.
+ * Create an enumerator for composed iterators and enumerators.
+ *   @outer: The outer iterator.
+ *   @iter: The enumerator.
  *   &returns: The iterator.
  */
 
 _export
-struct iter_t iter_enum(struct iter_enum_h handler)
+struct iter_t iter_compose(struct iter_t outer, struct enum_t iter)
 {
-	return handler.func(handler.arg);
+	struct compose_t *compose;
+	static struct iter_i iface = { (iter_f)compose_next, (delete_f)compose_delete };
+
+	compose = mem_alloc(sizeof(struct compose_t));
+	compose->outer = outer;
+	compose->inner = iter_blank;
+	compose->iter = iter;
+
+	return (struct iter_t){ compose, &iface };
+}
+
+/**
+ * Retrieve the next reference from the composed iterator.
+ *   @compose: The composition structure.
+ *   &returns: The next reference or null.
+ */
+
+static void *compose_next(struct compose_t *compose)
+{
+	void *ref;
+
+	while(true) {
+		ref = iter_next(compose->inner);
+		if(ref != NULL)
+			return ref;
+
+		ref = iter_next(compose->outer);
+		if(ref == NULL)
+			return NULL;
+
+		compose->inner = enum_iter(compose->iter);
+	}
+}
+
+/**
+ * Delete a composed iterator.
+ *   @compose: The composition structure.
+ */
+
+static void compose_delete(struct compose_t *compose)
+{
+	iter_delete(compose->inner);
+	iter_delete(compose->outer);
+	enum_delete(compose->iter);
+	mem_free(compose);
 }

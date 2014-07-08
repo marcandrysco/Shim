@@ -17,33 +17,20 @@
 typedef void *(*iter_wrapper_f)(void *ref, void *arg);
 
 
-/**
- * Enumerate callback function.
- *   @arg: The argument.
- *   &returns: The iterator.
+/*
+ * iterator variables
  */
 
-typedef struct iter_t (*iter_enum_f)(void *arg);
-
-/**
- * Enuemrator handler structure.
- *   @func: The function.
- *   @arg: The argument.
- */
-
-struct iter_enum_h {
-	iter_enum_f func;
-	void *arg;
-};
-
+extern struct iter_t iter_blank;
 
 /*
  * iterator function declarations
  */
 
+struct iter_t iter_new(void *ref, iter_f next, delete_f delete);
 struct iter_t iter_wrapper(struct iter_t inner, iter_wrapper_f func, void *arg);
 struct iter_t iter_filter(struct iter_t iter, struct filter_t filter);
-struct iter_t iter_enum(struct iter_enum_h handler);
+struct iter_t iter_compose(struct iter_t outer, struct enum_t iter);
 
 
 /**

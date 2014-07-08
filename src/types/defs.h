@@ -137,12 +137,6 @@ struct filter_t {
 
 
 /*
- * common implementation variables
- */
-
-extern struct iter_t iter_blank;
-
-/*
  * blank function declarations
  */
 
