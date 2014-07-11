@@ -22,6 +22,8 @@ int compare_str(const void *s1, const void *s2);
 int compare_ptr(const void *p1, const void *p2);
 int compare_int(const void *p1, const void *p2);
 int compare_uint(const void *p1, const void *p2);
+int compare_uint16(const void *p1, const void *p2);
+int compare_uint32(const void *p1, const void *p2);
 int compare_double(const void *p1, const void *p2);
 
 /* %~shim.h% */
