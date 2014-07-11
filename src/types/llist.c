@@ -2,13 +2,14 @@
 #include "llist.h"
 #include "../debug/exception.h"
 #include "../mem/manage.h"
+#include "iter.h"
 
 
 /*
  * local function declarations
  */
 
-static void *iter_next(struct llist_node_t **node);
+static void *isiter_next(struct llist_node_t **node);
 static void *asiter_next(struct llist_t *list);
 
 static struct llist_inst_t *inst_cast(struct llist_node_t *node);
@@ -232,6 +233,29 @@ void llist_delete(struct llist_t *list)
 
 
 /**
+ * Scan a linked-list for a reference.
+ *   @list: The list.
+ *   @ref: The reference.
+ *   &returns: The matching instance.
+ */
+
+_export
+struct llist_inst_t *llist_scan(struct llist_t *list, void *ref)
+{
+	struct llist_node_t *node;
+	struct llist_inst_t *inst;
+
+	for(node = list->root.head; node != NULL; node = node->next) {
+		inst = inst_cast(node);
+		if(inst->ref == ref)
+			return inst;
+	}
+
+	return NULL;
+}
+
+
+/**
  * Prepend a reference onto the linked list.
  *   @list: The list.
  *   @ref: The reference.
@@ -271,6 +295,23 @@ struct llist_inst_t *llist_append(struct llist_t *list, void *ref)
 	llist_root_append(&list->root, &inst->node);
 
 	return inst;
+}
+
+/**
+ * Pull values from an iterator onto the list.
+ *   @list: The linked-list.
+ *   @iter: The iterator.
+ */
+
+_export
+void llist_pull(struct llist_t *list, struct iter_t iter)
+{
+	void *ref;
+
+	while((ref = iter_next(iter)) != NULL)
+		llist_append(list, ref);
+
+	iter_delete(iter);
 }
 
 
@@ -418,7 +459,7 @@ struct llist_inst_t *llist_insert_after(struct llist_t *list, struct llist_inst_
 _export
 struct llist_iter_t llist_iter_begin(struct llist_t *list)
 {
-	return (struct llist_iter_t){ inst_cast(list->root.head) };
+	return (struct llist_iter_t){ list->root.head ? inst_cast(list->root.head) : NULL };
 }
 
 /**
@@ -452,7 +493,7 @@ _export
 struct iter_t llist_iter(struct llist_t *list)
 {
 	struct llist_node_t **node;
-	static const struct iter_i iface = { (iter_f)iter_next, mem_free };
+	static const struct iter_i iface = { (iter_f)isiter_next, mem_free };
 
 	node = mem_alloc(sizeof(void *));
 	*node = list->root.head;
@@ -466,7 +507,7 @@ struct iter_t llist_iter(struct llist_t *list)
  *   &returns: The reference or null.
  */
 
-static void *iter_next(struct llist_node_t **node)
+static void *isiter_next(struct llist_node_t **node)
 {
 	void *ref;
 
