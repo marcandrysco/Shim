@@ -159,7 +159,7 @@ void delete_noop(void *ref);
 
 struct avltree_t;
 struct avltree_node_t;
-struct avltree_ref_t;
+struct avltree_inst_t;
 struct avltree_iter_t;
 
 
@@ -193,13 +193,22 @@ struct avltree_node_t {
 };
 
 /**
+ * AVL tree root structure.
+ *   @node: The root node.
+ */
+
+struct avltree_root_t {
+	struct avlitree_node_t *node;
+};
+
+/**
  * AVL tree reference storage.
  *   @key: The key reference.
  *   @ref: The value reference.
  *   @node: The node.
  */
 
-struct avltree_ref_t {
+struct avltree_inst_t {
 	const void *key;
 	void *ref;
 
@@ -278,7 +287,7 @@ struct avlitree_node_t {
 };
 
 /**
- * AVL joint tree root structure.
+ * AVL index tree root structure.
  *   @node: The root node.
  */
 

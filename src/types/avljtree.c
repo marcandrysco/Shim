@@ -962,7 +962,7 @@ void *avljtree_slice(struct avljtree_t *tree, unsigned int index)
 	if(node == NULL)
 		return NULL;
 
-	ref = (void *)node - offsetof(struct avltree_ref_t, node);
+	ref = (void *)node - offsetof(struct avltree_inst_t, node);
 	value = ref->ref;
 
 	mem_free(ref);
@@ -1008,7 +1008,7 @@ void *avljtree_remove(struct avljtree_t *tree, const void *key)
 	if(node == NULL)
 		return NULL;
 
-	ref = (void *)node - offsetof(struct avltree_ref_t, node);
+	ref = (void *)node - offsetof(struct avltree_inst_t, node);
 	value = ref->ref;
 
 	mem_free(ref);

@@ -68,12 +68,14 @@ typedef short (*avltree_iterate_key_f)(const void *key, void *arg);
  *   &returns: Non-zero to halt iteration, zero to continue.
  */
 
-typedef short (*avltree_iterate_ref_f)(struct avltree_ref_t *ref, void *arg);
+typedef short (*avltree_iterate_ref_f)(struct avltree_inst_t *ref, void *arg);
 
 
 /*
  * avl tree node function declarations
  */
+
+struct avltree_root_t avltree_root_empty();
 
 struct avltree_node_t *avltree_node_first(struct avltree_node_t *root);
 struct avltree_node_t *avltree_node_last(struct avltree_node_t *root);
@@ -128,7 +130,7 @@ void avltree_iter_init(struct avltree_iter_t *iter, const struct avltree_t *tree
 void *avltree_iter_prev(struct avltree_iter_t *iter);
 void *avltree_iter_next(struct avltree_iter_t *iter);
 void *avltree_iter_next_key(struct avltree_iter_t *iter);
-struct avltree_ref_t *avltree_iter_next_ref(struct avltree_iter_t *iter);
+struct avltree_inst_t *avltree_iter_next_ref(struct avltree_iter_t *iter);
 
 struct iter_t avltree_iter_new(const struct avltree_t *tree);
 struct iter_t avltree_iter_keys_new(const struct avltree_t *tree);
@@ -139,6 +141,15 @@ struct iter_t avltree_asiter(struct avltree_t *tree);
 void avltree_iterate(const struct avltree_t *tree, avltree_iterate_f func, void *arg);
 void avltree_iterate_keys(const struct avltree_t *tree, avltree_iterate_key_f func, void *arg);
 void avltree_iterate_refs(const struct avltree_t *tree, avltree_iterate_ref_f func, void *arg);
+
+/*
+ * avl tree instance function declarations
+ */
+
+struct avltree_inst_t *avltree_inst_first(struct avltree_t *tree);
+struct avltree_inst_t *avltree_inst_last(struct avltree_t *tree);
+struct avltree_inst_t *avltree_inst_prev(struct avltree_inst_t *inst);
+struct avltree_inst_t *avltree_inst_next(struct avltree_inst_t *inst);
 
 /* %~shim.h% */
 

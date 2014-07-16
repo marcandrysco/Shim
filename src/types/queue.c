@@ -29,6 +29,7 @@ void queue_root_add(struct queue_root_t *root, struct queue_node_t *node)
 		root->head = node;
 
 	root->tail = node;
+	node->next = NULL;
 	//struct queue_node_t **tail = root->head ? &root->tail->next : &root->head;
 
 	//node->next = NULL;

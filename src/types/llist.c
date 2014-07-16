@@ -406,6 +406,31 @@ void *llist_back_remove(struct llist_t *list)
 
 
 /**
+ * Push an element onto the front of the list.
+ *   @list: The list.
+ *   @ref: The reference.
+ */
+
+_export
+void llist_push(struct llist_t *list, void *ref)
+{
+	llist_prepend(list, ref);
+}
+
+/**
+ * Pop an element off the front of the list.
+ *   @list: The list.
+ *   &returns: The reference or null.
+ */
+
+_export
+void *llist_pop(struct llist_t *list, void *ref)
+{
+	return llist_front_remove(list);
+}
+
+
+/**
  * Insert a reference before the cursor.
  *   @list: The list.
  *   @cur: The cursor instance.

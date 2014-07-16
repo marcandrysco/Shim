@@ -39,7 +39,8 @@ struct asiter_t {
 static int compare_nodekey(const void *key, const struct avltree_node_t *node, void *arg);
 static int compare_nodenode(const struct avltree_node_t *n1, const struct avltree_node_t *n2, void *arg);
 
-static void ref_del(struct avltree_node_t *node, void *arg);
+static struct avltree_inst_t *inst_cast(struct avltree_node_t *node);
+static void inst_del(struct avltree_node_t *node, void *arg);
 
 static void *asiter_next(struct asiter_t *info);
 static void asiter_delete(struct asiter_t *info);
@@ -54,6 +55,18 @@ static struct avltree_node_t *rotate_double(struct avltree_node_t *node, uint8_t
 static struct iter_i iter_iface = { (iter_f)avltree_iter_next, mem_free };
 static struct iter_i iter_keys_iface = { (iter_f)avltree_iter_next_key, mem_free };
 static struct iter_i iter_refs_iface = { (iter_f)avltree_iter_next_ref, mem_free };
+
+
+/**
+ * Create an empty AVL tree root.
+ *   &returns: The empty root.
+ */
+
+_export
+struct avltree_root_t avltree_root_empty()
+{
+	return (struct avltree_root_t){ NULL };
+}
 
 
 /**
@@ -714,7 +727,7 @@ void *avltree_first(const struct avltree_t *tree)
 	if(node == NULL)
 		return NULL;
 
-	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+	return ((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->ref;
 }
 
 /**
@@ -733,7 +746,7 @@ void *avltree_last(const struct avltree_t *tree)
 	if(node == NULL)
 		return NULL;
 
-	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+	return ((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->ref;
 }
 
 
@@ -753,7 +766,7 @@ void *avltree_lookup(const struct avltree_t *tree, const void *key)
 	if(node == NULL)
 		return NULL;
 
-	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+	return ((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->ref;
 }
 
 /**
@@ -772,7 +785,7 @@ void *avltree_nearby(const struct avltree_t *tree, const void *key)
 	if(node == NULL)
 		return NULL;
 
-	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+	return ((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->ref;
 }
 
 /**
@@ -791,7 +804,7 @@ void *avltree_atleast(const struct avltree_t *tree, const void *key)
 	if(node == NULL)
 		return NULL;
 
-	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+	return ((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->ref;
 }
 
 /**
@@ -810,7 +823,7 @@ void *avltree_atmost(const struct avltree_t *tree, const void *key)
 	if(node == NULL)
 		return NULL;
 
-	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+	return ((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->ref;
 }
 
 
@@ -824,9 +837,9 @@ void *avltree_atmost(const struct avltree_t *tree, const void *key)
 _export
 void avltree_insert(struct avltree_t *tree, const void *key, void *ref)
 {
-	struct avltree_ref_t *value;
+	struct avltree_inst_t *value;
 
-	value = mem_alloc(sizeof(struct avltree_ref_t));
+	value = mem_alloc(sizeof(struct avltree_inst_t));
 	value->key = key;
 	value->ref = ref;
 
@@ -857,14 +870,14 @@ _export
 void *avltree_remove(struct avltree_t *tree, const void *key)
 {
 	struct avltree_node_t *node;
-	struct avltree_ref_t *ref;
+	struct avltree_inst_t *ref;
 	void *value;
 
 	node = avltree_node_remove(&tree->root, key, compare_nodekey, tree->compare);
 	if(node == NULL)
 		return node;
 
-	ref = (void *)node - offsetof(struct avltree_ref_t, node);
+	ref = (void *)node - offsetof(struct avltree_inst_t, node);
 	value = ref->ref;
 
 	mem_free(ref);
@@ -922,7 +935,7 @@ void avltree_merge(struct avltree_t *dest, struct avltree_t *src)
 _export
 void avltree_clear(struct avltree_t *tree)
 {
-	avltree_node_clear(tree->root, ref_del, tree->delete);
+	avltree_node_clear(tree->root, inst_del, tree->delete);
 
 	tree->root = NULL;
 	tree->count = 0;
@@ -991,7 +1004,7 @@ void *avltree_iter_prev(struct avltree_iter_t *iter)
 	if(node == NULL)
 		return NULL;
 
-	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+	return ((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->ref;
 }
 
 /**
@@ -1009,7 +1022,7 @@ void *avltree_iter_next(struct avltree_iter_t *iter)
 	if(node == NULL)
 		return NULL;
 
-	return ((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->ref;
+	return ((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->ref;
 }
 
 /**
@@ -1027,7 +1040,7 @@ void *avltree_iter_next_key(struct avltree_iter_t *iter)
 	if(node == NULL)
 		return NULL;
 
-	return (void *)((struct avltree_ref_t *)((void *)node - offsetof(struct avltree_ref_t, node)))->key;
+	return (void *)((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->key;
 }
 
 /**
@@ -1037,7 +1050,7 @@ void *avltree_iter_next_key(struct avltree_iter_t *iter)
  */
 
 _export
-struct avltree_ref_t *avltree_iter_next_ref(struct avltree_iter_t *iter)
+struct avltree_inst_t *avltree_iter_next_ref(struct avltree_iter_t *iter)
 {
 	struct avltree_node_t *node;
 
@@ -1045,7 +1058,7 @@ struct avltree_ref_t *avltree_iter_next_ref(struct avltree_iter_t *iter)
 	if(node == NULL)
 		return NULL;
 
-	return (void *)node - offsetof(struct avltree_ref_t, node);
+	return (void *)node - offsetof(struct avltree_inst_t, node);
 }
 
 
@@ -1200,13 +1213,74 @@ _export
 void avltree_iterate_refs(const struct avltree_t *tree, avltree_iterate_ref_f func, void *arg)
 {
 	struct avltree_iter_t iter;
-	struct avltree_ref_t *ref;
+	struct avltree_inst_t *ref;
 
 	avltree_iter_init(&iter, tree);
 	while((ref = avltree_iter_next_ref(&iter)) != NULL) {
 		if(func(ref, arg))
 			break;
 	}
+}
+
+
+/**
+ * Retrieve the first instance from the tree.
+ *   @tree: The tree.
+ *   &returns: The instance.
+ */
+
+_export
+struct avltree_inst_t *avltree_inst_first(struct avltree_t *tree)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_first(tree->root);
+	return node ? inst_cast(node) : NULL;
+}
+
+/**
+ * Retrieve the last instance from the tree.
+ *   @tree: The tree.
+ *   &returns: The instance.
+ */
+
+_export
+struct avltree_inst_t *avltree_inst_last(struct avltree_t *tree)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_last(tree->root);
+	return node ? inst_cast(node) : NULL;
+}
+
+/**
+ * Retrieve the previous instance.
+ *   @inst: The current instance.
+ *   &returns: The instance.
+ */
+
+_export
+struct avltree_inst_t *avltree_inst_prev(struct avltree_inst_t *inst)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_prev(&inst->node);
+	return node ? inst_cast(node) : NULL;
+}
+
+/**
+ * Retrieve the next instance.
+ *   @inst: The current instance.
+ *   &returns: The instance.
+ */
+
+_export
+struct avltree_inst_t *avltree_inst_next(struct avltree_inst_t *inst)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_next(&inst->node);
+	return node ? inst_cast(node) : NULL;
 }
 
 
@@ -1221,7 +1295,7 @@ void avltree_iterate_refs(const struct avltree_t *tree, avltree_iterate_ref_f fu
 static int compare_nodekey(const void *key, const struct avltree_node_t *node, void *arg)
 {
 	compare_f compare = arg;
-	struct avltree_ref_t *ref = (void *)node - offsetof(struct avltree_ref_t, node);
+	struct avltree_inst_t *ref = (void *)node - offsetof(struct avltree_inst_t, node);
 
 	return compare(key, ref->key);
 }
@@ -1237,28 +1311,39 @@ static int compare_nodekey(const void *key, const struct avltree_node_t *node, v
 static int compare_nodenode(const struct avltree_node_t *n1, const struct avltree_node_t *n2, void *arg)
 {
 	compare_f compare = arg;
-	struct avltree_ref_t *r1 = (void *)n1 - offsetof(struct avltree_ref_t, node);
-	struct avltree_ref_t *r2 = (void *)n2 - offsetof(struct avltree_ref_t, node);
+	struct avltree_inst_t *r1 = (void *)n1 - offsetof(struct avltree_inst_t, node);
+	struct avltree_inst_t *r2 = (void *)n2 - offsetof(struct avltree_inst_t, node);
 
 	return compare(r1->key, r2->key);
 }
 
 
 /**
- * Delete a reference while clearing.
+ * Delete an instance while clearing.
  *   @node: The node.
  *   @arg: The deletion callback.
  */
 
-static void ref_del(struct avltree_node_t *node, void *arg)
+static void inst_del(struct avltree_node_t *node, void *arg)
 {
 	delete_f delete = arg;
-	struct avltree_ref_t *ref = (void *)node - offsetof(struct avltree_ref_t, node);
+	struct avltree_inst_t *ref = (void *)node - offsetof(struct avltree_inst_t, node);
 
 	if(delete != NULL)
 		delete(ref->ref);
 
 	mem_free(ref);
+}
+
+/**
+ * Cast a node to an instance.
+ *   @node: The node.
+ *   &returns: The instance.
+ */
+
+static struct avltree_inst_t *inst_cast(struct avltree_node_t *node)
+{
+	return (void *)node - offsetof(struct avltree_inst_t, node);
 }
 
 
