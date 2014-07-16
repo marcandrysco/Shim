@@ -77,8 +77,11 @@ typedef short (*avltree_iterate_ref_f)(struct avltree_inst_t *ref, void *arg);
 
 struct avltree_root_t avltree_root_empty();
 
-struct avltree_node_t *avltree_node_first(struct avltree_node_t *root);
-struct avltree_node_t *avltree_node_last(struct avltree_node_t *root);
+struct avltree_node_t *avltree_root_first(struct avltree_root_t *root);
+struct avltree_node_t *avltree_root_last(struct avltree_root_t *root);
+
+struct avltree_node_t *avltree_node_first(struct avltree_node_t *node);
+struct avltree_node_t *avltree_node_last(struct avltree_node_t *node);
 struct avltree_node_t *avltree_node_prev(struct avltree_node_t *node);
 struct avltree_node_t *avltree_node_next(struct avltree_node_t *node);
 
@@ -107,8 +110,8 @@ struct avltree_t *avltree_new(compare_f compare, delete_f delete);
 void avltree_destroy(struct avltree_t *tree);
 void avltree_delete(struct avltree_t *tree);
 
-void *avltree_first(const struct avltree_t *tree);
-void *avltree_last(const struct avltree_t *tree);
+void *avltree_first(struct avltree_t *tree);
+void *avltree_last(struct avltree_t *tree);
 
 void *avltree_lookup(const struct avltree_t *tree, const void *key);
 void *avltree_nearby(const struct avltree_t *tree, const void *key);

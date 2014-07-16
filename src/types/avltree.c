@@ -71,38 +71,79 @@ struct avltree_root_t avltree_root_empty()
 
 /**
  * Obtain the first element from the root.
- *   @root: The root node.
- *   &returns: The first node from the root, or null if no elements exist.
+ *   @root: The root.
+ *   &returns: The first node from the root or null.
  */
 
 _export
-struct avltree_node_t *avltree_node_first(struct avltree_node_t *root)
+struct avltree_node_t *avltree_root_first(struct avltree_root_t *root)
 {
-	if(root == NULL)
+	struct avltree_node_t *node = root->node;
+
+	if(node == NULL)
 		return NULL;
 
-	while(root->child[LEFT] != NULL)
-		root = root->child[LEFT];
+	while(node->child[LEFT] != NULL)
+		node = node->child[LEFT];
 
-	return root;
+	return node;
 }
 
 /**
  * Obtain the last element from the root.
- *   @root: The root node.
- *   &returns: The last node from the root, or null if no elements exist.
+ *   @root: The root.
+ *   &returns: The last node from the root or null.
  */
 
 _export
-struct avltree_node_t *avltree_node_last(struct avltree_node_t *root)
+struct avltree_node_t *avltree_root_last(struct avltree_root_t *root)
 {
-	if(root == NULL)
+	struct avltree_node_t *node = root->node;
+
+	if(node == NULL)
 		return NULL;
 
-	while(root->child[RIGHT] != NULL)
-		root = root->child[RIGHT];
+	while(node->child[RIGHT] != NULL)
+		node = node->child[LEFT];
 
-	return root;
+	return node;
+}
+
+
+/**
+ * Obtain the left-most node from the given node.
+ *   @node: The given node.
+ *   &returns: The left-mode node or null if the given node is null.
+ */
+
+_export
+struct avltree_node_t *avltree_node_first(struct avltree_node_t *node)
+{
+	if(node == NULL)
+		return NULL;
+
+	while(node->child[LEFT] != NULL)
+		node = node->child[LEFT];
+
+	return node;
+}
+
+/**
+ * Obtain the right-most node from the given node.
+ *   @node: The given node.
+ *   &returns: The right-mode node or null if the given node is null.
+ */
+
+_export
+struct avltree_node_t *avltree_node_last(struct avltree_node_t *node)
+{
+	if(node == NULL)
+		return NULL;
+
+	while(node->child[RIGHT] != NULL)
+		node = node->child[RIGHT];
+
+	return node;
 }
 
 /**
@@ -664,7 +705,7 @@ void avltree_init(struct avltree_t *tree, compare_f compare, delete_f delete)
 _export
 struct avltree_t avltree_empty(compare_f compare, delete_f delete)
 {
-	return (struct avltree_t){ NULL, 0, compare, delete };
+	return (struct avltree_t){ avltree_root_empty(), 0, compare, delete };
 }
 
 /**
@@ -719,15 +760,15 @@ void avltree_delete(struct avltree_t *tree)
  */
 
 _export
-void *avltree_first(const struct avltree_t *tree)
+void *avltree_first(struct avltree_t *tree)
 {
 	struct avltree_node_t *node;
 
-	node = avltree_node_first(tree->root);
+	node = avltree_root_first(&tree->root);
 	if(node == NULL)
 		return NULL;
 
-	return ((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->ref;
+	return inst_cast(node)->ref;
 }
 
 /**
@@ -738,15 +779,15 @@ void *avltree_first(const struct avltree_t *tree)
  */
 
 _export
-void *avltree_last(const struct avltree_t *tree)
+void *avltree_last(struct avltree_t *tree)
 {
 	struct avltree_node_t *node;
 
-	node = avltree_node_last(tree->root);
+	node = avltree_root_last(&tree->root);
 	if(node == NULL)
 		return NULL;
 
-	return ((struct avltree_inst_t *)((void *)node - offsetof(struct avltree_inst_t, node)))->ref;
+	return inst_cast(node)->ref;
 }
 
 
@@ -762,7 +803,7 @@ void *avltree_lookup(const struct avltree_t *tree, const void *key)
 {
 	struct avltree_node_t *node;
 
-	node = avltree_node_lookup(tree->root, key, compare_nodekey, tree->compare);
+	node = avltree_node_lookup(tree->root.node, key, compare_nodekey, tree->compare);
 	if(node == NULL)
 		return NULL;
 
@@ -781,7 +822,7 @@ void *avltree_nearby(const struct avltree_t *tree, const void *key)
 {
 	struct avltree_node_t *node;
 
-	node = avltree_node_nearby(tree->root, key, compare_nodekey, tree->compare);
+	node = avltree_node_nearby(tree->root.node, key, compare_nodekey, tree->compare);
 	if(node == NULL)
 		return NULL;
 
@@ -800,7 +841,7 @@ void *avltree_atleast(const struct avltree_t *tree, const void *key)
 {
 	struct avltree_node_t *node;
 
-	node = avltree_node_atleast(tree->root, key, compare_nodekey, tree->compare);
+	node = avltree_node_atleast(tree->root.node, key, compare_nodekey, tree->compare);
 	if(node == NULL)
 		return NULL;
 
@@ -819,7 +860,7 @@ void *avltree_atmost(const struct avltree_t *tree, const void *key)
 {
 	struct avltree_node_t *node;
 
-	node = avltree_node_atmost(tree->root, key, compare_nodekey, tree->compare);
+	node = avltree_node_atmost(tree->root.node, key, compare_nodekey, tree->compare);
 	if(node == NULL)
 		return NULL;
 
@@ -843,7 +884,7 @@ void avltree_insert(struct avltree_t *tree, const void *key, void *ref)
 	value->key = key;
 	value->ref = ref;
 
-	avltree_node_insert(&tree->root, &value->node, compare_nodenode, tree->compare);
+	avltree_node_insert(&tree->root.node, &value->node, compare_nodenode, tree->compare);
 	tree->count++;
 }
 
@@ -873,7 +914,7 @@ void *avltree_remove(struct avltree_t *tree, const void *key)
 	struct avltree_inst_t *ref;
 	void *value;
 
-	node = avltree_node_remove(&tree->root, key, compare_nodekey, tree->compare);
+	node = avltree_node_remove(&tree->root.node, key, compare_nodekey, tree->compare);
 	if(node == NULL)
 		return node;
 
@@ -917,12 +958,12 @@ void avltree_merge(struct avltree_t *dest, struct avltree_t *src)
 	struct avltree_iter_t iter;
 	struct avltree_node_t *node;
 
-	iter = avltree_node_iter_begin(src->root);
+	iter = avltree_node_iter_begin(src->root.node);
 	while((node = avltree_node_iter_next_depth(&iter)) != NULL)
-		avltree_node_insert(&dest->root, node, compare_nodenode, dest->compare);
+		avltree_node_insert(&dest->root.node, node, compare_nodenode, dest->compare);
 
 	dest->count += src->count;
-	src->root = NULL;
+	src->root = avltree_root_empty();
 	src->count = 0;
 }
 
@@ -935,9 +976,9 @@ void avltree_merge(struct avltree_t *dest, struct avltree_t *src)
 _export
 void avltree_clear(struct avltree_t *tree)
 {
-	avltree_node_clear(tree->root, inst_del, tree->delete);
+	avltree_node_clear(tree->root.node, inst_del, tree->delete);
 
-	tree->root = NULL;
+	tree->root = avltree_root_empty();
 	tree->count = 0;
 }
 
@@ -951,7 +992,7 @@ void avltree_clear(struct avltree_t *tree)
 _export
 struct avltree_iter_t avltree_iter(const struct avltree_t *tree)
 {
-	return avltree_node_iter_begin(tree->root);
+	return avltree_node_iter_begin(tree->root.node);
 }
 
 /**
@@ -974,7 +1015,7 @@ struct avltree_iter_t avltree_iter_blank()
 _export
 struct avltree_iter_t avltree_iter_begin(const struct avltree_t *tree)
 {
-	return avltree_node_iter_begin(tree->root);
+	return avltree_node_iter_begin(tree->root.node);
 }
 
 /**
@@ -986,7 +1027,7 @@ struct avltree_iter_t avltree_iter_begin(const struct avltree_t *tree)
  _export
 void avltree_iter_init(struct avltree_iter_t *iter, const struct avltree_t *tree)
 {
-	*iter = avltree_node_iter_begin(tree->root);
+	*iter = avltree_node_iter_begin(tree->root.node);
 }
 
 /**
@@ -1234,7 +1275,7 @@ struct avltree_inst_t *avltree_inst_first(struct avltree_t *tree)
 {
 	struct avltree_node_t *node;
 
-	node = avltree_node_first(tree->root);
+	node = avltree_root_first(&tree->root);
 	return node ? inst_cast(node) : NULL;
 }
 
@@ -1249,7 +1290,7 @@ struct avltree_inst_t *avltree_inst_last(struct avltree_t *tree)
 {
 	struct avltree_node_t *node;
 
-	node = avltree_node_last(tree->root);
+	node = avltree_root_last(&tree->root);
 	return node ? inst_cast(node) : NULL;
 }
 

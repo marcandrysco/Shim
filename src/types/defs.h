@@ -163,17 +163,25 @@ struct avltree_inst_t;
 struct avltree_iter_t;
 
 
+/**
+ * AVL tree root structure.
+ *   @node: The root node.
+ */
+
+struct avltree_root_t {
+	struct avltree_node_t *node;
+};
 
 /**
  * AVL tree storage.
- *   @root: The root node.
+ *   @root: The root.
  *   @count: The number of nodes.
  *   @compare: The comparison function.
  *   @delete: The value deletion function.
  */
 
 struct avltree_t {
-	struct avltree_node_t *root;
+	struct avltree_root_t root;
 
 	unsigned int count;
 
@@ -190,15 +198,6 @@ struct avltree_t {
 struct avltree_node_t {
 	int8_t balance;
 	struct avltree_node_t *parent, *child[2];
-};
-
-/**
- * AVL tree root structure.
- *   @node: The root node.
- */
-
-struct avltree_root_t {
-	struct avlitree_node_t *node;
 };
 
 /**
