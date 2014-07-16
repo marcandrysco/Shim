@@ -79,7 +79,7 @@ void io_printf_float(struct io_output_t output, struct io_print_mod_t *mod, stru
 void io_format_chunk(struct io_output_t output, struct io_chunk_t chunk, uint16_t width, bool neg, char pad);
 void io_format_str(struct io_output_t output, const char *str, uint16_t width, bool neg, char pad);
 void io_format_int(struct io_output_t output, int value, uint8_t base, int16_t width, bool pad);
-void io_format_uint(struct io_output_t output, unsigned int value, uint8_t base, int16_t width, bool pad);
+void io_format_uint(struct io_output_t output, unsigned int value, uint8_t base, int16_t width, bool neg, bool pad);
 
 /*
  * convenience defintions

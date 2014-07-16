@@ -251,7 +251,7 @@ void io_printf_int(struct io_output_t output, struct io_print_mod_t *mod, struct
 _export
 void io_printf_uint(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list)
 {
-	io_format_uint(output, va_arg(list->args, unsigned int), 10, mod->width, mod->zero);
+	io_format_uint(output, va_arg(list->args, unsigned int), 10, mod->width, mod->neg, mod->zero);
 }
 
 /**
@@ -264,7 +264,7 @@ void io_printf_uint(struct io_output_t output, struct io_print_mod_t *mod, struc
 _export
 void io_printf_hex(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list)
 {
-	io_format_uint(output, va_arg(list->args, unsigned int), 16, mod->width, mod->zero);
+	io_format_uint(output, va_arg(list->args, unsigned int), 16, mod->width, mod->neg, mod->zero);
 }
 
 /**
@@ -395,7 +395,7 @@ void io_format_int(struct io_output_t output, int value, uint8_t base, int16_t w
 		io_output_write(output, &neg, 1);
 	}
 
-	io_format_uint(output, value, base, width, pad);
+	io_format_uint(output, value, base, width, false, pad);
 }
 
 /**
@@ -404,11 +404,12 @@ void io_format_int(struct io_output_t output, int value, uint8_t base, int16_t w
  *   @value: The value.
  *   @base: The base.
  *   @width: The width.
+ *   @neg: Negative alignment.
  *   @pad: Padding.
  */
 
 _export
-void io_format_uint(struct io_output_t output, unsigned int value, uint8_t base, int16_t width, bool pad)
+void io_format_uint(struct io_output_t output, unsigned int value, uint8_t base, int16_t width, bool neg, bool pad)
 {
 	uint8_t i = 0;
 	uint16_t len = m_uint16max(width, 19);
@@ -421,10 +422,24 @@ void io_format_uint(struct io_output_t output, unsigned int value, uint8_t base,
 		buf[len - ++i] = val + ((val < 10) ? '0' : ('a' - 10));
 	} while((value /= base) > 0);
 
-	while(i < width)
-		buf[len - ++i] = pad ? '0' : ' ';
+	if(!neg) {
+		while(i < width)
+			buf[len - ++i] = pad ? '0' : ' ';
 
-	io_output_write(output, buf + len - i, width ?: i);
+		io_output_write(output, buf + len - i, width ?: i);
+	}
+	else {
+		io_output_write(output, buf + len - i, (i <= width) ? i : width);
+
+		if(width > i) {
+			uint8_t rem = width - i;
+
+			while(i < width)
+				buf[len - ++i] = ' ';
+
+			io_output_write(output, buf + len - i, rem);
+		}
+	}
 }
 
 //_export

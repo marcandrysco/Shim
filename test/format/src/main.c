@@ -86,6 +86,14 @@ bool test_str_printf()
 	if(!str_isequal(buf, "1a94"))
 		return printf("failed\n"), false;
 
+	str_printf(buf, "%05u", 123);
+	if(!str_isequal(buf, "00123"))
+		return printf("failed\n"), false;
+
+	str_printf(buf, "%-5u", 123);
+	if(!str_isequal(buf, "123  "))
+		return printf("failed (%s)\n", buf), false;
+
 	str_printf(buf, "%c %c", 'g', 'L');
 	if(!str_isequal(buf, "g L"))
 		return printf("failed\n"), false;
