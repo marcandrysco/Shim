@@ -73,6 +73,7 @@ void io_printf_str(struct io_output_t output, struct io_print_mod_t *mod, struct
 void io_printf_int(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 void io_printf_uint(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 void io_printf_hex(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
+void io_printf_binary(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 void io_printf_char(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 void io_printf_float(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list);
 

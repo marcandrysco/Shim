@@ -19,6 +19,7 @@ struct io_print_t io_print_default[] = {
 	{ 'i', "integer", 0, io_printf_int },
 	{ 'u', "unsigned", 0, io_printf_uint },
 	{ 'x', "hex", 0, io_printf_hex },
+	{ 'b', "binary", 0, io_printf_binary },
 	{ 'u', "unsigned", 0, io_printf_uint },
 	{ 'c', "char", 0, io_printf_char },
 	{ 'C', "chunk", 0, io_printf_chunk },
@@ -268,6 +269,19 @@ void io_printf_hex(struct io_output_t output, struct io_print_mod_t *mod, struct
 }
 
 /**
+ * Printf-style unsigned integer output in binary.
+ *   @device: The output device.
+ *   @mod: The modifier.
+ *   @args: The variable argument list with an upcoming string.
+ */
+
+_export
+void io_printf_binary(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list)
+{
+	io_format_uint(output, va_arg(list->args, unsigned int), 2, mod->width, mod->neg, mod->zero);
+}
+
+/**
  * Printf-style character output.
  *   @device: The output device.
  *   @mod: The modifier.
@@ -277,10 +291,10 @@ void io_printf_hex(struct io_output_t output, struct io_print_mod_t *mod, struct
 _export
 void io_printf_char(struct io_output_t output, struct io_print_mod_t *mod, struct arglist_t *list)
 {
-	char ch;
+	uint8_t ch;
 
 	ch = va_arg(list->args, int);
-	io_output_write(output, &ch, sizeof(char));
+	io_output_write(output, &ch, sizeof(uint8_t));
 }
 
 /**
@@ -303,7 +317,6 @@ void io_printf_float(struct io_output_t output, struct io_print_mod_t *mod, stru
 
 	sprintf(str, format, va_arg(list->args, double));
 	io_print_str(output, str);
-	//io_format_uint(output, va_arg(list->args, unsigned int), 10, mod->width, mod->zero);
 }
 
 
