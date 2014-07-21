@@ -20,6 +20,17 @@ struct inst_t {
 };
 
 /**
+ * Constant structure.
+ *   @ref: The reference.
+ *   @iter: The enumerator.
+ */
+
+struct const_t {
+	void *ref;
+	enum_f iter;
+};
+
+/**
  * Apply structure for enumeration.
  *   @inner: The inner enumerator.
  *   @filter: The filter.
@@ -95,6 +106,20 @@ static struct iter_t blank_iter(void *ref)
 
 
 /**
+ * Replace an enumerator, deleting the original.
+ *   @dest: The destination.
+ *   @src: The srouce.
+ */
+
+_export
+void enum_replace(struct enum_t *dest, struct enum_t src)
+{
+	enum_delete(*dest);
+	*dest = src;
+}
+
+
+/**
  * Create a new enumerator from a function and argument.
  *   @ref: The reference.
  *   @iter: The iterator callback.
@@ -134,6 +159,18 @@ static void inst_delete(struct inst_t *inst)
 {
 	inst->delete(inst->ref);
 	mem_free(inst);
+}
+
+/**
+ * Create a constnat copy of an enumerator.
+ *   @iter: The enumerator.
+ *   &returns: The constant copy.
+ */
+
+_export
+struct enum_t enum_const(struct enum_t iter)
+{
+	return enum_new(iter.ref, iter.iface->iter, delete_noop);
 }
 
 

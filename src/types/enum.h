@@ -17,7 +17,9 @@ extern struct enum_t enum_blank;
  * enumerator function declarations
  */
 
+void enum_replace(struct enum_t *dest, struct enum_t src);
 struct enum_t enum_new(void *ref, enum_f iter, delete_f delete);
+struct enum_t enum_const(struct enum_t iter);
 struct enum_t enum_filter(struct enum_t inner, struct filter_t filter);
 struct enum_t enum_sort(struct enum_t inner, compare_f compare);
 struct enum_t enum_compose(struct enum_t outer, enum_f inner);
