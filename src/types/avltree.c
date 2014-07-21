@@ -755,39 +755,31 @@ void avltree_delete(struct avltree_t *tree)
 /**
  * Obtain the first element in the tree.
  *   @tree: The AVL tree.
- *   &returns: The reference from the first element, or 'NULL' if the tree is
- *     empty.
+ *   &returns: The reference from the first element or null.
  */
 
 _export
 void *avltree_first(struct avltree_t *tree)
 {
-	struct avltree_node_t *node;
+	struct avltree_inst_t *inst;
 
-	node = avltree_root_first(&tree->root);
-	if(node == NULL)
-		return NULL;
-
-	return inst_cast(node)->ref;
+	inst = avltree_inst_first(tree);
+	return inst ? inst->ref : NULL;
 }
 
 /**
  * Obtain the last element in the tree.
  *   @tree: The AVL tree.
- *   &returns: The reference from the last element, or 'NULL' if the tree is
- *     empty.
+ *   &returns: The reference from the last element or null.
  */
 
 _export
 void *avltree_last(struct avltree_t *tree)
 {
-	struct avltree_node_t *node;
+	struct avltree_inst_t *inst;
 
-	node = avltree_root_last(&tree->root);
-	if(node == NULL)
-		return NULL;
-
-	return inst_cast(node)->ref;
+	inst = avltree_inst_last(tree);
+	return inst ? inst->ref : NULL;
 }
 
 
@@ -795,7 +787,7 @@ void *avltree_last(struct avltree_t *tree)
  * Lookup an AVL tree reference.
  *   @tree: The AVL tree.
  *   @key: The sought key.
- *   &returns: The refrence if found, null otherwise.
+ *   &returns: The reference if found, null otherwise.
  */
 
 _export
@@ -814,7 +806,7 @@ void *avltree_lookup(const struct avltree_t *tree, const void *key)
  * Lookup a nearby AVL tree reference.
  *   @tree: The AVL tree.
  *   @key: The sought key.
- *   &returns: The refrence if found, null otherwise.
+ *   &returns: The reference if found, null otherwise.
  */
 
 _export
@@ -833,7 +825,7 @@ void *avltree_nearby(const struct avltree_t *tree, const void *key)
  * Lookup the LUB node given the key.
  *   @tree: The AVL tree.
  *   @key: The sought key.
- *   &returns: The refrence if found, null otherwise.
+ *   &returns: The reference if found, null otherwise.
  */
 
 _export
@@ -852,7 +844,7 @@ void *avltree_atleast(const struct avltree_t *tree, const void *key)
  * Lookup the GLB node given the key.
  *   @tree: The AVL tree.
  *   @key: The sought key.
- *   &returns: The refrence if found, null otherwise.
+ *   &returns: The reference if found, null otherwise.
  */
 
 _export
@@ -1321,6 +1313,39 @@ struct avltree_inst_t *avltree_inst_next(struct avltree_inst_t *inst)
 	struct avltree_node_t *node;
 
 	node = avltree_node_next(&inst->node);
+	return node ? inst_cast(node) : NULL;
+}
+
+
+/**
+ * Lookup the LUB instance given the key.
+ *   @tree: The AVL tree.
+ *   @key: The sought key.
+ *   &returns: The refernce if found, null otherwise.
+ */
+
+_export
+struct avltree_inst_t *avltree_inst_atleast(const struct avltree_t *tree, const void *key)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_atleast(tree->root.node, key, compare_nodekey, tree->compare);
+	return node ? inst_cast(node) : NULL;
+}
+
+/**
+ * Lookup the GLB instance given the key.
+ *   @tree: The AVL tree.
+ *   @key: The sought key.
+ *   &returns: The refernce if found, null otherwise.
+ */
+
+_export
+struct avltree_inst_t *avltree_inst_atmost(const struct avltree_t *tree, const void *key)
+{
+	struct avltree_node_t *node;
+
+	node = avltree_node_atmost(tree->root.node, key, compare_nodekey, tree->compare);
 	return node ? inst_cast(node) : NULL;
 }
 

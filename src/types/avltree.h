@@ -154,6 +154,9 @@ struct avltree_inst_t *avltree_inst_last(struct avltree_t *tree);
 struct avltree_inst_t *avltree_inst_prev(struct avltree_inst_t *inst);
 struct avltree_inst_t *avltree_inst_next(struct avltree_inst_t *inst);
 
+struct avltree_inst_t *avltree_inst_atleast(const struct avltree_t *tree, const void *key);
+struct avltree_inst_t *avltree_inst_atmost(const struct avltree_t *tree, const void *key);
+
 /* %~shim.h% */
 
 /*
