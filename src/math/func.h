@@ -82,6 +82,29 @@ static inline size_t m_sizemin(size_t a, size_t b)
 
 
 /**
+ * Unsinged integer count the number of leading zeros.
+ *   @n: The number.
+ *   &returns: The number of leading zeros
+ */
+
+static inline int8_t m_uintclz(unsigned int n)
+{
+	return __builtin_clz(n);
+}
+
+/**
+ * Unsinged integer count the number of leading zeros.
+ *   @n: The number.
+ *   &returns: The number of leading zeros
+ */
+
+static inline int8_t m_uintctz(unsigned int n)
+{
+	return __builtin_ctz(n);
+}
+
+
+/**
  * Double maximum.
  *   @left: The left value.
  *   @right: The right value.
