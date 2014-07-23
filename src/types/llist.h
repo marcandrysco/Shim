@@ -127,6 +127,19 @@ void *llist_iter_next(struct llist_iter_t *iter);
 struct iter_t llist_iter(struct llist_t *list);
 struct iter_t llist_asiter(struct llist_t *list);
 
+/*
+ * linked list instance function declarations
+ */
+
+struct llist_inst_t *llist_inst_front(struct llist_t *list);
+struct llist_inst_t *llist_inst_back(struct llist_t *list);
+
+struct llist_inst_t *llist_inst_prev(struct llist_inst_t *inst);
+struct llist_inst_t *llist_inst_next(struct llist_inst_t *inst);
+
+void *llist_inst_remove(struct llist_t *list, struct llist_inst_t *inst);
+void llist_inst_purge(struct llist_t *list, struct llist_inst_t *inst);
+
 /* %~shim.h% */
 
 /*

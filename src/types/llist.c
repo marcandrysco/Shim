@@ -574,6 +574,101 @@ static void *asiter_next(struct llist_t *list)
 
 
 /**
+ * Retrieve the first instnace from the list.
+ *   @list: The list.
+ *   &returns: The instance.
+ */
+
+_export
+struct llist_inst_t *llist_inst_front(struct llist_t *list)
+{
+	struct llist_node_t *node;
+	
+	node = list->root.head;
+	return node ? inst_cast(node) : NULL;
+}
+
+/**
+ * Retrieve the first instnace from the list.
+ *   @list: The list.
+ *   &returns: The instance.
+ */
+
+_export
+struct llist_inst_t *llist_inst_back(struct llist_t *list)
+{
+	struct llist_node_t *node;
+	
+	node = list->root.tail;
+	return node ? inst_cast(node) : NULL;
+}
+
+
+/**
+ * Retrieve the previous instance.
+ *   @inst: The instance.
+ *   &returns: The previous instance or null.
+ */
+
+_export
+struct llist_inst_t *llist_inst_prev(struct llist_inst_t *inst)
+{
+	struct llist_node_t *node;
+	
+	node = inst->node.next;
+	return node ? inst_cast(node) : NULL;
+}
+
+/**
+ * Retrieve the next instance.
+ *   @inst: The instance.
+ *   &returns: The next instance or null.
+ */
+
+_export
+struct llist_inst_t *llist_inst_next(struct llist_inst_t *inst)
+{
+	struct llist_node_t *node;
+	
+	node = inst->node.next;
+	return node ? inst_cast(node) : NULL;
+}
+
+
+/**
+ * Remove an instance from the list without deleting the reference.
+ *   @list: The list.
+ *   @inst: The instance.
+ *   &returns: The reference.
+ */
+
+_export
+void *llist_inst_remove(struct llist_t *list, struct llist_inst_t *inst)
+{
+	void *ref;
+
+	llist_root_remove(&list->root, &inst->node);
+	ref = inst->ref;
+
+	mem_free(inst);
+
+	return ref;
+}
+
+/**
+ * Purge an instance from the list, deleting its reference.
+ *   @list: The list.
+ *   @inst: The instance.
+ */
+
+_export
+void llist_inst_purge(struct llist_t *list, struct llist_inst_t *inst)
+{
+	list->delete(llist_inst_remove(list, inst));
+}
+
+
+/**
  * Cast to instance.
  *   @node: The node.
  *   &returns: The instance.
