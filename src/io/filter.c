@@ -23,18 +23,21 @@ struct inst_t {
 static struct io_chunk_t inst_apply(struct inst_t *inst, void *in);
 
 static struct io_chunk_t blank_apply(void *ref, void *in);
+static struct io_chunk_t str_apply(void *ref, const char *str);
 
 /*
  * local variables
  */
 
 static struct io_filter_i blank_iface = { blank_apply, delete_noop };
+static struct io_filter_i str_iface = { (io_filter_f)str_apply, delete_noop };
 
 /*
  * global variables
  */
 
 _export struct io_filter_t io_filter_blank = { NULL, &blank_iface };
+_export struct io_filter_t io_filter_str = { NULL, &str_iface };
 
 
 /**
@@ -80,4 +83,16 @@ static struct io_chunk_t inst_apply(struct inst_t *inst, void *in)
 static struct io_chunk_t blank_apply(void *ref, void *in)
 {
 	return io_chunk_null;
+}
+
+/**
+ * Apply a string filter.
+ *   @ref: Unused.
+ *   @str: The string.
+ *   &returns: The string as an I/O chunk.
+ */
+
+static struct io_chunk_t str_apply(void *ref, const char *str)
+{
+	return io_chunk_str(str);
 }

@@ -53,6 +53,7 @@ struct io_filter_t {
  */
 
 extern struct io_filter_t io_filter_blank;
+extern struct io_filter_t io_filter_str;
 
 /*
  * filter function declarations
