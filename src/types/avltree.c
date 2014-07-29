@@ -284,7 +284,7 @@ struct avltree_node_t *avltree_node_atleast(struct avltree_node_t *root, const v
 			node = node->child[CMP2NODE(cmp)];
 	}
 
-	if((node == NULL) && (cmp > 0))
+	if(cmp > 0)
 		return avltree_node_next(prev);
 	else
 		return prev;
@@ -315,7 +315,7 @@ struct avltree_node_t *avltree_node_atmost(struct avltree_node_t *root, const vo
 			node = node->child[CMP2NODE(cmp)];
 	}
 
-	if((node == NULL) && (cmp < 0))
+	if(cmp < 0)
 		return avltree_node_prev(prev);
 	else
 		return prev;
