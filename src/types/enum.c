@@ -72,6 +72,8 @@ static struct iter_t blank_iter(void *ref);
 static struct iter_t inst_iter(struct inst_t *inst);
 static void inst_delete(struct inst_t *inst);
 
+static struct iter_t arr_iter(void **arr);
+
 static struct iter_t apply_iter(struct apply_t *apply);
 static void apply_delete(struct apply_t *apply);
 
@@ -131,7 +133,7 @@ _export
 struct enum_t enum_new(void *ref, enum_f iter, delete_f delete)
 {
 	struct inst_t *inst;
-	static struct enum_i iface = { (enum_f)inst_iter, (delete_f)inst_delete };
+	static const struct enum_i iface = { (enum_f)inst_iter, (delete_f)inst_delete };
 
 	inst = mem_alloc(sizeof(struct inst_t));
 	*inst = (struct inst_t){ ref, iter, delete };
@@ -161,6 +163,7 @@ static void inst_delete(struct inst_t *inst)
 	mem_free(inst);
 }
 
+
 /**
  * Create a constnat copy of an enumerator.
  *   @iter: The enumerator.
@@ -171,6 +174,44 @@ _export
 struct enum_t enum_const(struct enum_t iter)
 {
 	return enum_new(iter.ref, iter.iface->iter, delete_noop);
+}
+
+
+/**
+ * Create an enumerator over an array of pointers.
+ *   @arr: The array.
+ *   &returns: The enumerator.
+ */
+
+_export
+struct enum_t enum_arr(void **arr)
+{
+	static const struct enum_i iface = { (enum_f)arr_iter, delete_noop };
+
+	return (struct enum_t){ arr, &iface };
+}
+
+/**
+ * Create an enumerator over an array of pointers.
+ *   @arr: The array.
+ *   &returns: The enumerator.
+ */
+
+_export
+struct enum_t enum_arrstr(const char *const *arr)
+{
+	return enum_arr((void **)arr);
+}
+
+/**
+ * Create an iterator over an array of pointers.
+ *   @arr: The array.
+ *   &returns: The iterator.
+ */
+
+static struct iter_t arr_iter(void **arr)
+{
+	return iter_arr(arr);
 }
 
 

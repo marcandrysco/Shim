@@ -68,6 +68,8 @@ static void *blank_next(void *ref);
 static void *inst_next(struct inst_t *inst);
 static void inst_delete(struct inst_t *inst);
 
+static void *arr_next(void ***ptr);
+
 static void *wrapper_next(struct wrapper_t *wrapper);
 static void wrapper_delete(struct wrapper_t *wrapper);
 
@@ -142,6 +144,54 @@ static void inst_delete(struct inst_t *inst)
 {
 	inst->delete(inst->ref);
 	mem_free(inst);
+}
+
+
+/**
+ * Create an iterator on a constant array.
+ *   @arr: The array data.
+ *   &returns: The iterator.
+ */
+
+_export
+struct iter_t iter_arr(void **arr)
+{
+	void ***ptr;
+	static const struct iter_i iface = { (iter_f)arr_next, mem_free };
+
+	ptr = mem_alloc(sizeof(void **));
+	*ptr = arr;
+
+	return (struct iter_t){ ptr, &iface };
+}
+
+/**
+ * Create an iterator on an array of strings.
+ *   @arr: The array data.
+ *   &returns: The iterator.
+ */
+
+_export
+struct iter_t iter_arrstr(const char *const *arr)
+{
+	return iter_arr((void **)arr);
+}
+
+/**
+ * Retrieve the next value from the array iterator.
+ *   @iter: The iterator.
+ *   &returns: The value.
+ */
+
+static void *arr_next(void ***ptr)
+{
+	void *ref;
+
+	ref = **ptr;
+	if(ref != NULL)
+		(*ptr)++;
+
+	return ref;
 }
 
 
