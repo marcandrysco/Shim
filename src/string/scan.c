@@ -1,5 +1,6 @@
 #include "../common.h"
 #include "scan.h"
+#include "../debug/exception.h"
 #include "../io/input.h"
 #include "../io/scan.h"
 #include "locale.h"
@@ -27,6 +28,28 @@ int8_t str_getdigit(char ch)
 
 
 /**
+ * Parse an unsigned integer from a string.
+ *   @str: The string.
+ *   &returns: The unsigned integer.
+ */
+
+_export
+unsigned int str_parse_uint(const char *str)
+{
+	unsigned long val;
+
+	val = str_toulong(str, (char **)&str);
+	if(val > UINT_MAX)
+		throw("Value too large.");
+
+	if(!str_endchk(str))
+		throw("Extra characters after number [%s].", str);
+
+	return val;
+}
+
+
+/**
  * Convert a string to an unsigned long value.
  *   @str: The string.
  *   @endptr: Optional. The end pointer.
@@ -38,7 +61,7 @@ unsigned long str_toulong(const char *str, char **endptr)
 {
 	struct io_input_t input;
 	unsigned long val;
-	char ch;
+	char ch = '\0';
 
 	input = str_input_ref(&str);
 	val = io_scan_ulong(input, &ch);

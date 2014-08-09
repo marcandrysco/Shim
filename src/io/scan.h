@@ -22,6 +22,8 @@ char *io_scan_str(struct io_input_t input);
 
 unsigned long io_scan_ulong(struct io_input_t input, char *ch);
 
+unsigned int str_parse_uint(const char *str);
+
 /* %~shim.h% */
 
 /*
