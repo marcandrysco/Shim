@@ -351,8 +351,10 @@ void *llist_front_remove(struct llist_t *list)
 		return NULL;
 
 	inst = inst_cast(node);
+	
+	list->len--;
 	list->root.head = node->next;
-
+	
 	ref = inst->ref;
 	mem_free(inst);
 
@@ -396,6 +398,8 @@ void *llist_back_remove(struct llist_t *list)
 		return NULL;
 
 	inst = inst_cast(node);
+
+	list->len--;
 	list->root.head = node->next;
 
 	ref = inst->ref;
@@ -424,7 +428,7 @@ void llist_push(struct llist_t *list, void *ref)
  */
 
 _export
-void *llist_pop(struct llist_t *list, void *ref)
+void *llist_pop(struct llist_t *list)
 {
 	return llist_front_remove(list);
 }

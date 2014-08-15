@@ -7,6 +7,14 @@
 
 /* %shim.h% */
 
+
+/**
+ * Initializer function.
+ *   @ref: The reference.
+ */
+
+typedef void (*init_f)(void *ref);
+
 /**
  * Delete a reference.
  *   @ref: The reference.
