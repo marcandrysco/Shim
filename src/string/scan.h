@@ -13,6 +13,8 @@
 
 int8_t str_getdigit(char ch);
 
+unsigned int str_parse_uint(const char *str);
+
 unsigned long str_toulong(const char *str, char **endptr);
 bool str_endchk(const char *str);
 
