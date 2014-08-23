@@ -24,7 +24,7 @@ void *mem_dup(void *ptr, size_t nbytes);
 #define mem_getref(type, val) (&(union { type v; }){ .v = (val) })
 #define mem_dupval(type, val) mem_dup(&(union { type v; }){ .v = (val) }, sizeof(type))
 
-#define getcontainer(ptr, type, member) ((void *)(ptr) - offsetof(type, member))
+#define getcontainer(ptr, type, member) ((type *)((void *)(ptr) - offsetof(type, member)))
 
 /* %~shim.h% */
 

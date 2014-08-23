@@ -176,7 +176,7 @@ struct llist_t llist_empty(delete_f delete)
 
 	list.len = 0;
 	list.delete = delete;
-	llist_root_init(&list.root);
+	list.root = llist_root_empty();
 
 	return list;
 }
@@ -193,7 +193,7 @@ struct llist_t *llist_new(delete_f delete)
 	struct llist_t *list;
 
 	list = mem_alloc(sizeof(struct llist_t));
-	*list  = llist_empty(delete);
+	*list = llist_empty(delete);
 
 	return list;
 }
@@ -229,6 +229,20 @@ void llist_delete(struct llist_t *list)
 {
 	llist_destroy(list);
 	mem_free(list);
+}
+
+
+/**
+ * Clear a linked-list.
+ *   @list: The list.
+ */
+
+_export
+void llist_clear(struct llist_t *list)
+{
+	llist_destroy(list);
+
+	list->root = llist_root_empty();
 }
 
 

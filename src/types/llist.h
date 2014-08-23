@@ -104,6 +104,8 @@ struct llist_t *llist_new(delete_f delete);
 void llist_destroy(struct llist_t *list);
 void llist_delete(struct llist_t *list);
 
+void llist_clear(struct llist_t *list);
+
 struct llist_inst_t *llist_scan(struct llist_t *list, void *ref);
 
 struct llist_inst_t *llist_prepend(struct llist_t *list, void *ref);
