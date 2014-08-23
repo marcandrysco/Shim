@@ -267,6 +267,9 @@ struct avlitree_node_t *avlitree_root_slice(struct avlitree_root_t *root, unsign
 		}
 
 		stack[i]->child[dir[i]] = node->child[dir[ii]];
+		if(node->child[dir[ii]] != NULL)
+			node->child[dir[ii]]->parent = stack[i];
+
 		i++;
 
 		if(stack[ii]->child[LEFT] != NULL)

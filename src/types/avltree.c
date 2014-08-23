@@ -382,12 +382,10 @@ void avltree_node_insert(struct avltree_node_t **root, struct avltree_node_t *no
 		else
 			node = rotate_double(stack[i], OTHERNODE(CMP2NODE(stack[i]->balance)));
 
-		if(i == 0) {
+		if(i == 0)
 			*root = node;
-		}
-		else {
+		else
 			stack[i-1]->child[dir[i-1]] = node;
-		}
 		
 		break;
 	}
@@ -438,17 +436,34 @@ struct avltree_node_t *avltree_node_remove(struct avltree_node_t **root, const v
 		}
 
 		stack[i]->child[dir[i]] = node->child[dir[ii]];
+		if(node->child[dir[ii]] != NULL)
+			node->child[dir[ii]]->parent = stack[i];
+
 		i++;
 
-		node->child[0] = stack[ii]->child[0];
-		node->child[1] = stack[ii]->child[1];
+		node->child[LEFT] = stack[ii]->child[LEFT];
+		node->child[RIGHT] = stack[ii]->child[RIGHT];
 		node->balance = stack[ii]->balance;
+
+		if(node->child[LEFT] != NULL)
+			node->child[LEFT]->parent = node;
+
+		if(node->child[RIGHT] != NULL)
+			node->child[RIGHT]->parent = node;
 	}
 
-	if(ii == 0)
+	if(ii == 0) {
 		*root = node;
-	else
+
+		if(node != NULL)
+			node->parent = NULL;
+	}
+	else {
 		stack[ii-1]->child[dir[ii-1]] = node;
+
+		if(node != NULL)
+			node->parent = stack[ii-1];
+	}
 
 	retval = stack[ii];
 	stack[ii] = node;
@@ -1433,11 +1448,6 @@ static struct avltree_node_t *rotate_single(struct avltree_node_t *node, uint8_t
 	node->child[OTHERNODE(dir)] = tmp->child[dir];
 	tmp->child[dir] = node;
 
-	tmp->parent = node->parent;
-	node->parent = tmp;
-	if(node->child[OTHERNODE(dir)])
-		node->child[OTHERNODE(dir)]->parent = node;
-
 	node->balance += NODEDIR(dir);
 	if(NODEDIR(dir) * tmp->balance < 0)
 		node->balance -= tmp->balance;
@@ -1445,6 +1455,12 @@ static struct avltree_node_t *rotate_single(struct avltree_node_t *node, uint8_t
 	tmp->balance += NODEDIR(dir);
 	if(NODEDIR(dir) * node->balance > 0)
 		tmp->balance += node->balance;
+
+	tmp->parent = node->parent;
+	node->parent = tmp;
+
+	if(node->child[OTHERNODE(dir)] != NULL)
+		node->child[OTHERNODE(dir)]->parent = node;
 
 	return tmp;
 }
