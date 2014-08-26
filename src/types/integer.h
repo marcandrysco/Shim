@@ -33,12 +33,17 @@ struct integer_t *integer_parse(const char *str, char **endptr);
 struct integer_t *integer_scan(struct io_input_t input, int16_t *cur);
 void integer_delete(struct integer_t *integer);
 
+void integer_add(struct integer_t **integer, struct integer_t *val);
 void integer_add_uint(struct integer_t **integer, unsigned int val);
 void integer_add_ushort(struct integer_t **integer, unsigned short val);
+
+void integer_sub(struct integer_t **integer, struct integer_t *val);
 
 void integer_mul_ushort(struct integer_t **integer, unsigned short val);
 
 unsigned short integer_div_ushort(struct integer_t **integer, unsigned short val);
+
+int integer_cmp(const struct integer_t *left, const struct integer_t *right);
 
 void integer_print(const struct integer_t *integer, struct io_output_t output);
 struct io_chunk_t integer_chunk(const struct integer_t *integer);

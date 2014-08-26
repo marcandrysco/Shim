@@ -29,6 +29,12 @@
 
 static void chunk_proc(struct io_output_t output, void *arg);
 
+static void op_resize(struct integer_t **integer, unsigned int len);
+static void op_shrink(struct integer_t **integer);
+static void op_add(unsigned int *val, unsigned int add, bool *c);
+static void op_sub(unsigned int *val, unsigned int sub, bool *c);
+static void op_rev(unsigned int *val, unsigned int sub, bool *c);
+
 
 /**
  * Create a zero integer.
@@ -156,10 +162,10 @@ struct integer_t *integer_scan(struct io_input_t input, int16_t *cur)
 		base = 10;
 
 	digit = str_getdigit(ch);
-	if((digit < 0) || (digit >= base))
+	if(digit >= base)
 		throw("Invalid number.");
 
-	integer = integer_new(neg ? -digit : digit);
+	integer = integer_new((digit < 0) ? 0 : (neg ? -digit : digit));
 
 	while(true) {
 		digit = str_getdigit(ch = io_input_byte(input));
@@ -187,6 +193,38 @@ void integer_delete(struct integer_t *integer)
 	mem_free(integer);
 }
 
+
+/**
+ * Add an integer to a base integer.
+ *   @integer: The base integer.
+ *   @val: The value integer to add.
+ */
+
+_export
+void integer_add(struct integer_t **integer, struct integer_t *val)
+{
+	if(val->neg) {
+		val->neg = false;
+		integer_sub(integer, val);
+		val->neg = true;
+	}
+	else {
+		bool c;
+		unsigned int i;
+
+		if(val->len > (*integer)->len)
+			op_resize(integer, val->len);
+
+		for(i = 0, c = false; (i < val->len) || (c && (i < (*integer)->len)); i++)
+			op_add(&(*integer)->arr[i], (i < val->len) ? val->arr[i] : 0, &c);
+
+		if(c) {
+			*integer = mem_realloc(*integer, sizeof(struct integer_t) + (i + 1) * sizeof(unsigned int));
+			(*integer)->len = i + 1;
+			(*integer)->arr[i] = 1;
+		}
+	}
+}
 
 /**
  * Add an unsigned integer to the integer.
@@ -226,6 +264,44 @@ _export
 void integer_add_ushort(struct integer_t **integer, unsigned short val)
 {
 	integer_add_uint(integer, val);
+}
+
+
+/**
+ * Subtract an integer to a base integer.
+ *   @integer: The base integer.
+ *   @val: The value integer to subtract.
+ */
+
+_export
+void integer_sub(struct integer_t **integer, struct integer_t *val)
+{
+	if(val->neg) {
+		val->neg = false;
+		integer_add(integer, val);
+		val->neg = true;
+	}
+	else if(integer_cmp(*integer, val) >= 0) {
+		bool c;
+		unsigned int i;
+
+		for(i = 0, c = false; (i < val->len) || (c && (i < (*integer)->len)); i++)
+			op_sub(&(*integer)->arr[i], (i < val->len) ? val->arr[i] : 0, &c);
+
+		op_shrink(integer);
+	}
+	else {
+		bool c;
+		unsigned int i;
+
+		op_resize(integer, val->len);
+
+		for(i = 0, c = false; i < (*integer)->len; i++)
+			op_rev(&(*integer)->arr[i], (i < val->len) ? val->arr[i] : 0, &c);
+
+		(*integer)->neg = true;
+		op_shrink(integer);
+	}
 }
 
 
@@ -295,6 +371,33 @@ unsigned short integer_div_ushort(struct integer_t **integer, unsigned short val
 
 
 /**
+ * Compare two integer.
+ *   @left: The left integer.
+ *   @right: The right integer.
+ *   &returns: Their order.
+ */
+
+int integer_cmp(const struct integer_t *left, const struct integer_t *right)
+{
+	unsigned int i;
+
+	if(left->len > right->len)
+		return 2;
+	else if(left->len < right->len)
+		return -2;
+
+	for(i = left->len - 1; i != UINT_MAX; i--) {
+		if(left->arr[i] > right->arr[i])
+			return 1;
+		else if(left->arr[i] < right->arr[i])
+			return -1;
+	}
+
+	return 0;
+}
+
+
+/**
  * Print an integer to the output.
  *   @integer: The integer.
  *   @output: The output.
@@ -342,4 +445,92 @@ struct io_chunk_t integer_chunk(const struct integer_t *integer)
 static void chunk_proc(struct io_output_t output, void *arg)
 {
 	integer_print(arg, output);
+}
+
+
+
+/**
+ * Resize an integer to a given length, zero filling all new elements.
+ *   @integer: The integer.
+ *   @len: The length.
+ */
+
+static void op_resize(struct integer_t **integer, unsigned int len)
+{
+	unsigned int i;
+
+	*integer = mem_realloc(*integer, sizeof(struct integer_t) + len * sizeof(unsigned int));
+
+	for(i = (*integer)->len; i < len; i++)
+		(*integer)->arr[i] = 0;
+
+	(*integer)->len = len;
+}
+
+/**
+ * Shrink the integer to the minimum necessary size.
+ *   @integer: The integer.
+ */
+
+static void op_shrink(struct integer_t **integer)
+{
+	unsigned int i;
+
+	for(i = (*integer)->len; i > 0; i--) {
+		if((*integer)->arr[i-1] != 0)
+			break;
+	}
+
+	if(i < (*integer)->len) {
+		*integer = mem_realloc(*integer, sizeof(struct integer_t) + i * sizeof(unsigned int));
+		(*integer)->len = i;
+	}
+}
+
+/**
+ * Perform an add with carry on a single digit.
+ *   @val: The base value.
+ *   @add: The value to add.
+ *   @c: The carry flag.
+ */
+
+static void op_add(unsigned int *val, unsigned int add, bool *c)
+{
+	unsigned int t;
+
+	t = *val;
+	*val += add + (*c ? 1 : 0);
+	*c = (*val < t) || ((*val == t) && *c);
+}
+
+/**
+ * Perform a subtract with carry on a single digit.
+ *   @val: The base value.
+ *   @sub: The value to subract.
+ *   @c: The carry flag.
+ */
+
+static void op_sub(unsigned int *val, unsigned int sub, bool *c)
+{
+	unsigned int t;
+
+	t = *val;
+	*val -= sub + (*c ? 1 : 0);
+	*c = (*val > t) || ((*val == t) && *c);
+}
+
+/**
+ * Perform a reverse subtract with carry on a single digit.
+ *   @val: The base value.
+ *   @sub: The value to subract from.
+ *   @c: The carry flag.
+ */
+
+static void op_rev(unsigned int *val, unsigned int sub, bool *c)
+{
+	unsigned int t;
+
+	t = sub;
+	*val = sub - (*val + (*c ? 1 : 0));
+	*c = (*val > t) || ((*val == t) && *c);
 }
