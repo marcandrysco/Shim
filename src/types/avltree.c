@@ -104,7 +104,7 @@ struct avltree_node_t *avltree_root_last(struct avltree_root_t *root)
 		return NULL;
 
 	while(node->child[RIGHT] != NULL)
-		node = node->child[LEFT];
+		node = node->child[RIGHT];
 
 	return node;
 }
