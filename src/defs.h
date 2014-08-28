@@ -15,10 +15,15 @@
 #	define _debug 1
 #endif
 
+#if !defined(_debug)
+#	define NDEBUG 1
+#endif
+
 /*
  * common headers
  */
 
+#include <assert.h>
 #include <limits.h>
 #include <math.h>
 #include <signal.h>
