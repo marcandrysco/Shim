@@ -14,6 +14,7 @@
 #include "../../string/base.h"
 #include "../../string/io.h"
 #include "../../types/defs.h"
+#include "../../types/llist.h"
 
 
 /*
@@ -456,7 +457,7 @@ _export
 void _impl_fs_rmdir(const char *path)
 {
 	if(rmdir(path) != 0)
-		throw("Failed to remove directory '%s'. %s.", strerror(errno));
+		_fatal("Failed to remove directory '%s'. %s.", path, strerror(errno));
 }
 
 /**
@@ -468,7 +469,7 @@ _export
 void _impl_fs_rmfile(const char *path)
 {
 	if(unlink(path) < 0)
-		throw("Unable to remove file '%s'. %s.", path, strerror(errno));
+		_fatal("Unable to remove file '%s'. %s.", path, strerror(errno));
 }
 
 /**
@@ -481,32 +482,31 @@ void _impl_fs_clear(const char *path)
 {
 	if(_impl_fs_isdir(path)) {
 		DIR *dir;
+		char *sub;
 		struct dirent *entry;
+		struct llist_t list;
 
 		dir = opendir(path);
 		if(dir == NULL)
 			throw("Unable to enumerate files in '%s'. %s.", path, strerror(errno));
 
-		while(true) {
-			entry = readdir(dir);
-			do {
-				entry = readdir(dir);
-				if(entry == NULL)
-					break;
-			} while(str_isequal(entry->d_name, ".") || str_isequal(entry->d_name, ".."));
+		list = llist_empty(mem_free);
 
-			if(entry == NULL)
-				break;
-			else {
-				char sub[str_len(path) + str_len(entry->d_name) + 2];
-
-				str_printf(sub, "%s/%s", path, entry->d_name);
-
-				_impl_fs_clear(sub);
-			}
+		while((entry = readdir(dir)) != NULL) {
+			if(str_isequal(entry->d_name, ".") || str_isequal(entry->d_name, ".."))
+				continue;
+			else
+				llist_append(&list, str_aprintf("%s/%s", path, entry->d_name));
 		}
 
 		closedir(dir);
+
+		while((sub = llist_front_remove(&list)) != NULL) {
+			_impl_fs_clear(sub);
+
+			mem_free(sub);
+		}
+
 		_impl_fs_rmdir(path);
 	}
 	else
