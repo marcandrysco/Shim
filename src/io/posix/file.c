@@ -231,7 +231,26 @@ static size_t buf_read(struct file_t *file, void *restrict buf, size_t nbytes)
 
 static size_t buf_write(struct file_t *file, const void *restrict buf, size_t nbytes)
 {
-	_fatal("stub");
+	if(file->op != io_write_e) {
+		file->idx = 0;
+		file->avail = file->nbytes;
+	}
+
+	if(nbytes > file->avail) {
+		if(file->idx > 0)
+			unbuf_write(file, file->buf, file->idx);
+
+		unbuf_write(file, buf, nbytes);
+		file->op = 0;
+	}
+	else {
+		mem_copy(file->buf + file->idx, buf, nbytes);
+		file->idx += nbytes;
+		file->avail = 0;
+		file->op = io_write_e;
+	}
+
+	return nbytes;
 }
 
 
@@ -258,6 +277,8 @@ uint64_t file_seek(struct file_t *file, int64_t offset, enum io_whence_e whence)
 {
 	int val;
 
+	file_flush(file);
+
 	switch(whence) {
 	case io_seek_set_e: val = SEEK_SET; break;
 	case io_seek_cur_e: val = SEEK_CUR; break;
@@ -281,13 +302,13 @@ bool file_flush(struct file_t *file)
 	ssize_t nbytes, rem;
 
 	if(file->op != io_write_e)
-		return 0;
+		return false;
 
 	buf = file->buf;
 	rem = file->idx;
 
 	while(rem > 0) {
-		nbytes = write(file->fd, buf, rem);
+		nbytes = unbuf_write(file, buf, rem);
 		if(nbytes == 0)
 			;
 		if(nbytes < 0)
@@ -299,7 +320,7 @@ bool file_flush(struct file_t *file)
 
 	file->idx = 0;
 
-	return 0;
+	return true;
 }
 
 

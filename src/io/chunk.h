@@ -32,6 +32,7 @@ size_t io_chunk_proc_len(struct io_chunk_t chunk);
 
 struct io_chunk_t io_chunk_str(const char *str);
 struct io_chunk_t io_chunk_strptr(char **str);
+struct io_chunk_t io_chunk_uint(unsigned int *val);
 struct io_chunk_t io_chunk_cond(const struct io_chunk_t *pair);
 struct io_chunk_t io_chunk_indent(const unsigned int *indent);
 

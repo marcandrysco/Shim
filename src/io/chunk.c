@@ -41,6 +41,7 @@ static size_t len_write(size_t *len, const void *restrict buf, size_t nbytes);
 
 static void str_proc(struct io_output_t output, void *arg);
 static void strptr_proc(struct io_output_t output, void *arg);
+static void uint_proc(struct io_output_t output, void *arg);
 static void cond_proc(struct io_output_t output, void *arg);
 static void indent_proc(struct io_output_t output, void *arg);
 
@@ -244,6 +245,30 @@ struct io_chunk_t io_chunk_strptr(char **str)
 static void strptr_proc(struct io_output_t output, void *arg)
 {
 	io_print_str(output, *(char **)arg);
+}
+
+/**
+ * Create an unsigned integer chunk.
+ *   @val: The value.
+ *   &returns: The chunk.
+ */
+
+_export
+struct io_chunk_t io_chunk_uint(unsigned int *val)
+{
+	return (struct io_chunk_t){ uint_proc, (void *)val };
+}
+
+/**
+ * Processing callback for string chunks.
+ *   @output: The output.
+ *   @arg: the argument.
+ */
+
+static void uint_proc(struct io_output_t output, void *arg)
+{
+	if(arg != NULL)
+		io_print_uint(output, *(unsigned int *)arg);
 }
 
 /**
