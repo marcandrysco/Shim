@@ -99,14 +99,14 @@ void io_input_readfull(struct io_input_t input, void *restrict buf, size_t nbyte
 {
 	size_t rem = nbytes;
 
-	do {
+	while(rem > 0) {
 		nbytes = io_input_read(input, buf, rem);
 		if(nbytes == 0)
 			throw("Unable to read data from input.");
 
 		rem -= nbytes;
 		buf += nbytes;
-	} while(rem > 0);
+	}
 }
 
 /**

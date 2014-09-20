@@ -151,14 +151,14 @@ void io_output_writefull(struct io_output_t output, const void *restrict buf, si
 {
 	size_t rem = nbytes;
 
-	do {
+	while(rem > 0) {
 		nbytes = io_output_write(output, buf, rem);
 		if(nbytes == 0)
 			throw("Unable to write data to output.");
 
 		rem -= nbytes;
 		buf += nbytes;
-	} while(rem > 0);
+	}
 }
 
 /**
