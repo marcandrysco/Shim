@@ -77,9 +77,11 @@ void _abort()
  */
 
 _export _noreturn
-void _fatal(const char *restrict format, ...)
+void _shim_fatal(const char *file, unsigned int line, const char *restrict format, ...)
 {
 	va_list args;
+
+	io_printf(io_stderr, "Fatal error.\n%s:%u:", file, line);
 
 	va_start(args, format);
 	io_vprintf(io_stderr, format, args);

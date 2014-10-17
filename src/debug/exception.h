@@ -19,7 +19,7 @@
 
 void _nothrow();
 _noreturn void _abort();
-_noreturn void _fatal(const char *restrict format, ...);
+_noreturn void _shim_fatal(const char *file, unsigned int line, const char *restrict format, ...);
 
 void _backtrace();
 
@@ -56,6 +56,7 @@ _noreturn void _shim_sthrow(const char *file, unsigned int line, char *restrict 
 #define try		for(struct _shim_try_t *_shim_try = _shim_try_start(); _shim_try != NULL; _shim_try_end(_shim_try), _shim_try = NULL) if(!setjmp(_shim_try->jmpbuf)) switch(0) case 0:
 #define catch(e)	else for(const char *e = (_shim_try = NULL, _shim_catch_start()); e != NULL ; _shim_catch_end(), e = NULL) switch(0) case 0:
 
+#define _fatal(...)	_shim_fatal(__FILE__, __LINE__, __VA_ARGS__)
 #define throw(...)	_shim_throw(__FILE__, __LINE__, __VA_ARGS__)
 #define vthrow(...)	_shim_vthrow(__FILE__, __LINE__, __VA_ARGS__)
 
