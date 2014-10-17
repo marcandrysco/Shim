@@ -683,8 +683,23 @@ struct avljtree_node_t *avljtree_node_idxiter_next(struct avljtree_idxiter_t *it
 
 
 /**
- * Initialize the AVL join tree.
- *   @tree: The uninitialized AVL join tree.
+ * Initialize the AVL joint tree.
+ *   @tree: The uninitialized AVL joint tree.
+ *   @compare: The comparison function used to sort reference.
+ *   @delete: Optional. The callback to delete references. Set to 'NULL' if
+ *     unused.
+ *   &prop: noerror
+ */
+
+_export
+struct avljtree_t avljtree_empty(compare_f compare, delete_f delete)
+{
+	return (struct avljtree_t){ NULL, NULL, 0, compare, delete };
+}
+
+/**
+ * Creatent an empty the AVL joint tree.
+ *   @tree: The uninitialized AVL joint tree.
  *   @compare: The comparison function used to sort reference.
  *   @delete: Optional. The callback to delete references. Set to 'NULL' if
  *     unused.
@@ -698,11 +713,11 @@ void avljtree_init(struct avljtree_t *tree, compare_f compare, delete_f delete)
 }
 
 /**
- * Allocates and initializes a new AVL join tree.
+ * Allocates and initializes a new AVL joint tree.
  *   @compare: The comparison function used to sort reference.
  *   @delete: Optional. The callback to delete references. Set to 'NULL' if
  *     unused.
- *   &returns: The AVL join tree.
+ *   &returns: The AVL joint tree.
  */
 
 _export

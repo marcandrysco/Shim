@@ -179,8 +179,8 @@ struct avljtree_node_t *avljtree_node_idxiter_next(struct avljtree_idxiter_t *it
  * avl joint tree function declarations
  */
 
+struct avljtree_t avljtree_empty(compare_f compare, delete_f delete);
 void avljtree_init(struct avljtree_t *tree, compare_f compare, delete_f delete);
-struct avljtree_t *avljtree_new(compare_f compare, delete_f delete);
 void avljtree_destroy(struct avljtree_t *tree);
 void avljtree_delete(struct avljtree_t *tree);
 
