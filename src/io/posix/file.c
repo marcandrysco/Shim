@@ -112,7 +112,7 @@ struct io_file_t _impl_io_file_open(const char *path, enum io_file_e opt)
 
 	fd = open(path, oflag, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 	if(fd < 0)
-		throw("Failed to open file.");
+		throw("Failed to open file '%s'.", path);
 
 	file = mem_alloc(sizeof(struct file_t));
 	file->fd = fd;
@@ -262,7 +262,14 @@ static size_t buf_write(struct file_t *file, const void *restrict buf, size_t nb
 
 uint64_t file_tell(struct file_t *file)
 {
-	return lseek(file->fd, 0, SEEK_CUR);
+	uint64_t addr = lseek(file->fd, 0, SEEK_CUR);
+
+	if(file->op == io_write_e)
+		addr += file->idx;
+	else if(file->op == io_read_e)
+		addr -= file->avail;
+
+	return addr;
 }
 
 /**
