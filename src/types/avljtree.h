@@ -203,7 +203,7 @@ void avljtree_clear(struct avljtree_t *tree);
 void avljtree_append(struct avljtree_t *tree, const void *key, void *ref);
 void avljtree_prepend(struct avljtree_t *tree, const void *key, void *ref);
 
-struct avljtree_keyiter_t avljtree_keyiter_new(const struct avljtree_t *tree);
+struct avljtree_keyiter_t avljtree_keyiter_begin(const struct avljtree_t *tree);
 void *avljtree_keyiter_next(struct avljtree_keyiter_t *iter);
 void *avljtree_keyiter_next_key(struct avljtree_keyiter_t *iter);
 struct avljtree_ref_t *avljtree_keyiter_next_ref(struct avljtree_keyiter_t *iter);

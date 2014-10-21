@@ -1104,7 +1104,7 @@ void avljtree_prepend(struct avljtree_t *tree, const void *key, void *ref)
  */
 
 _export
-struct avljtree_keyiter_t avljtree_keyiter_new(const struct avljtree_t *tree)
+struct avljtree_keyiter_t avljtree_keyiter_begin(const struct avljtree_t *tree)
 {
 	return avljtree_node_keyiter_new(tree->keyroot);
 }
@@ -1171,7 +1171,7 @@ struct iter_t avljtree_keyiter_vals_new(struct avljtree_t *tree)
 
 	iter.ref = mem_alloc(sizeof(struct avljtree_keyiter_t));
 	iter.iface = &keyiter_iface;
-	*(struct avljtree_keyiter_t *)iter.ref = avljtree_keyiter_new(tree);
+	*(struct avljtree_keyiter_t *)iter.ref = avljtree_keyiter_begin(tree);
 
 	return iter;
 }
@@ -1189,7 +1189,7 @@ struct iter_t avljtree_keyiter_keys_new(struct avljtree_t *tree)
 
 	iter.ref = mem_alloc(sizeof(struct avljtree_keyiter_t));
 	iter.iface = &keyiter_keys_iface;
-	*(struct avljtree_keyiter_t *)iter.ref = avljtree_keyiter_new(tree);
+	*(struct avljtree_keyiter_t *)iter.ref = avljtree_keyiter_begin(tree);
 
 	return iter;
 }
@@ -1208,7 +1208,7 @@ struct iter_t avljtree_keyiter_refs_new(struct avljtree_t *tree)
 
 	iter.ref = mem_alloc(sizeof(struct avljtree_keyiter_t));
 	iter.iface = &keyiter_refs_iface;
-	*(struct avljtree_keyiter_t *)iter.ref = avljtree_keyiter_new(tree);
+	*(struct avljtree_keyiter_t *)iter.ref = avljtree_keyiter_begin(tree);
 
 	return iter;
 }
