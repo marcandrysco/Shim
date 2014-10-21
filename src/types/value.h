@@ -52,15 +52,20 @@ struct value_integer_t {
  * value function declarations
  */
 
+struct value_t *value_copy(struct value_t *value);
 void value_delete(struct value_t *value);
 
 void value_print(const struct value_t *value, struct io_output_t output);
+void value_print_raw(const struct value_t *value, struct io_output_t output);
 struct io_chunk_t value_chunk(const struct value_t *value);
+struct io_chunk_t value_chunk_raw(const struct value_t *value);
 
 struct value_integer_t *value_integer_new(enum type_e type, struct integer_t *integer);
+struct value_integer_t *value_integer_copy(struct value_integer_t *value);
 void value_integer_delete(struct value_integer_t *value);
 
 void value_integer_print(const struct value_integer_t *value, struct io_output_t output);
+void value_integer_print_raw(const struct value_integer_t *value, struct io_output_t output);
 
 /* %~shim.h% */
 
