@@ -33,6 +33,15 @@ struct integer_t *integer_parse(const char *str, char **endptr);
 struct integer_t *integer_scan(struct io_input_t input, int16_t *cur);
 void integer_delete(struct integer_t *integer);
 
+uint8_t integer_uint8(struct integer_t *integer);
+int8_t integer_uint8chk(struct integer_t *integer);
+uint16_t integer_uint16(struct integer_t *integer);
+int8_t integer_uint16chk(struct integer_t *integer);
+uint32_t integer_uint32(struct integer_t *integer);
+int8_t integer_uint32chk(struct integer_t *integer);
+uint64_t integer_uint64(struct integer_t *integer);
+int8_t integer_uint64chk(struct integer_t *integer);
+
 void integer_add(struct integer_t **integer, struct integer_t *val);
 void integer_add_uint(struct integer_t **integer, unsigned int val);
 void integer_add_ushort(struct integer_t **integer, unsigned short val);

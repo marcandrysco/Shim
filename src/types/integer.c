@@ -3,6 +3,7 @@
 #include "../debug/exception.h"
 #include "../io/input.h"
 #include "../io/output.h"
+#include "../math/func.h"
 #include "../mem/base.h"
 #include "../mem/manage.h"
 #include "../string/scan.h"
@@ -191,6 +192,187 @@ _export
 void integer_delete(struct integer_t *integer)
 {
 	mem_free(integer);
+}
+
+
+/**
+ * Retrieve an unsigned 8-bit unsigned integer from the integer.
+ *   @integer: The integer.
+ *   &returns: The 8-bit unsigned integer.
+ */
+
+_export
+uint8_t integer_uint8(struct integer_t *integer)
+{
+	uint8_t val;
+
+#if UINT8_MAX <= UINT_MAX
+	val = integer->arr[0];
+#else
+	unsigned int i;
+
+	val = 0;
+	for(i = m_uintmin(sizeof(uint8_t) / sizeof(unsigned int), integer->len) - 1; i != UINT_MAX; i--)
+		val = val * ((uint8_t)1 << (8 * sizeof(unsigned int))) + integer->arr[i];
+#endif
+
+	return integer->neg ? -val : val;
+}
+
+/**
+ * Check an integer to see if it fits in an unsigned 8-bit integer.
+ *   @integer: The integer.
+ *   &returns: The range error result.
+ */
+
+_export
+int8_t integer_uint8chk(struct integer_t *integer)
+{
+	if(integer->neg)
+		return -1;
+#if UINT8_MAX < UINT_MAX
+	else if((integer->len > 1) || (integer->arr[0] > UINT8_MAX))
+#else
+	else if(integer->len > (sizeof(uint8_t) / sizeof(unsigned int)))
+#endif
+		return 0;
+	else
+		return 1;
+}
+
+/**
+ * Retrieve an unsigned 16-bit unsigned integer from the integer.
+ *   @integer: The integer.
+ *   &returns: The 16-bit unsigned integer.
+ */
+
+_export
+uint16_t integer_uint16(struct integer_t *integer)
+{
+	uint16_t val;
+
+#if UINT16_MAX <= UINT_MAX
+	val = integer->arr[0];
+#else
+	unsigned int i;
+
+	val = 0;
+	for(i = m_uintmin(sizeof(uint16_t) / sizeof(unsigned int), integer->len) - 1; i != UINT_MAX; i--)
+		val = val * ((uint16_t)1 << (8 * sizeof(unsigned int))) + integer->arr[i];
+#endif
+
+	return integer->neg ? -val : val;
+}
+
+/**
+ * Check an integer to see if it fits in an unsigned 16-bit integer.
+ *   @integer: The integer.
+ *   &returns: The range error result.
+ */
+
+_export
+int8_t integer_uint16chk(struct integer_t *integer)
+{
+	if(integer->neg)
+		return -1;
+#if UINT16_MAX < UINT_MAX
+	else if((integer->len > 1) || (integer->arr[0] > UINT16_MAX))
+#else
+	else if(integer->len > (sizeof(uint16_t) / sizeof(unsigned int)))
+#endif
+		return 0;
+	else
+		return 1;
+}
+
+/**
+ * Retrieve an unsigned 32-bit unsigned integer from the integer.
+ *   @integer: The integer.
+ *   &returns: The 32-bit unsigned integer.
+ */
+
+_export
+uint32_t integer_uint32(struct integer_t *integer)
+{
+	uint32_t val;
+
+#if UINT32_MAX <= UINT_MAX
+	val = integer->arr[0];
+#else
+	unsigned int i;
+
+	val = 0;
+	for(i = m_uintmin(sizeof(uint32_t) / sizeof(unsigned int), integer->len) - 1; i != UINT_MAX; i--)
+		val = val * ((uint32_t)1 << (8 * sizeof(unsigned int))) + integer->arr[i];
+#endif
+
+	return integer->neg ? -val : val;
+}
+
+/**
+ * Check an integer to see if it fits in an unsigned 32-bit integer.
+ *   @integer: The integer.
+ *   &returns: The range error result.
+ */
+
+_export
+int8_t integer_uint32chk(struct integer_t *integer)
+{
+	if(integer->neg)
+		return -1;
+#if UINT32_MAX < UINT_MAX
+	else if((integer->len > 1) || (integer->arr[0] > UINT32_MAX))
+#else
+	else if(integer->len > (sizeof(uint32_t) / sizeof(unsigned int)))
+#endif
+		return 0;
+	else
+		return 1;
+}
+
+/**
+ * Retrieve an unsigned 64-bit unsigned integer from the integer.
+ *   @integer: The integer.
+ *   &returns: The 64-bit unsigned integer.
+ */
+
+_export
+uint64_t integer_uint64(struct integer_t *integer)
+{
+	uint64_t val;
+
+#if UINT64_MAX <= UINT_MAX
+	val = integer->arr[0];
+#else
+	unsigned int i;
+
+	val = 0;
+	for(i = m_uintmin(sizeof(uint64_t) / sizeof(unsigned int), integer->len) - 1; i != UINT_MAX; i--)
+		val = val * ((uint64_t)1 << (8 * sizeof(unsigned int))) + integer->arr[i];
+#endif
+
+	return integer->neg ? -val : val;
+}
+
+/**
+ * Check an integer to see if it fits in an unsigned 64-bit integer.
+ *   @integer: The integer.
+ *   &returns: The range error result.
+ */
+
+_export
+int8_t integer_uint64chk(struct integer_t *integer)
+{
+	if(integer->neg)
+		return -1;
+#if UINT64_MAX < UINT_MAX
+	else if((integer->len > 1) || (integer->arr[0] > UINT64_MAX))
+#else
+	else if(integer->len > (sizeof(uint64_t) / sizeof(unsigned int)))
+#endif
+		return 0;
+	else
+		return 1;
 }
 
 
@@ -413,8 +595,9 @@ void integer_print(const struct integer_t *integer, struct io_output_t output)
 
 	copy = integer_copy(integer);
 
-	while(!integer_iszero(copy))
+	do
 		*str-- = '0' + integer_div_ushort(&copy, 10);
+	while(!integer_iszero(copy));
 
 	integer_delete(copy);
 
