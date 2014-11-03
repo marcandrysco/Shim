@@ -35,6 +35,18 @@ struct io_print_t io_print_default[] = {
  */
 
 _export
+void io_print_(struct io_output_t output, const char *str)
+{
+	io_output_write(output, str, str_len(str));
+}
+
+/**
+ * Print out a string.
+ *   @output: The output device.
+ *   @string: The string.
+ */
+
+_export
 void io_print_str(struct io_output_t output, const char *str)
 {
 	io_output_write(output, str, str_len(str));
@@ -138,56 +150,60 @@ void io_vprintf_custom(struct io_output_t output, struct io_print_t *print, cons
 		if(*format == '%') {
 			format++;
 
-			if(*format == '-')
-				mod.neg = true, format++;
-			else
-				mod.neg = false;
+			if(*format != '%') {
+				if(*format == '-')
+					mod.neg = true, format++;
+				else
+					mod.neg = false;
 
-			if(*format == '0')
-				mod.zero = true, format++;
-			else
-				mod.zero = false;
+				if(*format == '0')
+					mod.zero = true, format++;
+				else
+					mod.zero = false;
 
-			mod.width = 0;
-			while(str_isdigit(*format))
-				mod.width = mod.width * 10 + *format - '0', format++;
+				mod.width = 0;
+				while(str_isdigit(*format))
+					mod.width = mod.width * 10 + *format - '0', format++;
 
-			if(*format == ':') {
-				format++;
+				if(*format == ':') {
+					format++;
 
-				for(i = 0; format[i] != ':'; i++) {
-					if(i == 15)
-						throw("Format name too long.");
-					else if(format[i] == '\0')
-						throw("Invalid format, no ending ':'.");
+					for(i = 0; format[i] != ':'; i++) {
+						if(i == 15)
+							throw("Format name too long.");
+						else if(format[i] == '\0')
+							throw("Invalid format, no ending ':'.");
+					}
+
+					mem_copy(name, format, i);
+					name[i] = '\0';
+
+					search = print;
+					while(1) {
+						if(search->callback == NULL)
+							throw("Invalid token '%c'.", *format);
+						if((search->name != NULL) && str_isequal(search->name, name))
+							break;
+
+						search++;
+					}
+
+					format += i;
+				}
+				else {
+					search = print;
+					while(search->ch != *format) {
+						if(search->callback == NULL)
+							throw("Invalid token '%c'.", *format);
+
+						search++;
+					}
 				}
 
-				mem_copy(name, format, i);
-				name[i] = '\0';
-
-				search = print;
-				while(1) {
-					if(search->callback == NULL)
-						throw("Invalid token '%c'.", *format);
-					if((search->name != NULL) && str_isequal(search->name, name))
-						break;
-
-					search++;
-				}
-
-				format += i;
+				search->callback(output, &mod, args);
 			}
-			else {
-				search = print;
-				while(search->ch != *format) {
-					if(search->callback == NULL)
-						throw("Invalid token '%c'.", *format);
-
-					search++;
-				}
-			}
-
-			search->callback(output, &mod, args);
+			else 
+				io_output_ch(output, '%');
 
 			format++;
 		}
