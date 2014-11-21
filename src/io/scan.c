@@ -1,5 +1,6 @@
 #include "../common.h"
 #include "scan.h"
+#include <stdio.h>
 #include "../debug/exception.h"
 #include "../types/strbuf.h"
 #include "input.h"
@@ -23,6 +24,14 @@ static char readdigit(struct io_input_t input)
 
 	ch = io_input_byte(input);
 	return (ch == IO_EOS) ? '\0' : ch;
+}
+
+static void buf_add(char *buf, unsigned int *idx, char ch)
+{
+	if(*idx >= 128)
+		throw("Number too long.");
+
+	buf[(*idx)++] = ch;
 }
 
 
@@ -97,4 +106,55 @@ unsigned long io_scan_ulong(struct io_input_t input, char *ch)
 	}
 
 	return num;
+}
+
+/**
+ * Scan double long from an input.
+ *   @input: The input string.
+ *   @ch: The buffered character.
+ *   &returns: The double.
+ */
+
+_export
+double io_scan_double(struct io_input_t input, char *ch)
+{
+	char buf[128];
+	unsigned int idx = 0;
+	double val;
+
+	if(*ch == '\0') {
+		*ch = readdigit(input);
+		if(*ch == '\0')
+			throw("Unexpected end of input.");
+	}
+
+	if(*ch == '-') {
+		buf_add(buf, &idx, *ch);
+		*ch = readdigit(input);
+	}
+
+	while((*ch >= '0') && (*ch <= '9')) {
+		buf_add(buf, &idx, *ch);
+		*ch = readdigit(input);
+	}
+
+	if(*ch == '.') {
+		do {
+			buf_add(buf, &idx, *ch);
+			*ch = readdigit(input);
+		} while((*ch >= '0') && (*ch <= '9'));
+	}
+
+	if((*ch == 'e') || (*ch == 'E')) {
+		do {
+			buf_add(buf, &idx, *ch);
+			*ch = readdigit(input);
+		} while((*ch >= '0') && (*ch <= '9'));
+	}
+
+	buf_add(buf, &idx, '\0');
+
+	sscanf(buf, "%lf", &val);
+
+	return val;
 }

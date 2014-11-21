@@ -35,6 +35,7 @@ struct io_chunk_t io_chunk_strptr(char **str);
 struct io_chunk_t io_chunk_uint(unsigned int *val);
 struct io_chunk_t io_chunk_cond(const struct io_chunk_t *pair);
 struct io_chunk_t io_chunk_indent(const unsigned int *indent);
+struct io_chunk_t io_chunk_pair(struct io_chunk_t *pair);
 
 /*
  * chunk definitions
@@ -42,6 +43,8 @@ struct io_chunk_t io_chunk_indent(const unsigned int *indent);
 
 #define io_chunk_nullstr(chunk, str) io_chunk_cond((struct io_chunk_t []){ chunk, io_chunk_str(str) })
 #define io_chunk_indentval(val) io_chunk_indent(&(union { unsigned int i; }){ .i = val }.i)
+#define io_chunk_pairval(left, right) io_chunk_pair((struct io_chunk_t []){ left, right })
+#define io_chunk_pairstr(left, right) io_chunk_pairval(io_chunk_str(left), io_chunk_str(right))
 
 
 /**

@@ -44,6 +44,7 @@ static void strptr_proc(struct io_output_t output, void *arg);
 static void uint_proc(struct io_output_t output, void *arg);
 static void cond_proc(struct io_output_t output, void *arg);
 static void indent_proc(struct io_output_t output, void *arg);
+static void pair_proc(struct io_output_t output, void *arg);
 
 /*
  * local variables
@@ -312,7 +313,7 @@ struct io_chunk_t io_chunk_indent(const unsigned int *indent)
 /**
  * Processing callback for indent.
  *   @output: The output.
- *   @arg: the argument.
+ *   @arg: The argument.
  */
 
 static void indent_proc(struct io_output_t output, void *arg)
@@ -324,4 +325,30 @@ static void indent_proc(struct io_output_t output, void *arg)
 
 	for(n /= 8; n != 0; n--)
 		io_print_str(output, blank);
+}
+
+/**
+ * Create a chunk pair.
+ *   @pair: The pair.
+ *   &returns: The chunk.
+ */
+
+_export
+struct io_chunk_t io_chunk_pair(struct io_chunk_t *pair)
+{
+	return (struct io_chunk_t){ pair_proc, pair };
+}
+
+/**
+ * Processing callback for a chunk pair.
+ *   @output: The output.
+ *   @arg: The argument.
+ */
+
+static void pair_proc(struct io_output_t output, void *arg)
+{
+	struct io_chunk_t *pair = arg;
+
+	io_chunk_proc(pair[0], output);
+	io_chunk_proc(pair[1], output);
 }
