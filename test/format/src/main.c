@@ -118,6 +118,7 @@ bool test_io_scan()
 	char ch;
 	const char *str, *ptr;
 	unsigned long ulong;
+	double dbl;
 
 	printf("testing io scanning... ");
 
@@ -157,6 +158,16 @@ bool test_io_scan()
 
 	ulong = io_scan_ulong(input, &ch);
 	if((ulong != 0) || (*ptr != '\0'))
+		return printf("failed\n"), false;
+
+	io_input_close(input);
+
+	ch = '\0';
+	ptr = str = "-1.23e10";
+	input = str_input_ref(&ptr);
+
+	dbl = io_scan_double(input, &ch);
+	if((dbl != -1.23e10) || (*ptr != '\0'))
 		return printf("failed\n"), false;
 
 	io_input_close(input);
