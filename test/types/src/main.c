@@ -1,6 +1,16 @@
 #include "common.h"
 
 
+void dump(struct avltree_node_t *node, unsigned int indent)
+{
+	if(node == NULL)
+		return;
+
+	dump(node->child[0], indent+1);
+	printf("%C%x\n", io_chunk_indentval(indent * 2), node);
+	dump(node->child[1], indent+1);
+}
+
 /**
  * AVL tree testing.
  *   &returns: True of success, false on failure.
@@ -8,7 +18,7 @@
 
 bool test_avltree()
 {
-	unsigned int i, list[8] = { 4, 2, 3, 7, 1, 0, 6, 5};
+	unsigned int i, list[8] = { 4, 2, 3, 7, 1, 0, 6, 5 }, trim[5] = { 1, 2, 5, 6, 7 };
 	struct avltree_node_t *root = NULL, *cur, node[10000];
 
 	printf("testing avltree... ");
@@ -20,6 +30,15 @@ bool test_avltree()
 
 		for(i = 0, cur = avltree_node_first(root); i < 8; i++, cur = avltree_node_next(cur)) {
 			if(cur != &node[i])
+				return printf("failed\n"), false;
+		}
+
+		avltree_node_remove(&root, &node[list[2]], (avltree_compare_nodekey_f)compare_ptr, NULL);
+		avltree_node_remove(&root, &node[list[5]], (avltree_compare_nodekey_f)compare_ptr, NULL);
+		avltree_node_remove(&root, &node[list[0]], (avltree_compare_nodekey_f)compare_ptr, NULL);
+
+		for(i = 0, cur = avltree_node_first(root); i < 5; i++, cur = avltree_node_next(cur)) {
+			if(cur != &node[trim[i]])
 				return printf("failed\n"), false;
 		}
 	}
@@ -74,9 +93,9 @@ bool test_avltree()
 
 bool test_integer()
 {
-	char *endptr, buf[32];
-	struct integer_t *val;
-	unsigned rem;
+	char *endptr, buf[64];
+	struct integer_t *val, *tmp;
+	unsigned int rem;
 
 	printf("testing integer... ");
 
@@ -133,7 +152,89 @@ bool test_integer()
 	str_printf(buf, "%C", integer_chunk(val));
 	integer_delete(val);
 	if(!str_isequal(buf, "78910"))
-		return printf("failed [%s]\n", buf), false;
+		return printf("failed\n"), false;
+
+	val = integer_parse("4052555153018976267", NULL);
+	tmp = integer_parse("4656612873077392578125", NULL);
+	integer_add(&val, tmp);
+	str_printf(buf, "%C", integer_chunk(val));
+	integer_delete(tmp);
+	integer_delete(val);
+	if(!str_isequal(buf, "4660665428230411554392"))
+		return printf("failed\n"), false;
+
+	val = integer_parse("13", NULL);
+	tmp = integer_parse("28", NULL);
+	integer_add(&val, tmp);
+	str_printf(buf, "%C", integer_chunk(val));
+	integer_delete(tmp);
+	integer_delete(val);
+	if(!str_isequal(buf, "41"))
+		return printf("failed\n"), false;
+
+	val = integer_parse("28", NULL);
+	tmp = integer_parse("13", NULL);
+	integer_sub(&val, tmp);
+	str_printf(buf, "%C", integer_chunk(val));
+	integer_delete(tmp);
+	integer_delete(val);
+	if(!str_isequal(buf, "15"))
+		return printf("failed\n"), false;
+
+	val = integer_parse("4656612873077392578125", NULL);
+	tmp = integer_parse("4052555153018976267", NULL);
+	integer_sub(&val, tmp);
+	str_printf(buf, "%C", integer_chunk(val));
+	integer_delete(tmp);
+	integer_delete(val);
+	if(!str_isequal(buf, "4652560317924373601858"))
+		return printf("failed\n"), false;
+
+	val = integer_parse("483306625", NULL);
+	tmp = integer_parse("-3916345896", NULL);
+	integer_add(&val, tmp);
+	str_printf(buf, "%C", integer_chunk(val));
+	integer_delete(tmp);
+	integer_delete(val);
+	if(!str_isequal(buf, "-3433039271"))
+		return printf("failed\n"), false;
+
+	val = integer_parse("483306625", NULL);
+	tmp = integer_parse("-13582478396", NULL);
+	integer_add(&val, tmp);
+	str_printf(buf, "%C", integer_chunk(val));
+	integer_delete(tmp);
+	integer_delete(val);
+	if(!str_isequal(buf, "-13099171771"))
+		return printf("failed\n"), false;
+
+	val = integer_new(78910);
+	if(!integer_uint32chk(val))
+		return printf("failed\n"), false;
+	else if(integer_uint16chk(val))
+		return printf("failed\n"), false;
+	else if(integer_uint8chk(val))
+		return printf("failed\n"), false;
+	else if(integer_uint32(val) != 78910)
+		return printf("failed\n"), false;
+	else if(integer_uint16(val) != 13374)
+		return printf("failed\n"), false;
+	else if(integer_uint8(val) != 62)
+		return printf("failed\n"), false;
+	integer_delete(val);
+
+	val = integer_new(-281);
+	if(!integer_uint16chk(val))
+		return printf("failed\n"), false;
+	else if(!integer_uint8chk(val))
+		return printf("failed\n"), false;
+	else if(integer_uint32(val) != 4294967015)
+		return printf("failed\n"), false;
+	else if(integer_uint16(val) != 65255)
+		return printf("failed\n"), false;
+	else if(integer_uint8(val) != 231)
+		return printf("failed %u\n", integer_uint8(val)), false;
+	integer_delete(val);
 
 	printf("okay\n");
 
