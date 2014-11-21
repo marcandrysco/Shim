@@ -14,8 +14,10 @@
 int8_t str_getdigit(char ch);
 
 unsigned int str_parse_uint(const char *str);
+double str_parse_double(const char *str);
 
 unsigned long str_toulong(const char *str, char **endptr);
+double str_todouble(const char *str, char **endptr);
 bool str_endchk(const char *str);
 
 /* %~shim.h% */

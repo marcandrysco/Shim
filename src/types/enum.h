@@ -11,6 +11,7 @@
  * enumerator variables
  */
 
+extern struct enum_t enum_null;
 extern struct enum_t enum_blank;
 
 /*

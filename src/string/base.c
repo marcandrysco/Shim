@@ -74,6 +74,19 @@ bool str_isequal(const char *s1, const char *s2)
 }
 
 /**
+ * Determine if two strings are equal without case sensitivity.
+ *   @s1: The first string.
+ *   @s2: The second string.
+ *   &returns: True if they are equal, false otherwise.
+ */
+
+_export
+bool str_isequali(const char *s1, const char *s2)
+{
+	return strcasecmp(s1, s2) == 0;
+}
+
+/**
  * Determine if a string is a prefix of a reference string.
  *   @str: The reference string.
  *   @prefix: The prefix to test.

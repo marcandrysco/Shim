@@ -57,7 +57,6 @@ static struct io_output_i len_iface = { { unimpl_ctrl, unimpl_close }, (io_write
 static struct io_output_i accum_iface = { { unimpl_ctrl, (io_close_f)accum_delete }, (io_write_f)accum_write };
 
 static struct io_input_i str_iface = { { (io_ctrl_f)ref_ctrl, mem_free }, (io_read_f)ref_read };
-static struct io_input_i ref_iface = { { (io_ctrl_f)ref_ctrl, unimpl_close }, (io_read_f)ref_read };
 
 
 /**
@@ -236,7 +235,9 @@ struct io_input_t str_input_buf(const char *buf)
 _export
 struct io_input_t str_input_ref(const char **ref)
 {
-	return (struct io_input_t){ ref, &ref_iface };
+	static const struct io_input_i iface = { { (io_ctrl_f)ref_ctrl, unimpl_close }, (io_read_f)ref_read };
+
+	return (struct io_input_t){ ref, &iface };
 }
 
 /**

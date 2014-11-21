@@ -43,7 +43,26 @@ unsigned int str_parse_uint(const char *str)
 		throw("Value too large.");
 
 	if(!str_endchk(str))
-		throw("Extra characters after number [%s].", str);
+		throw("Extra characters after number.");
+
+	return val;
+}
+
+/**
+ * Parse a double from a string.
+ *   @str: The string.
+ *   &returns: The unsigned integer.
+ */
+
+_export
+double str_parse_double(const char *str)
+{
+	double val;
+
+	val = str_todouble(str, (char **)&str);
+
+	if(!str_endchk(str))
+		throw("Extra characters after number.");
 
 	return val;
 }
@@ -65,6 +84,30 @@ unsigned long str_toulong(const char *str, char **endptr)
 
 	input = str_input_ref(&str);
 	val = io_scan_ulong(input, &ch);
+	io_input_close(input);
+
+	if(endptr != NULL)
+		*endptr = (char *)str - ((ch == '\0') ? 0 : 1);
+
+	return val;
+}
+
+/**
+ * Convert a string to a double value.
+ *   @str: The string.
+ *   @endptr: Optional. The end pointer.
+ *   &returns: The value.
+ */
+
+_export
+double str_todouble(const char *str, char **endptr)
+{
+	struct io_input_t input;
+	double val;
+	char ch = '\0';
+
+	input = str_input_ref(&str);
+	val = io_scan_double(input, &ch);
 	io_input_close(input);
 
 	if(endptr != NULL)

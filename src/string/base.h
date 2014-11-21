@@ -17,6 +17,7 @@ void str_copy(char *restrict dest, const char *restrict src);
 size_t str_ncopy(char *restrict dest, const char *restrict src, size_t nbytes);
 
 bool str_isequal(const char *s1, const char *s2);
+bool str_isequali(const char *s1, const char *s2);
 bool str_isprefix(const char *str, const char *prefix);
 int str_cmp(const char *s1, const char *s2);
 

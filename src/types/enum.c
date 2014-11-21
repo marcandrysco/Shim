@@ -93,6 +93,7 @@ static struct enum_i blank_iface = { blank_iter, delete_noop };
  * global variables
  */
 
+_export struct enum_t enum_null = { NULL, NULL };
 _export struct enum_t enum_blank = { NULL, &blank_iface };
 
 
